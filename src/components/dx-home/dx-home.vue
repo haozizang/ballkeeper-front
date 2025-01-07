@@ -1,24 +1,21 @@
 <template>
-  <view class="bg-white">
-    <tm-carousel autoplay :margin="[0, 0]" :round="0" :width="750" :height="380" :list="appStore.app_carousel"></tm-carousel>
-  </view>
   <view class="py-20 bg-white">
     <tm-grid :width="750" :col="4">
-      <tm-grid-item :height="180" @click="openLink('/others/follow/follow')">
-        <image class="icon" src="../../static/a2.png"></image>
-        <tm-text :font-size="22" label="我的关注"></tm-text>
-      </tm-grid-item>
       <tm-grid-item color="orange" :height="180" @click="openLink('/others/activity/activity')">
         <image class="icon" src="../../static/a3.png"></image>
         <tm-text :font-size="22" label="我的活动"></tm-text>
       </tm-grid-item>
       <tm-grid-item color="green" :height="180" @click="openLink('/teams/index/index')">
         <image class="icon" src="../../static/a4.png"></image>
-        <tm-text :font-size="22" label="我的组织"></tm-text>
+        <tm-text :font-size="22" label="我的球队"></tm-text>
       </tm-grid-item>
       <tm-grid-item color="pink" :height="180" @click="openLink('/others/publish/publish')">
         <image class="icon" src="../../static/a1.png"></image>
         <tm-text :font-size="22" label="发布活动"></tm-text>
+      </tm-grid-item>
+      <tm-grid-item :height="180" @click="openLink('/others/follow/follow')">
+        <image class="icon" src="../../static/a2.png"></image>
+        <tm-text :font-size="22" label="我的关注"></tm-text>
       </tm-grid-item>
     </tm-grid>
   </view>
@@ -52,7 +49,7 @@
     </view>
   </view>
   <view class="flex-row-center-between pt-30 px-30 mt-30 bg-white">
-    <view class="text-black">推荐组织</view>
+    <view class="text-black">推荐球队</view>
     <view>
       <tm-icon name="tmicon-angle-right" color="#999999"></tm-icon>
     </view>
