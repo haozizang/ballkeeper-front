@@ -14,13 +14,6 @@
           <tm-form-item required field="password" :rules="[{ required: true, message: '请输入密码' }]">
             <tm-input :inputPadding="[20, 0]" type="password" :round="20" prefix="tmicon-lock" v-model.lazy="loginForm.password" placeholder="请输入密码" :showBottomBotder="false"> </tm-input>
           </tm-form-item>
-          <tm-form-item required field="captcha" :border="false" :rules="[{ required: true, message: '请输入验证码' }]">
-            <tm-input :inputPadding="[20, 0]" :round="20" prefix="tmicon-picture" v-model.lazy="loginForm.captcha" placeholder="请输入验证码" :showBottomBotder="false">
-              <template #right>
-                <image :src="captchaUrl" style="width: 133rpx; height: 60rpx; margin-right: -20rpx"></image>
-              </template>
-            </tm-input>
-          </tm-form-item>
           <tm-form-item :border="false">
             <tm-button :margin="[10]" :shadow="0" :round="20" size="small" form-type="submit" block label="立即注册"></tm-button>
             <view class="login-tips flex flex-between px-30">
