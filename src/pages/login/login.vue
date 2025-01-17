@@ -15,13 +15,6 @@
             <tm-input :inputPadding="[20, 0]" type="password" :round="20" prefix="tmicon-lock" v-model.lazy="loginForm.password" placeholder="请输入密码" :showBottomBotder="false">
             </tm-input>
           </tm-form-item>
-          <tm-form-item required field="captcha" :border="false" :rules="[{ required: true, message: '请输入验证码' }]">
-            <tm-input :inputPadding="[20, 0]" :round="20" prefix="tmicon-picture" v-model.lazy="loginForm.captcha" placeholder="请输入验证码" :showBottomBotder="false">
-              <template #right>
-                <image :src="captchaUrl" style="width: 133rpx; height: 60rpx; margin-right: -20rpx" @click="captcha"> </image>
-              </template>
-            </tm-input>
-          </tm-form-item>
           <tm-form-item :border="false">
             <tm-button :margin="[10]" :shadow="0" :round="20" size="small" form-type="submit" block label="立即登录"></tm-button>
             <view class="login-tips flex flex-between px-30">
@@ -95,15 +88,13 @@ import { ref, computed } from 'vue';
 import { login, getCaptcha } from '@/common/index';
 import { useAppStore } from '@/stores/app';
 import { useUserStore } from '@/stores/user';
-import { openLink } from '@/common/tools';
+import { openLink, debugLog } from '@/common/tools';
 import { onLoad } from '@dcloudio/uni-app';
 const appStore = useAppStore();
 const userStore = useUserStore();
-const captchaUrl = ref('');
 const loginForm = ref({
   username: '',
   password: '',
-  captcha: '',
 });
 // #ifdef MP-WEIXIN
 const showWin = ref(false);
@@ -224,29 +215,29 @@ function mobileLogin() {
 }
 // #endif
 
-function captcha() {
-  getCaptcha({ scene: 'login' }).then(res => {
-    if (res.code == 1000) {
-      captchaUrl.value = res.data;
-    }
-  });
-}
-captcha();
 function confirm(e: any) {
   if (e.validate) {
-    login({
-      ...e.data,
-      loginType: 'account',
-    }).then(res => {
-      console.log(res);
-      if (res.code === 1000) {
-        userStore.setUserInfo(res.data);
-        uni.reLaunch({
-          url: '/pages/index/index',
-        });
-      } else {
-        captcha();
-        uni.$tm.u.toast(res.message);
+    uni.request({
+      url: "/ballkeeper/login/",
+      method: 'POST',
+      data: {
+        ...e.data,
+        loginType: 'account'
+      },
+      success: (res: any) => {
+        debugLog("request ok, res: ", res);
+        if (res.data.code === 0) {
+          userStore.setUserInfo(res.data.data);
+          uni.reLaunch({
+            url: '/pages/index/index',
+          });
+        } else {
+          uni.$tm.u.toast(res.data.message || '登录失败');
+        }
+      },
+      fail: (err) => {
+        console.error('login failed: ', err);
+        uni.$tm.u.toast('登录失败，请稍后重试');
       }
     });
   }

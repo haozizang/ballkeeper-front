@@ -32,7 +32,7 @@
 
 <script lang="ts" setup>
 import { ref } from 'vue';
-import { openLink } from '@/common/tools';
+import { openLink, debugLog } from '@/common/tools';
 import { register } from '@/common/index';
 import { useAppStore } from '@/stores/app';
 const appStore = useAppStore();
@@ -42,25 +42,25 @@ const loginForm = ref({
 });
 
 function confirm(e: any) {
+  debugLog("register with details", e);
   if (e.validate) {
     uni.request({
-      url: "/ballkeeper/",
-      method: 'GET',
-      success: (res) => {
-        console.log("request ok, res: ", res);
+      url: "/ballkeeper/register/",
+      method: 'POST',
+      data: e.data,
+      success: (res: any) => {
+        debugLog("request ok, res: ", res);
+        debugLog("request ok, res.data.code: ", res.data.code);
+        if (res.data.code === 0) {
+          uni.$tm.u.toast('注册成功');
+          openLink('pages/login/login', 1);
+        } else {
+          uni.$tm.u.toast(res.data.message || '注册失败');
+        }
       },
       fail: (err) => {
         console.error('request failed: ', err);
-      }
-    });
-
-    register({
-      ...e.data,
-    }).then(res => {
-      if (res.code == 1000) {
-        openLink('pages/login/login', 1);
-      } else {
-        uni.$tm.u.toast(res.message);
+        uni.$tm.u.toast('注册失败，请稍后重试');
       }
     });
   }
