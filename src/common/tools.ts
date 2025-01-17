@@ -52,6 +52,23 @@ export const arrayToTree = function (items: any, idField = '_id', pidField = 'pa
   return result;
 };
 
+// debug专用日志
+export const debugLog = function (...args: any[]) {
+    // 创建一个错误对象以获取堆栈信息
+    const stack = new Error().stack?.split("\n");
+    if (!stack) return;
+    // 获取调用的行
+    const callerLine = stack[2].trim(); // 这通常是我们需要的调用函数行
+
+    // 从 callerLine 中提取函数名和行号
+    const match = callerLine.match(/at (.+):(\d+):(\d+)/);
+    const functionName = match ? match[1] : 'unknown function';
+    const lineNumber = match ? match[2] : 'unknown line';
+
+    // 输出日志带上调用信息
+    console.log(`[${functionName}:${lineNumber}]`, ...args);
+};
+
 /**
  * 格式化时间
  */
