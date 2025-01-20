@@ -89,6 +89,7 @@ import { login, getCaptcha } from '@/common/index';
 import { useAppStore } from '@/stores/app';
 import { useUserStore } from '@/stores/user';
 import { openLink, debugLog } from '@/common/tools';
+import { ApiCode } from '@/common/data';
 import { onLoad } from '@dcloudio/uni-app';
 const appStore = useAppStore();
 const userStore = useUserStore();
@@ -225,14 +226,16 @@ function confirm(e: any) {
         loginType: 'account'
       },
       success: (res: any) => {
-        debugLog("request ok, res: ", res);
-        if (res.data.code === 0) {
+        debugLog("res: ", res);
+        if (res.data.code === ApiCode.SUCCESS) {
+          debugLog("login succeeded, res: ", res);
           userStore.setUserInfo(res.data.data);
           uni.reLaunch({
             url: '/pages/index/index',
           });
         } else {
-          uni.$tm.u.toast(res.data.message || '登录失败');
+          debugLog("login failed, res: ", res);
+          uni.$tm.u.toast('登录失败: ' + res.data.msg);
         }
       },
       fail: (err) => {

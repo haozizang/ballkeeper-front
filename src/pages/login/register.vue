@@ -33,8 +33,10 @@
 <script lang="ts" setup>
 import { ref } from 'vue';
 import { openLink, debugLog } from '@/common/tools';
+import { ApiCode } from '@/common/data';
 import { register } from '@/common/index';
 import { useAppStore } from '@/stores/app';
+
 const appStore = useAppStore();
 const loginForm = ref({
   username: '',
@@ -50,12 +52,11 @@ function confirm(e: any) {
       data: e.data,
       success: (res: any) => {
         debugLog("request ok, res: ", res);
-        debugLog("request ok, res.data.code: ", res.data.code);
-        if (res.data.code === 0) {
+        if (res.data.code === ApiCode.SUCCESS) {
           uni.$tm.u.toast('注册成功');
           openLink('pages/login/login', 1);
         } else {
-          uni.$tm.u.toast(res.data.message || '注册失败');
+          uni.$tm.u.toast(res.data.msg || '注册失败');
         }
       },
       fail: (err) => {
