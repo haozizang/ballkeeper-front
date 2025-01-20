@@ -240,11 +240,12 @@ function confirm(e: any) {
       },
       fail: (err) => {
         console.error('login failed: ', err);
-        uni.$tm.u.toast('登录失败，请稍后重试');
+        uni.$tm.u.toast('登录请求失败, 请稍后重试');
       }
     });
   }
 }
+
 onLoad((e: any) => {
   // #ifdef H5
   if (e.code && e.state) {
