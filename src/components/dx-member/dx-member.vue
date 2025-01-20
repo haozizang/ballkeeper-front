@@ -7,6 +7,7 @@
           <view class="flex-1" @click="openLink('pages/user/edit')">
             <view class="text-size-xl">{{ userStore.userInfo.nickname }}</view>
             <view class="mt-15">{{ userStore.userInfo.mobile }}</view>
+            <view class="ml-30 mt-10 text-size-xl">{{ userStore.userInfo.username }}</view>
           </view>
         </template>
         <template v-else>
