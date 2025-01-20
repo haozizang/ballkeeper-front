@@ -25,9 +25,9 @@ export const useUserStore = defineStore('userStore', () => {
 	// 设置用户信息
 	const setUserInfo = (info : any) => {
 		userInfo.value = info;
-		uni.setStorageSync('dx_activity_user_info', info);
-		uni.setStorageSync('uni_id_token', info.token);
-		uni.setStorageSync('uni_id_token_expired', info.tokenExpired);
+		// uni.setStorageSync('dx_activity_user_info', info);
+		// uni.setStorageSync('uni_id_token', info.token);
+		// uni.setStorageSync('uni_id_token_expired', info.tokenExpired);
 		isLogin.value = true;
 	};
 	
