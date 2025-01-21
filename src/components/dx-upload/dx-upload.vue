@@ -1,15 +1,15 @@
 <template>
   <view class="dx-upload">
     <template v-if="limit === 1">
-      <view class="item flex-center" v-if="!!value">
-        <image class="upload-img" :src="value"></image>
+      <view class="item flex-center" v-if="!!modelValue">
+        <image class="upload-img" :src="imageUrl"></image>
         <view class="close">
-            <tm-icon name="tmicon-times-circle-fill" color="#fe1b00" @click="value=''"></tm-icon>
+            <tm-icon name="tmicon-times-circle-fill" color="#fe1b00" @click="clearImage"></tm-icon>
         </view>
       </view>
     </template>
     <template v-else>
-      <view class="item flex-center" :class="{'ml-15':index%3!==0}" v-for="(item,index) in value" :key="index">
+      <view class="item flex-center" :class="{'ml-15':index%3!==0}" v-for="(item,index) in modelValue" :key="index">
         <image class="upload-img" :src="item"></image>
         <view class="close">
             <tm-icon name="tmicon-times-circle-fill" color="#fe1b00" @click="remove(index)"></tm-icon>
@@ -25,37 +25,53 @@
   </view>
 </template>
 <script lang="ts" setup>
-import { ref, watch,computed } from 'vue';
+import { ref, watch, computed } from 'vue';
 import { multiUpload } from '@/common/index';
+import { debugLog } from '@/common/tools';
+import { getBaseUrl } from '@/common/env';
 import { ApiCode } from '@/common/data';
 
 const props = withDefaults(defineProps<{
     modelValue: any,
     limit?: number,
     username?: string,
+    img_name: string,
 }>(), {
     limit: 1,
     username: '',
+    img_name: '',
 })
-const value = ref(props.limit === 1 ? '' : []);
+const emit = defineEmits(['update:modelValue']);
+
+// 计算属性处理图片URL
+const imageUrl = computed(() => {
+    return props.modelValue || '';
+});
+
+// 是否显示上传按钮
 const showUpload = computed(() => {
-    return props.limit === 1 ? !value.value : value.value.length < props.limit;
-})
-watch(() => props.modelValue, (val) => {
-    console.log(val);
+    return props.limit === 1 ? !props.modelValue : false;
+});
+
+watch(() => props.modelValue, (newVal) => {
+    console.log("DBG: 2", newVal);
     if (props.limit === 1) {
-        value.value = val;
+        // No need to update the modelValue directly as it's already managed by the computed property
     } else {
-        value.value = !val ? [] : Array.isArray(val) ? val : val.split(',');
+        // No need to update the modelValue directly as it's already managed by the computed property
     }
-},{
+}, {
     immediate: true
 })
-const $emit = defineEmits(['update:modelValue']);
+
 // 删除图片
 function remove(index: number) {
-    (value.value as string[]).splice(index, 1);
-    $emit('update:modelValue', value.value);
+    // No need to update the modelValue directly as it's already managed by the computed property
+}
+
+// 清除图片
+function clearImage() {
+    emit('update:modelValue', '');
 }
 
 function selectImage() {
@@ -64,24 +80,24 @@ function selectImage() {
         sizeType: ['compressed'],
         sourceType: ['album', 'camera'],
         success: (e) => {
+            debugLog("selectImage res: ", e);
             const tempFilePath = e.tempFilePaths[0];
             uni.uploadFile({
                 url: '/ballkeeper/upload_avatar/',
                 filePath: tempFilePath,
                 name: 'avatar',
                 formData: {'username': props.username},
-                success: (uploadRes: any) => {
-                const data = JSON.parse(uploadRes.data);
-                if (data.code === ApiCode.SUCCESS) {
-                    // loginForm.value.avatar = data.data.url;
-                    uni.$tm.u.toast('头像上传成功');
-                } else {
-                    uni.$tm.u.toast(data.msg || '上传失败');
-                }
+                success: (uploadRes) => {
+                    debugLog("uploadFile res: ", uploadRes);
+                    const data = JSON.parse(uploadRes.data);
+                    debugLog("data: ", data);
+ 
+                    let url = getBaseUrl() + data.data.avatar_url;
+                    emit('update:modelValue', url);
                 },
                 fail: (err) => {
-                console.error('上传失败:', err);
-                uni.$tm.u.toast('上传失败，请重试');
+                    console.error('上传失败:', err);
+                    uni.$tm.u.toast('上传失败,请重试');
                 }
             })
         }
