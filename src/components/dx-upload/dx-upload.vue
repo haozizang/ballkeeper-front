@@ -19,7 +19,7 @@
     <view class="item flex-center ml-15" v-if="showUpload" @click="selectImage">
       <view>
         <tm-icon name="tmicon-plus" color="#999999"></tm-icon>
-        <view class="tips">上传</view>
+        <view class="tips">点击上传</view>
       </view>
     </view>
   </view>
@@ -27,11 +27,15 @@
 <script lang="ts" setup>
 import { ref, watch,computed } from 'vue';
 import { multiUpload } from '@/common/index';
+import { ApiCode } from '@/common/data';
+
 const props = withDefaults(defineProps<{
     modelValue: any,
     limit?: number,
+    username?: string,
 }>(), {
     limit: 1,
+    username: '',
 })
 const value = ref(props.limit === 1 ? '' : []);
 const showUpload = computed(() => {
@@ -53,22 +57,37 @@ function remove(index: number) {
     (value.value as string[]).splice(index, 1);
     $emit('update:modelValue', value.value);
 }
-function selectImage(){
+
+function selectImage() {
     uni.chooseImage({
-        count: props.limit === 1 ? 1 : props.limit - value.value.length,
+        count: 1,
+        sizeType: ['compressed'],
+        sourceType: ['album', 'camera'],
         success: (e) => {
-            multiUpload(e.tempFiles as any).then((res:any) => {
-                if (props.limit === 1) {
-                    value.value = res[0];
-                    $emit('update:modelValue', res[0]);
+            const tempFilePath = e.tempFilePaths[0];
+            uni.uploadFile({
+                url: '/ballkeeper/upload_avatar/',
+                filePath: tempFilePath,
+                name: 'avatar',
+                formData: {'username': props.username},
+                success: (uploadRes: any) => {
+                const data = JSON.parse(uploadRes.data);
+                if (data.code === ApiCode.SUCCESS) {
+                    // loginForm.value.avatar = data.data.url;
+                    uni.$tm.u.toast('头像上传成功');
                 } else {
-                    value.value = value.value.concat(res);
-                    $emit('update:modelValue',value.value);
+                    uni.$tm.u.toast(data.msg || '上传失败');
+                }
+                },
+                fail: (err) => {
+                console.error('上传失败:', err);
+                uni.$tm.u.toast('上传失败，请重试');
                 }
             })
         }
     })
 }
+
 </script>
 <style lang="scss" scoped>
 .dx-upload{

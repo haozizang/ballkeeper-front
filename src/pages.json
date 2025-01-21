@@ -52,6 +52,11 @@
 			"style":{
 				"navigationBarTitleText":"编辑资料"
 			}
+		},{
+			"path":"pages/user/avatar",
+			"style":{
+				"navigationBarTitleText":"上传头像"
+			}
 		}
 	],
 	"subPackages": [ //分包配置，参考：https://uniapp.dcloud.io/collocation/pages?id=分包配置

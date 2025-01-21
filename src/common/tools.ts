@@ -1,8 +1,20 @@
 import * as dayjs from "@/tmui/tool/dayjs/esm/index"
 import { computed } from "vue";
 //导航
-export const openLink = (url: string, type?: number) => {
+export const openLink = (url: string, params?: Record<string, any>, type?: number) => {
+  // 处理基础 url
   url = url.startsWith('/') ? url : `/${url}`;
+  
+  // 如果有参数，将其添加到 url 中
+  if (params) {
+    const queryString = Object.entries(params)
+      .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
+      .join('&');
+    url = `${url}${url.includes('?') ? '&' : '?'}${queryString}`;
+  }
+  console.log("[openLink] go to url: ", url);
+
+  // 页面跳转
   if (type) {
     uni.redirectTo({
       url,

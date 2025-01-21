@@ -51,17 +51,22 @@ function confirm(e: any) {
       method: 'POST',
       data: e.data,
       success: (res: any) => {
-        debugLog("request ok, res: ", res);
+        debugLog("response of register: ", res);
         if (res.data.code === ApiCode.SUCCESS) {
-          uni.$tm.u.toast('注册成功');
-          openLink('pages/login/login', 1);
+          uni.$tm.u.toast('注册成功！');
+          // 注册成功后，先保存token
+          const token = res.data.data.token;
+          uni.setStorageSync('token', token);
+          // 跳转到编辑页面进行头像设置
+          setTimeout(() => {
+            openLink('/pages/user/avatar', {username: res.data.data.username}, 1);
+          }, 1500);
         } else {
           uni.$tm.u.toast(res.data.msg || '注册失败');
         }
       },
-      fail: (err) => {
-        console.error('request failed: ', err);
-        uni.$tm.u.toast('注册失败，请稍后重试');
+      fail: () => {
+        uni.$tm.u.toast('注册失败，请重试');
       }
     });
   }
