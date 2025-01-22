@@ -13,9 +13,9 @@
         <template v-else>
           <view class="flex-1" @click="openLink('pages/login/login')">立即登录</view>
         </template>
-		<view>
-			<tm-icon :font-size="30" color="#ffffff" name="tmicon-angle-right"></tm-icon>
-		</view>
+        <view>
+          <tm-icon :font-size="30" color="#ffffff" name="tmicon-angle-right"></tm-icon>
+        </view>
       </view>
     </view>
     <view class="flex flex-between text-align-center py-50">
@@ -82,7 +82,7 @@
         </view>
       </template>
     </tm-cell>
-	<tm-cell :margin="[0, 0]" @click="userStore.logout">
+    <tm-cell :margin="[0, 0]" @click="userStore.logout">
       <template v-slot:title>
         <view class="flex-col-top-center">
           <tm-icon name="tmicon-poweroff" :font-size="28" color="#555050"></tm-icon>

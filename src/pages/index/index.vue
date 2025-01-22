@@ -1,7 +1,7 @@
 <template>
   <tm-app>
     <tm-sheet :margin="[0, 0]" :padding="[0, 0]" :transprent="true">
-      <!-- <dx-home v-if="act_ind === 0"></dx-home> -->
+      <dx-home v-if="act_ind === 0"></dx-home>
       <dx-my-activity :category-list="categoryList" v-if="act_ind === 0"></dx-my-activity>
       <dx-activity :category-list="categoryList" v-else-if="act_ind === 1"></dx-activity>
       <dx-team :category-list="categoryList" v-else-if="act_ind == 3"></dx-team>
