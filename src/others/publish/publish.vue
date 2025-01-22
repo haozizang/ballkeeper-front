@@ -1,13 +1,6 @@
 <template>
   <tm-app>
     <tm-sheet :margin="[0, 0]" :padding="[0, 0]" :round="3" :shadow="2">
-      <view class="cover" @click="uploadCover">
-        <image :src="formData.cover || '../../static/image.jpg'" mode="aspectFill"></image>
-        <view class="upload round-3 flex-row-center-center">
-          <tm-icon name="tmicon-plus" color="white" :font-size="25"></tm-icon>
-          <text class="ml-5">上传封面(800*500)</text>
-        </view>
-      </view>
       <tm-form @submit="confirm" :margin="[0, 0]" ref="form" v-model="formData" :label-width="180">
         <tm-form-item :margin="[15, 0]" required label="活动标题" field="title" :rules="[{ required: true, message: '请输入活动标题' }]">
           <tm-input v-model="formData.title" showClear placeholder="请输入活动标题"></tm-input>
@@ -82,19 +75,28 @@
 </template>
 <script setup lang="ts">
 import { ref,watch,computed } from 'vue';
-import {getCategory,upload,activitySave,myActivityInfo} from '@/common/index'
+import {getCategory, activitySave, myActivityInfo} from '@/common/index'
 import {arrayToTree, openLink} from '@/common/tools'
 import {useActivityStore} from '@/stores/activity'
 import { onLoad } from '@dcloudio/uni-app';
 import * as dayjs from "@/tmui/tool/dayjs/esm/index"
 
-const categoryList = ref<any>([]);
+const categoryList = ref([
+  { _id: '1', name: '足球(5人制)' },
+  { _id: '2', name: '足球(6人制)' },
+  { _id: '3', name: '足球(7人制)' },
+  { _id: '3', name: '足球(8人制)' },
+  { _id: '3', name: '足球(9人制)' },
+  { _id: '4', name: '足球(11人制)' }
+]);
 const activityStore = useActivityStore();
 const showCategory = ref(false);
 const categoryIndex = ref<number[]>([]);
 const categoryStr = ref('');
 const categoryText = computed(() => {
-  return categoryStr.value ? categoryStr.value : '请选择组织分类';
+  if (!formData.value.category_id) return '请选择活动分类';
+  const category = categoryList.value.find(item => item._id === formData.value.category_id);
+  return category ? category.name : '请选择活动分类';
 })
 const formListText = computed(() => {
   if(activityStore.fieldList.length){
@@ -138,16 +140,7 @@ function openSelectTime(field:string){
     defaultDate.value = new Date().getTime();
   }
 }
-function uploadCover() {
-  uni.chooseImage({
-    count: 1,
-    success(res: any) {
-      upload(res.tempFiles[0]).then((url: any) => {
-        formData.value.cover = url;
-      });
-    },
-  });
-}
+
 function chooseAddress() {
   uni.chooseLocation({
     success: function (res) {
@@ -157,10 +150,12 @@ function chooseAddress() {
     }
   });
 }
+
 watch(categoryIndex, (val) => {
-  formData.value.category_id = categoryList.value[val[0]]?.children[val[1]]?._id;
-  categoryStr.value = categoryList.value[val[0]].name + '-' + categoryList.value[val[0]]?.children[val[1]]?.name;
+  formData.value.category_id = categoryList.value[val[0]]?._id;
+  categoryStr.value = categoryList.value[val[0]].name;
 });
+
 watch(
   () => dateSAva.value,
   (val) => {
@@ -207,11 +202,9 @@ onLoad(async (e: any) => {
         end_date_text.value = dayjs.default(res.data.end_date).format('YYYY年MM月DD日 HH时mm分');
         activityStore.setFieldList(res.data.form_list);
         categoryList.value.map((item: any, index: number) => {
-          item.children.map((row: any, rowIndex: number) => {
-            if (row._id === res.data.category_id) {
-              categoryIndex.value = [index, rowIndex];
-            }
-          })
+          if (item._id === res.data.category_id) {
+            categoryIndex.value = [index];
+          }
         })
       }
     })

@@ -81,15 +81,6 @@ function init() {
 }
 
 init();
-function toFollow(id: string) {
-	// 关注
-  followTeam({id}).then(res=>{
-    uni.$tm.u.toast(res.message);
-    if(res.code===1000){
-      init()
-    }
-  })
-}
 </script>
 <style lang="scss" scoped>
 .icon {
