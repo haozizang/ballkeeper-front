@@ -1,6 +1,6 @@
 <template>
   <view class="flex-row-center-between py-20 px-30 mt-20" :style="{ backgroundColor: '#3c8af8' }">
-    <view class="text-white">我的活动</view>
+    <view class="text-white">已完成的活动</view>
     <view>
       <tm-icon name="tmicon-angle-right" color="#ffffff"></tm-icon>
     </view>
@@ -59,9 +59,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { openLink,timeText } from '@/common/tools';
-import { useAppStore } from '@/stores/app'
 import { indexHome,followTeam } from '@/common/index'
-const appStore = useAppStore();
 const my_activities = ref<any>([]);
 const other_activities = ref<any>([]);
 const team = ref<any>([]);
@@ -76,72 +74,9 @@ function init() {
 	});
   // DEL: 模拟活动数据
   my_activities.value = [
-    {
-      title: '我创建的比赛',
-      cover: 'https://example.com/image1.jpg',
-      address: '北京音乐厅',
-      start_date: '2023-04-15',
-      views: 150,
-      is_hidden_views: false,
-      _id: '1',
-    },
-    {
-      title: '我报名的比赛',
-      cover: 'https://example.com/image2.jpg',
-      address: '上海博物馆',
-      start_date: '2023-06-20',
-      views: 100,
-      is_hidden_views: false,
-      _id: '2',
-    },
-    {
-      title: '我报名的聚餐',
-      cover: 'https://example.com/image3.jpg',
-      address: '广州国际美食中心',
-      start_date: '2023-09-10',
-      views: 75,
-      is_hidden_views: false,
-      _id: '3',
-    },
   ];
 
   other_activities.value = [
-    {
-      title: '精神糖训练赛',
-      cover: 'https://example.com/image1.jpg',
-      address: '精神糖足球场',
-      start_date: '2023-04-15',
-      views: 150,
-      is_hidden_views: false,
-      _id: '1',
-    },
-    {
-      title: '丰台区足球联赛',
-      cover: 'https://example.com/image2.jpg',
-      address: '上海博物馆',
-      start_date: '2023-06-20',
-      views: 100,
-      is_hidden_views: false,
-      _id: '2',
-    },
-    {
-      title: '奥体中心篮球赛',
-      cover: 'https://example.com/image3.jpg',
-      address: '广州国际美食中心',
-      start_date: '2023-09-10',
-      views: 75,
-      is_hidden_views: false,
-      _id: '3',
-    },
-    {
-      title: '冬季滑雪活动',
-      cover: 'https://example.com/image4.jpg',
-      address: '长白山滑雪场',
-      start_date: '2023-12-05',
-      views: 200,
-      is_hidden_views: false,
-      _id: '4',
-    },
   ];
 }
 

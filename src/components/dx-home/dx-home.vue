@@ -20,7 +20,6 @@
     </tm-grid>
   </view>
   
-  
   <view class="list2 bg-white px-30 flex flex-between flex-wrap round-3">
     <view class="item pb-20 mb-30 round-3" v-for="(item, index) in newActivity" :key="index" @click="openLink('/others/activity/detail?id=' + item._id)">
       <image :src="item.cover" style="width: 100%; height: 250rpx"></image>
@@ -42,9 +41,8 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { openLink,timeText } from '@/common/tools';
-import { useAppStore } from '@/stores/app'
-import { indexHome,followTeam } from '@/common/index'
-const appStore = useAppStore();
+import { indexHome } from '@/common/index'
+
 const activity = ref<any>([]);
 const newActivity = ref<any>([]);
 const team = ref<any>([]);
