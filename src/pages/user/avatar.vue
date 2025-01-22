@@ -3,7 +3,6 @@
     <view class="top">
       <view class="content">
         <dx-upload v-model="editForm.avatar" :username="username"></dx-upload>
-        <view class="ml-30 text-size-xl" style="margin-top: 80px;">{{ username }}</view>
         <view class="ml-30 mt-10 text-size-xl">{{ userStore.userInfo.username }}</view>
       </view>
     </view>
@@ -25,11 +24,9 @@
 import { ref, watch } from 'vue';
 import {useUserStore} from '@/stores/user';
 import {editUserInfo} from '@/common/index';
-import { openLink, debugLog } from '@/common/tools';
-import { onLoad } from '@dcloudio/uni-app';
+import { debugLog } from '@/common/tools';
 
 const userStore = useUserStore();
-const username = ref('');
 const editForm = ref({
   nickname: userStore.userInfo.nickname,
   avatar: userStore.userInfo.avatar,
@@ -41,11 +38,6 @@ const editForm = ref({
 
 const hasUploadedImage = ref(false);  // 用于跟踪是否有上传的图片
 
-onLoad((e: any) => {
-  console.log("[onLoad] e: ", e);
-  username.value = e.username;
-});
-
 // 监听图片上传状态
 watch(() => editForm.value.avatar, (newVal) => {
   hasUploadedImage.value = !!newVal;
@@ -55,8 +47,8 @@ watch(() => editForm.value.avatar, (newVal) => {
 const handleButtonClick = () => {
   if (hasUploadedImage.value) {
     // 有图片时直接跳转
-    uni.navigateTo({
-      url: '/pages/login/login'
+    uni.reLaunch({
+      url: '/pages/index/index',
     });
   } else {
     // 无图片时显示确认提示
@@ -65,8 +57,8 @@ const handleButtonClick = () => {
       content: '确认跳过头像上传吗？',
       success: (res) => {
         if (res.confirm) {
-          uni.navigateTo({
-            url: '/pages/login/login'
+          uni.reLaunch({
+            url: '/pages/index/index',
           });
         }
       }

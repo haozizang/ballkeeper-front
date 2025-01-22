@@ -36,8 +36,10 @@ import { openLink, debugLog } from '@/common/tools';
 import { ApiCode } from '@/common/data';
 import { register } from '@/common/index';
 import { useAppStore } from '@/stores/app';
+import { useUserStore } from '@/stores/user';
 
 const appStore = useAppStore();
+const userStore = useUserStore();
 const loginForm = ref({
   username: '',
   password: '',
@@ -54,10 +56,9 @@ function confirm(e: any) {
         debugLog("response of register: ", res);
         if (res.data.code === ApiCode.SUCCESS) {
           uni.$tm.u.toast('注册成功！');
-          // 注册成功后，先保存token
-          const token = res.data.data.token;
-          uni.setStorageSync('token', token);
-          // 跳转到编辑页面进行头像设置
+          // 保存用户信息
+          userStore.setUserInfo(res.data.data);
+          // 跳转到头像设置页面
           setTimeout(() => {
             openLink('/pages/user/avatar', {username: res.data.data.username}, 1);
           }, 1500);

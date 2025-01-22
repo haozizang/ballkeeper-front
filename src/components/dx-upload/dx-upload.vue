@@ -35,11 +35,9 @@ const props = withDefaults(defineProps<{
     modelValue: any,
     limit?: number,
     username?: string,
-    img_name: string,
 }>(), {
     limit: 1,
     username: '',
-    img_name: '',
 })
 const emit = defineEmits(['update:modelValue']);
 
@@ -54,7 +52,6 @@ const showUpload = computed(() => {
 });
 
 watch(() => props.modelValue, (newVal) => {
-    console.log("DBG: 2", newVal);
     if (props.limit === 1) {
         // No need to update the modelValue directly as it's already managed by the computed property
     } else {
