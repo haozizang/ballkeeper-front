@@ -67,13 +67,14 @@
         <dx-activity-history :category-list="categoryList" v-else-if="grid_ind === 1"></dx-activity-history>
       </tm-sheet>
     </view>
-    <dx-team :category-list="categoryList" v-else-if="tab_ind === 2"></dx-team>
+    <dx-team :category-list="categoryList" v-else-if="tab_ind === 1"></dx-team>
+    <view v-else-if="tab_ind === 2" class="py-30 bg-white">TODO: 数据页</view>
     <dx-member v-else-if="tab_ind === 3"></dx-member>
     <view style="height: 150rpx"></view>
     <tm-tabbar :autoSelect="false" v-model:active="tab_ind" :showSafe="false" @change="tabbarChange">
       <tm-tabbar-item @click="tab_ind = 0" activeColor="#3c8af8" open-type="reLaunch" text="活动" icon="tmicon-md-home"></tm-tabbar-item>
       <tm-tabbar-item @click="tab_ind = 1" activeColor="#3c8af8" text="球队" icon="tmicon-flag-fill"></tm-tabbar-item>
-      <tm-tabbar-item :shadow="2" btn-top fontColor="white" activeColor="white" linear="top" linearDeep="accent" color="#38cdde" icon="tmicon-paperplane-fill" url="/others/publish/publish" text="发起活动" ></tm-tabbar-item>
+      <tm-tabbar-item :shadow="2" btn-top fontColor="white" activeColor="white" linear="top" linearDeep="accent" color="#38cdde" icon="tmicon-paperplane-fill" url="/others/publish/publish" text="发起活动"></tm-tabbar-item>
       <tm-tabbar-item @click="tab_ind = 2" activeColor="#3c8af8" text="数据" icon="tmicon-layergroup-fill"></tm-tabbar-item>
       <tm-tabbar-item @click="tab_ind = 3" activeColor="#3c8af8" text="我的" icon="tmicon-md-person"></tm-tabbar-item>
     </tm-tabbar>
@@ -83,7 +84,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { getCategory } from '@/common/index';
-import { openLink } from '@/common/tools';
 
 const categoryList = ref<any>([]);
 const tab_ind = ref(0);

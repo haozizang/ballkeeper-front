@@ -34,7 +34,6 @@
 import { ref } from 'vue';
 import { openLink, debugLog } from '@/common/tools';
 import { ApiCode } from '@/common/data';
-import { register } from '@/common/index';
 import { useAppStore } from '@/stores/app';
 import { useUserStore } from '@/stores/user';
 
