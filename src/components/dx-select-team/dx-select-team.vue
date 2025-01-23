@@ -20,9 +20,11 @@
     </tm-radio-group>
   </tm-drawer>
 </template>
+
 <script setup lang="ts">
 import { ref,watch } from 'vue';
-import {myTeamList} from '@/common/index'
+import { myTeamList } from '@/common/index'
+
 const props = defineProps<{
   modelValue: any;
 }>();
@@ -31,6 +33,7 @@ const showWin = ref(false);
 const radio = ref('');
 const teamTitle = ref('');
 const list = ref<any>([]);
+
 myTeamList({limit:500}).then(res=>{
   if(res.code === 1000){
     list.value = res.data;
@@ -50,9 +53,9 @@ function confirm(){
 </script>
 <style lang="scss" scoped>
 .item{
-    width: 100%;
-    padding: 15rpx 0;
-    border-top: 1px solid #e8e8e8;
+  width: 100%;
+  padding: 15rpx 0;
+  border-top: 1px solid #e8e8e8;
 }
 .flex{
   align-items: center;

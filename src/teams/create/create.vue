@@ -62,11 +62,14 @@
 </template>
 <script setup lang="ts">
 import { ref, watch, computed } from 'vue';
-import { getCategory, upload, saveTeam, myTeamDetail } from '@/common/index'
-import { arrayToTree } from '@/common/tools'
+import { upload, saveTeam, myTeamDetail } from '@/common/index'
 import { openLink } from '@/common/tools';
 import { onLoad } from '@dcloudio/uni-app';
-const categoryList = ref<any>([]);
+
+const categoryList = ref([
+  { _id: '0', name: '足球' },
+  { _id: '1', name: '其他' }
+]);
 const showCategory = ref(false);
 const categoryIndex = ref<number[]>([]);
 const categoryStr = ref('');
@@ -88,14 +91,13 @@ const formData = ref({
   id: ''
 });
 watch(categoryIndex, (val) => {
-  formData.value.category_id = categoryList.value[val[0]]?.children[val[1]]?._id;
-  categoryStr.value = categoryList.value[val[0]].name + '-' + categoryList.value[val[0]]?.children[val[1]]?.name;
+  const selectedCategory = categoryList.value[val[0]];
+  if (selectedCategory) {
+    formData.value.category_id = selectedCategory._id;
+    categoryStr.value = selectedCategory.name;
+  }
 });
 onLoad(async (e: any) => {
-  const rest = await getCategory();
-  if (rest.code === 1000) {
-    categoryList.value = arrayToTree(rest.data);
-  }
   if (e.id) {
     myTeamDetail({ id: e.id }).then(res => {
       if (res.code === 1000) {

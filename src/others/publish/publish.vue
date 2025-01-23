@@ -75,19 +75,16 @@
 </template>
 <script setup lang="ts">
 import { ref,watch,computed } from 'vue';
-import {getCategory, activitySave, myActivityInfo} from '@/common/index'
-import {arrayToTree, openLink} from '@/common/tools'
+import {activitySave, myActivityInfo} from '@/common/index'
+import {openLink} from '@/common/tools'
 import {useActivityStore} from '@/stores/activity'
 import { onLoad } from '@dcloudio/uni-app';
 import * as dayjs from "@/tmui/tool/dayjs/esm/index"
 
 const categoryList = ref([
-  { _id: '1', name: '足球(5人制)' },
-  { _id: '2', name: '足球(6人制)' },
-  { _id: '3', name: '足球(7人制)' },
-  { _id: '3', name: '足球(8人制)' },
-  { _id: '3', name: '足球(9人制)' },
-  { _id: '4', name: '足球(11人制)' }
+  { _id: '0', name: '足球(6人制)' },
+  { _id: '1', name: '足球(8人制)' },
+  { _id: '2', name: '足球(11人制)' }
 ]);
 const activityStore = useActivityStore();
 const showCategory = ref(false);
@@ -152,8 +149,11 @@ function chooseAddress() {
 }
 
 watch(categoryIndex, (val) => {
-  formData.value.category_id = categoryList.value[val[0]]?._id;
-  categoryStr.value = categoryList.value[val[0]].name;
+  const selectedCategory = categoryList.value[val[0]];
+  if (selectedCategory) {
+    formData.value.category_id = selectedCategory._id;
+    categoryStr.value = selectedCategory.name;
+  }
 });
 
 watch(
@@ -179,10 +179,6 @@ watch(
   }
 );
 onLoad(async (e: any) => {
-  const rest = await getCategory();
-  if (rest.code === 1000) {
-    categoryList.value = arrayToTree(rest.data);
-  }
   if (e.id) {
     myActivityInfo({ id: e.id }).then(res => {
       if (res.code === 1000) {
@@ -201,11 +197,6 @@ onLoad(async (e: any) => {
         formData.value.end_date = res.data.end_date;
         end_date_text.value = dayjs.default(res.data.end_date).format('YYYY年MM月DD日 HH时mm分');
         activityStore.setFieldList(res.data.form_list);
-        categoryList.value.map((item: any, index: number) => {
-          if (item._id === res.data.category_id) {
-            categoryIndex.value = [index];
-          }
-        })
       }
     })
   }
