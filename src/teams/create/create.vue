@@ -57,7 +57,7 @@
   </tm-app>
 </template>
 <script setup lang="ts">
-import { ref, watch, computed } from 'vue';
+import { ref, watch, computed, onMounted } from 'vue';
 import { debugLog } from '@/common/tools';
 import { upload, saveTeam, myTeamDetail } from '@/common/index'
 import { openLink } from '@/common/tools';
@@ -66,19 +66,16 @@ import {useUserStore} from '@/stores/user';
 
 const userStore = useUserStore();
 const categoryList = ref([
-  { _id: '0', name: '足球' },
-  { _id: '1', name: '其他' }
+  { id: 2, name: '足球' },
+  { id: 3, name: '其他' }
 ]);
 const showCategory = ref(false);
 const categoryIndex = ref<number[]>([]);
 const categoryStr = ref('');
-const categoryText = computed(() => {
-  return categoryStr.value ? categoryStr.value : '请选择组织分类';
-})
 const formData = ref({
   cover: '',
   title: '',
-  category_id: '',
+  category_id: categoryList.value.length > 0 ? categoryList.value[0].id : '',
   is_public: false,
   address: '',
   mobile: '',
@@ -88,13 +85,25 @@ const formData = ref({
   lon: 0,
   id: ''
 });
+const categoryText = computed(() => {
+  if (!categoryList.value.length) return '请选择分类'
+  if (!formData.value.category_id && formData.value.category_id !== 0) return '请选择分类'
+  
+  const category = categoryList.value.find(item => item.id === formData.value.category_id)
+  return category ? category.name : '请选择分类'
+})
 watch(categoryIndex, (val) => {
   const selectedCategory = categoryList.value[val[0]];
   if (selectedCategory) {
-    formData.value.category_id = selectedCategory._id;
+    formData.value.category_id = selectedCategory.id;
     categoryStr.value = selectedCategory.name;
   }
 });
+onMounted(() => {
+  if (!formData.value.category_id && categoryList.value.length > 0) {
+    formData.value.category_id = categoryList.value[0].id
+  }
+})
 onLoad(async (e: any) => {
   if (e.id) {
     myTeamDetail({ id: e.id }).then(res => {
@@ -109,7 +118,7 @@ onLoad(async (e: any) => {
         formData.value.cover = res.data.cover;
         categoryList.value.map((item: any, index: number) => {
           item.children.map((row: any, rowIndex: number) => {
-            if (row._id === res.data.category_id) {
+            if (row.id === res.data.category_id) {
               categoryIndex.value = [index, rowIndex];
             }
           })
