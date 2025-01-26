@@ -226,17 +226,16 @@ function confirm(e: any) {
         loginType: 'account'
       },
       success: (res: any) => {
-        debugLog("res: ", res);
-        if (res.data.code === ApiCode.SUCCESS) {
-          debugLog("login succeeded, res: ", res);
-          userStore.setUserInfo(res.data.data);
-          uni.reLaunch({
-            url: '/pages/index/index',
-          });
-        } else {
-          debugLog("login failed, res: ", res);
-          uni.$tm.u.toast('登录失败: ' + res.data.msg);
+        debugLog("login res: ", res);
+        if (res.statusCode !== 200) {
+          uni.$tm.u.toast(`${res.data.detail}(${res.statusCode})` || '登录失败');
+          return;
         }
+        debugLog("login succeeded, res: ", res);
+        userStore.setUserInfo(res.data);
+        uni.reLaunch({
+          url: '/pages/index/index',
+        });
       },
       fail: (err) => {
         console.error('login failed: ', err);

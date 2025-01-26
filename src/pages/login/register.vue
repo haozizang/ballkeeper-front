@@ -52,20 +52,18 @@ function confirm(e: any) {
       method: 'POST',
       data: e.data,
       success: (res: any) => {
-        debugLog("response of register: ", res);
-        if (res.statusCode === 200) {
-          uni.$tm.u.toast('注册成功！');
-          // 保存用户信息
-          userStore.setUserInfo(res.data);
-          // 跳转到头像设置页面
-          setTimeout(() => {
-            openLink('/pages/user/avatar', {username: res.data.username}, 1);
-          }, 1500);
-        } else if (res.statusCode === 409) {
-          uni.$tm.u.toast(res.data.detail);
-        } else {
-          uni.$tm.u.toast(res.data.detail || '注册失败');
+        debugLog("register res: ", res);
+        if (res.statusCode !== 200) {
+          uni.$tm.u.toast(`${res.data.detail}(${res.statusCode})` || '注册失败');
+          return;
         }
+        uni.$tm.u.toast('注册成功!');
+        // 保存用户信息
+        userStore.setUserInfo(res.data);
+        // 跳转到头像设置页面
+        setTimeout(() => {
+          openLink('/pages/user/avatar', {username: res.data.username}, 1);
+        }, 1500);
       },
       fail: () => {
         uni.$tm.u.toast('注册失败,请重试');

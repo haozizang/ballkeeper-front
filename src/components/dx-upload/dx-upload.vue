@@ -25,19 +25,19 @@
   </view>
 </template>
 <script lang="ts" setup>
-import { ref, watch, computed } from 'vue';
-import { multiUpload } from '@/common/index';
+import { watch, computed } from 'vue';
 import { debugLog } from '@/common/tools';
 import { getBaseUrl } from '@/common/env';
-import { ApiCode } from '@/common/data';
 
 const props = withDefaults(defineProps<{
     modelValue: any,
     limit?: number,
     image_name?: string,
+    username?: string,
 }>(), {
     limit: 1,
     image_name: '',
+    username: '',
 })
 const emit = defineEmits(['update:modelValue']);
 
@@ -72,6 +72,8 @@ function clearImage() {
 }
 
 function selectImage() {
+    debugLog("image_name: ", props.image_name);
+    debugLog("username: ", props.username);
     uni.chooseImage({
         count: 1,
         sizeType: ['compressed'],
@@ -83,19 +85,21 @@ function selectImage() {
                 url: '/ballkeeper/upload_image/',
                 filePath: tempFilePath,
                 name: 'image',
-                formData: {'image_name': props.image_name},
-                success: (uploadRes) => {
-                    debugLog("uploadFile res: ", uploadRes);
-                    debugLog("uploadFile msg: ", uploadRes.data.msg);
-                    debugLog("uploadFile code: ", uploadRes.data.code);
-                    if (uploadRes.data.code != ApiCode.SUCCESS) {
-                        uni.$tm.u.toast("上传失败", uploadRes.data.msg);
+                formData: {
+                    'image_name': props.image_name,
+                    'username': props.username,
+                },
+                success: (res) => {
+                    debugLog("uploadFile res: ", res);
+                    if (res.statusCode !== 200) {
+                        const data_json = typeof res.data === 'string' ? JSON.parse(res.data) : res.data;
+                        uni.$tm.u.toast(`${data_json.detail}(${res.statusCode})` || '上传失败');
                         return;
                     }
-                    const data = JSON.parse(uploadRes.data);
+                    const data = JSON.parse(res.data);
                     debugLog("data: ", data);
  
-                    let url = getBaseUrl() + data.data.avatar_url;
+                    let url = getBaseUrl() + data.avatar_url;
                     emit('update:modelValue', url);
                 },
                 fail: (err) => {

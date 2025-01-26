@@ -1,13 +1,13 @@
 <template>
   <tm-app>
     <tm-sheet :margin="[0, 0]" :padding="[0, 0]" :round="3" :shadow="2">
-      <view class="cover" @click="uploadCover">
+      <!-- <view class="cover" @click="uploadCover">
         <image :src="formData.cover || '../../static/image.jpg'" mode="aspectFill"></image>
         <view class="upload round-3 flex-row-center-center">
           <tm-icon name="tmicon-plus" color="white" :font-size="25"></tm-icon>
           <text class="ml-5">上传封面(800*500)</text>
         </view>
-      </view>
+      </view> -->
       <tm-form @submit="confirm" :margin="[0, 0]" ref="form" v-model="formData" :label-width="150">
         <tm-form-item :margin="[15, 0]" required label="组织名称" field="title" :rules="[{ required: true, message: '请输入组织名称' }]">
           <tm-input v-model="formData.title" showClear></tm-input>
@@ -16,7 +16,7 @@
           <view @click="showCategory = true" class="input-select round-3" :class="{ 'no-select': !formData.category_id }"> {{ categoryText }}</view>
         </tm-form-item>
         <tm-form-item :margin="[15, 0]" required label="LOGO" field="logo" :rules="[{ required: true, message: '请上传LOGO' }]">
-          <dx-upload v-model="formData.logo"></dx-upload>
+          <dx-upload v-model="formData.logo" :username="userStore.userInfo.username" :image_name="formData.title"></dx-upload>
         </tm-form-item>
         <tm-form-item :margin="[15, 0]" required label="组织地址" field="address" :rules="[{ required: true, message: '请输入或点击地图定位' }]">
           <tm-input v-model="formData.address" showClear>
@@ -65,7 +65,9 @@ import { ref, watch, computed } from 'vue';
 import { upload, saveTeam, myTeamDetail } from '@/common/index'
 import { openLink } from '@/common/tools';
 import { onLoad } from '@dcloudio/uni-app';
+import {useUserStore} from '@/stores/user';
 
+const userStore = useUserStore();
 const categoryList = ref([
   { _id: '0', name: '足球' },
   { _id: '1', name: '其他' }

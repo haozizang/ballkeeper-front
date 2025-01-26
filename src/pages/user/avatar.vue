@@ -2,12 +2,12 @@
   <tm-app color="white">
     <view class="top">
       <view class="content">
-        <dx-upload v-model="editForm.avatar" :image_name="userStore.userInfo.username"></dx-upload>
+        <dx-upload v-model="editForm.avatar" :image_name="userStore.userInfo.username" :username="userStore.userInfo.username"></dx-upload>
         <view class="ml-30 mt-10 text-size-xl">{{ userStore.userInfo.username }}</view>
       </view>
     </view>
     <view style="margin-top: 100px; padding: 0 40px;">
-        <tm-button 
+        <tm-button
           :margin="[10]" 
           :shadow="0" 
           :round="20" 
@@ -64,9 +64,6 @@ const handleButtonClick = () => {
   }
 };
 
-function confirm(e:any) {
-
-}
 </script>
 
 <style lang="scss" scoped>
