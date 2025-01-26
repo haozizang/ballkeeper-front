@@ -34,10 +34,10 @@ import { ApiCode } from '@/common/data';
 const props = withDefaults(defineProps<{
     modelValue: any,
     limit?: number,
-    username?: string,
+    image_name?: string,
 }>(), {
     limit: 1,
-    username: '',
+    image_name: '',
 })
 const emit = defineEmits(['update:modelValue']);
 
@@ -80,12 +80,18 @@ function selectImage() {
             debugLog("selectImage res: ", e);
             const tempFilePath = e.tempFilePaths[0];
             uni.uploadFile({
-                url: '/ballkeeper/upload_avatar/',
+                url: '/ballkeeper/upload_image/',
                 filePath: tempFilePath,
-                name: 'avatar',
-                formData: {'username': props.username},
+                name: 'image',
+                formData: {'image_name': props.image_name},
                 success: (uploadRes) => {
                     debugLog("uploadFile res: ", uploadRes);
+                    debugLog("uploadFile msg: ", uploadRes.data.msg);
+                    debugLog("uploadFile code: ", uploadRes.data.code);
+                    if (uploadRes.data.code != ApiCode.SUCCESS) {
+                        uni.$tm.u.toast("上传失败", uploadRes.data.msg);
+                        return;
+                    }
                     const data = JSON.parse(uploadRes.data);
                     debugLog("data: ", data);
  
@@ -94,7 +100,7 @@ function selectImage() {
                 },
                 fail: (err) => {
                     console.error('上传失败:', err);
-                    uni.$tm.u.toast('上传失败,请重试');
+                    uni.$tm.u.toast('上传请求失败,请重试');
                 }
             })
         }
