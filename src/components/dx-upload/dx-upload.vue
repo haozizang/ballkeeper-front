@@ -33,10 +33,12 @@ const props = withDefaults(defineProps<{
     modelValue: any,
     limit?: number,
     image_name?: string,
+    image_type?: string,
     username?: string,
 }>(), {
     limit: 1,
     image_name: '',
+    image_type: '',
     username: '',
 })
 const emit = defineEmits(['update:modelValue']);
@@ -72,8 +74,9 @@ function clearImage() {
 }
 
 function selectImage() {
-    debugLog("image_name: ", props.image_name);
     debugLog("username: ", props.username);
+    debugLog("image_name: ", props.image_name);
+    debugLog("image_type: ", props.image_type);
     uni.chooseImage({
         count: 1,
         sizeType: ['compressed'],
@@ -86,8 +89,9 @@ function selectImage() {
                 filePath: tempFilePath,
                 name: 'image',
                 formData: {
-                    'image_name': props.image_name,
                     'username': props.username,
+                    'image_name': props.image_name,
+                    'image_type': props.image_type,
                 },
                 success: (res) => {
                     debugLog("uploadFile res: ", res);
