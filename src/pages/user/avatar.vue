@@ -2,7 +2,7 @@
   <tm-app color="white">
     <view class="top">
       <view class="content">
-        <dx-upload v-model="editForm.avatar" :username="username"></dx-upload>
+        <dx-upload v-model="editForm.avatar" :username="userStore.userInfo.username"></dx-upload>
         <view class="ml-30 mt-10 text-size-xl">{{ userStore.userInfo.username }}</view>
       </view>
     </view>
@@ -23,8 +23,6 @@
 <script lang="ts" setup>
 import { ref, watch } from 'vue';
 import {useUserStore} from '@/stores/user';
-import {editUserInfo} from '@/common/index';
-import { debugLog } from '@/common/tools';
 
 const userStore = useUserStore();
 const editForm = ref({
