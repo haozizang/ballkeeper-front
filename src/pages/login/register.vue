@@ -53,20 +53,22 @@ function confirm(e: any) {
       data: e.data,
       success: (res: any) => {
         debugLog("response of register: ", res);
-        if (res.data.code === ApiCode.SUCCESS) {
+        if (res.statusCode === 200) {
           uni.$tm.u.toast('注册成功！');
           // 保存用户信息
-          userStore.setUserInfo(res.data.data);
+          userStore.setUserInfo(res.data);
           // 跳转到头像设置页面
           setTimeout(() => {
-            openLink('/pages/user/avatar', {username: res.data.data.username}, 1);
+            openLink('/pages/user/avatar', {username: res.data.username}, 1);
           }, 1500);
+        } else if (res.statusCode === 409) {
+          uni.$tm.u.toast(res.data.detail);
         } else {
-          uni.$tm.u.toast(res.data.msg || '注册失败');
+          uni.$tm.u.toast(res.data.detail || '注册失败');
         }
       },
       fail: () => {
-        uni.$tm.u.toast('注册失败，请重试');
+        uni.$tm.u.toast('注册失败,请重试');
       }
     });
   }

@@ -2,7 +2,7 @@
   <tm-app color="white">
     <view class="top">
       <view class="content">
-        <dx-upload v-model="editForm.avatar" :username="userStore.userInfo.username"></dx-upload>
+        <dx-upload v-model="editForm.avatar" :image_name="userStore.userInfo.username"></dx-upload>
         <view class="ml-30 mt-10 text-size-xl">{{ userStore.userInfo.username }}</view>
       </view>
     </view>
