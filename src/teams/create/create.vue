@@ -15,25 +15,21 @@
         <tm-form-item :margin="[15, 0]" required label="组织分类" field="category_id" :rules="[{ required: true, message: '请选择活动分类' }]">
           <view @click="showCategory = true" class="input-select round-3" :class="{ 'no-select': !formData.category_id }"> {{ categoryText }}</view>
         </tm-form-item>
-        <tm-form-item :margin="[15, 0]" required label="LOGO" field="logo" :rules="[{ required: true, message: '请上传LOGO' }]">
-          <dx-upload v-model="formData.logo" :username="userStore.userInfo.username" :image_name="formData.title"></dx-upload>
-        </tm-form-item>
-        <tm-form-item :margin="[15, 0]" required label="组织地址" field="address" :rules="[{ required: true, message: '请输入或点击地图定位' }]">
+        <!-- <tm-form-item :margin="[15, 0]" required label="组织地址" field="address" :rules="[{ required: true, message: '请输入或点击地图定位' }]">
           <tm-input v-model="formData.address" showClear>
             <template #right>
               <tm-icon name="tmicon-location" color="#999999" :font-size="30" @click="chooseAddress"></tm-icon>
             </template>
           </tm-input>
-        </tm-form-item>
+        </tm-form-item> -->
         <tm-form-item :margin="[15, 0]" label="是否公开" field="is_public">
           <tm-switch v-model="formData.is_public"></tm-switch>
         </tm-form-item>
         <tm-form-item
           :margin="[15, 0]"
-          required
           label="联系电话"
           field="mobile"
-          :rules="[{ required: true, message: '请输入联系人电话' }, {
+          :rules="[{ message: '请输入联系人电话' }, {
           validator: (val: string) => {
             if (!/^1[3456789]\d{9}$/.test(val)) {
               return false
@@ -62,6 +58,7 @@
 </template>
 <script setup lang="ts">
 import { ref, watch, computed } from 'vue';
+import { debugLog } from '@/common/tools';
 import { upload, saveTeam, myTeamDetail } from '@/common/index'
 import { openLink } from '@/common/tools';
 import { onLoad } from '@dcloudio/uni-app';
@@ -82,7 +79,6 @@ const formData = ref({
   cover: '',
   title: '',
   category_id: '',
-  logo: '',
   is_public: false,
   address: '',
   mobile: '',
@@ -106,7 +102,6 @@ onLoad(async (e: any) => {
         formData.value.id = e.id;
         formData.value.is_public = res.data.is_public;
         formData.value.title = res.data.title;
-        formData.value.logo = res.data.logo;
         formData.value.address = res.data.address;
         formData.value.mobile = res.data.mobile;
         formData.value.name = res.data.name;
@@ -144,13 +139,19 @@ function chooseAddress() {
 }
 function confirm(e: any) {
   if (e.validate) {
-    if (!e.data.cover) {
-      uni.$tm.u.toast('请上传封面');
-      return;
-    }
-    saveTeam(e.data).then(res => {
-      if (res.code === 1000) {
-        uni.$tm.u.toast(res.message);
+    debugLog("e.data: ", e.data);
+    debugLog("formData: ", formData.value);
+    uni.request({
+      url: '/ballkeeper/create_team/',
+      method: 'POST',
+      data: { ...e.data, username: userStore.userInfo.username },
+      success: (res: any) => {
+        debugLog("create team res: ", res);
+        if (res.statusCode !== 200) {
+          uni.$tm.u.toast(`${res.data.detail}(${res.statusCode})` || '创建失败');
+          return;
+        }
+        uni.$tm.u.toast('创建成功!');
         if (e.data.id) {
           uni.navigateBack();
         } else {
@@ -158,10 +159,23 @@ function confirm(e: any) {
             openLink('/teams/manage/manage?id=' + res.data)
           }, 1500)
         }
-      } else {
-        uni.$tm.u.toast(res.message);
       }
     })
+
+    // saveTeam(e.data).then(res => {
+    //   if (res.code === 1000) {
+    //     uni.$tm.u.toast(res.message);
+    //     if (e.data.id) {
+    //       uni.navigateBack();
+    //     } else {
+    //       setTimeout(() => {
+    //         openLink('/teams/manage/manage?id=' + res.data)
+    //       }, 1500)
+    //     }
+    //   } else {
+    //     uni.$tm.u.toast(res.message);
+    //   }
+    // })
 
   }
 }

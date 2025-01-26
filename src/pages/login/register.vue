@@ -33,7 +33,6 @@
 <script lang="ts" setup>
 import { ref } from 'vue';
 import { openLink, debugLog } from '@/common/tools';
-import { ApiCode } from '@/common/data';
 import { useAppStore } from '@/stores/app';
 import { useUserStore } from '@/stores/user';
 
