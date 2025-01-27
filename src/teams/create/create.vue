@@ -59,7 +59,7 @@
 <script setup lang="ts">
 import { ref, watch, computed, onMounted } from 'vue';
 import { debugLog } from '@/common/tools';
-import { upload, saveTeam, myTeamDetail } from '@/common/index'
+import { upload, myTeamDetail } from '@/common/index'
 import { openLink } from '@/common/tools';
 import { onLoad } from '@dcloudio/uni-app';
 import {useUserStore} from '@/stores/user';
@@ -88,7 +88,7 @@ const formData = ref({
 const categoryText = computed(() => {
   if (!categoryList.value.length) return '请选择分类'
   if (!formData.value.category_id && formData.value.category_id !== 0) return '请选择分类'
-  
+
   const category = categoryList.value.find(item => item.id === formData.value.category_id)
   return category ? category.name : '请选择分类'
 })
