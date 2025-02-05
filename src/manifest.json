@@ -55,7 +55,7 @@
             "disableHostCheck":true,
 			"proxy": {
 				"/ballkeeper": {
-					"target": "http://172.25.180.87:8888/",
+					"target": "http://172.25.176.234:8888/",
 					"changeOrigin": true,
 					"secure": false
 				}
