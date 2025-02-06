@@ -10,8 +10,14 @@
         </tm-tabs>
       </view>
     </view>
-    <!-- 添加顶部间距，防止被搜索栏遮挡 -->
-    <view class="content-wrapper">
+    
+    <!-- 使用 scroll-view 替换原来的 view, 在组件中onReachBottom无效! -->
+    <scroll-view 
+      scroll-y 
+      class="content-wrapper"
+      @scrolltolower="onLoadMore"
+      :style="{ height: scrollViewHeight }"
+    >
       <view class="list bg-white">
         <view class="item flex-row-center-between pa-30" 
               v-for="(item,index) in teamList" 
@@ -30,7 +36,7 @@
           </view>
         </view>
       </view>
-    </view>
+    </scroll-view>
   </view>
   <!-- 数据空 -->
   <view class="load-more px-50 pb-30" v-if="teamList.length">
@@ -41,8 +47,7 @@
   </view>
 </template>
 <script lang="ts" setup>
-import { ref, reactive, watch } from 'vue';
-import { onReachBottom } from '@dcloudio/uni-app';
+import { ref, reactive, watch, onMounted } from 'vue';
 import { openLink, debugLog } from '@/common/tools';
 import { debounce } from '@/tmui/tool/function/util';
 import { useUserStore } from '@/stores/user';
@@ -107,7 +112,7 @@ function getTeamList(is_more = false) {
         return;
       }
 
-      if (res.data.length < param.limit || res.data.length === 0) {
+      if (res.data.team_list.length < param.limit || res.data.team_list.length === 0) {
         hasMore.value = false;
       } else {
         // 更新 offset 用于下次加载
@@ -129,16 +134,23 @@ function getTeamList(is_more = false) {
   });
 }
 
-// 触底加载更多
-onReachBottom(() => {
-  debugLog("reach bottom");
-  debugLog("hasMore: ", hasMore.value);
-  debugLog("loading: ", loading.value);
-  if (hasMore.value && !loading.value) {
-    debugLog("call getTeamList");
-    getTeamList(true);  // 加载下一页
-  }
+// 添加 scrollViewHeight 计算
+const scrollViewHeight = ref('calc(100vh - 200rpx)');  // 减去顶部搜索和标签的高度
+
+// 计算实际高度
+onMounted(() => {
+  // #ifdef H5
+  scrollViewHeight.value = 'calc(100vh - 244rpx)';  // H5 环境需要考虑导航栏高度
+  // #endif
 })
+
+// 触底加载更多的处理函数
+function onLoadMore() {
+  console.log('触底加载更多');
+  if (hasMore.value && !loading.value) {
+    getTeamList(true);
+  }
+}
 
 // 初始加载
 getTeamList();
@@ -160,12 +172,17 @@ getTeamList();
 
 // 添加内容区域的样式
 .content-wrapper {
+  // 移除原来的 margin-top
   // #ifndef H5
-  margin-top: 200rpx;  // 非H5环境
+  top: 200rpx;  // 非H5环境
   // #endif
   // #ifdef H5
-  margin-top: 244rpx;  // H5环境
+  top: 244rpx;  // H5环境
   // #endif
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
 }
 
 .list {
