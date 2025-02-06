@@ -20,7 +20,7 @@
         >
           <view class="team-content flex flex-row">
             <!-- 左侧头像 -->
-            <tm-avatar :font-size="120" :round="25" :img="item.logo"></tm-avatar>
+            <tm-avatar :font-size="120" :round="25" :img="item.logo_url"></tm-avatar>
             
             <!-- 右侧内容 -->
             <view class="team-info ml-24">
@@ -42,33 +42,39 @@
 </template>
 <script lang="ts" setup>
 import { ref, reactive, watch } from 'vue';
-import { openLink } from '@/common/tools';
+import { onReachBottom } from '@dcloudio/uni-app';
+import { openLink, debugLog } from '@/common/tools';
 import { debounce } from '@/tmui/tool/function/util';
+import { useUserStore } from '@/stores/user';
 
 const props = defineProps<{
   categoryList: any[];
 }>();
 
-const hasMore = ref(true);
+const userStore = useUserStore();
+const hasMore = ref(true);  // 是否还有更多球队
 const loading = ref(false);
 
 const teamList = ref([
-  { _id: 1, logo: 'https://img1.baidu.com/it/u=3956679599,3956476954&fm=253&fmt=auto&app=138&f=JPEG?w=510&h=500', title: '万众篮球队', content: '内容' },
-  { _id: 2, logo: 'https://www.baidu.com/img/PCtm_d9c8750bed0b3c7d089fa7d55720d6cf.png', title: '功夫足球队', content: '足球' },
-  { _id: 3, logo: 'https://www.baidu.com/img/PCtm_d9c8750bed0b3c7d089fa7d55720d6cf.png', title: '兄弟连', content: '足球' },
-  { _id: 4, logo: 'https://img1.baidu.com/it/u=1697989098,4244944766&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=586', title: 'FC80S', content: '内容' }
+  { _id: 1, logo_url: 'https://img1.baidu.com/it/u=3956679599,3956476954&fm=253&fmt=auto&app=138&f=JPEG?w=510&h=500', title: '万众篮球队', content: '内容' },
+  { _id: 2, logo_url: 'https://www.baidu.com/img/PCtm_d9c8750bed0b3c7d089fa7d55720d6cf.png', title: '功夫足球队', content: '足球' },
+  { _id: 3, logo_url: 'https://www.baidu.com/img/PCtm_d9c8750bed0b3c7d089fa7d55720d6cf.png', title: '兄弟连', content: '足球' },
+  { _id: 4, logo_url: 'https://img1.baidu.com/it/u=1697989098,4244944766&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=586', title: 'FC80S', content: '内容' }
 ]);
 
 const param = reactive<any>({
   parent_id: '',
-  nextDate: '',
   keyword: '',
-  limit: 20
+  limit: 8,
+  offset: 0
 })
 
+// watch 监听 param.keyword（搜索关键词）的变化
 watch(() => param.keyword, () => {
+  // debounce 防抖：在用户停止输入500ms后才发起请求
   debounce(() => {
-    getTeamList();
+    hasMore.value = true;  // 重置加载更多状态
+    getTeamList(false);    // 重新加载第一页
   }, 500)
 })
 
@@ -78,48 +84,61 @@ function tabsChange(e: string) {
 }
 
 function getTeamList(is_more = false) {
-  loading.value = true;  // 设置加载状态
+  loading.value = true;
   
-  // 模拟 API 调用
-  setTimeout(() => {
-    // 这里暂时使用静态数据，实际项目中应该替换为真实的 API 调用
-    const mockData = teamList.value;
-    
-    if (mockData.length < param.limit) {
-      hasMore.value = false;
-    }
-    
-    if (is_more) {
-      teamList.value = teamList.value.concat(mockData);
-    } else {
-      teamList.value = mockData;
-    }
-    
-    loading.value = false;  // 重置加载状态
-  }, 500);
+  // 如果不是加载更多，重置 offset
+  if (!is_more) {
+    param.offset = 0;
+  }
   
-  // 当你准备使用真实 API 时，取消注释下面的代码
-  /*
-  uni.showLoading({
-    title: '加载中...'
-  })
-  teamList(param).then((res) => {
-    if (res.code === 1000) {
+  uni.request({
+    url: "/ballkeeper/get_team_list/",
+    method: 'POST',
+    data: {
+      username: userStore.userInfo.username,
+      keyword: param.keyword,
+      limit: param.limit,
+      offset: param.offset
+    },
+    success: (res: any) => {
+      debugLog("get_team_list res: ", res);
+      if (res.statusCode !== 200) {
+        uni.$tm.u.toast(`${res.data.detail}(${res.statusCode})` || '获取球队列表失败');
+        return;
+      }
+
       if (res.data.length < param.limit || res.data.length === 0) {
-        hasMore.value = false
-      }
-      if (is_more) {
-        teamList.value = teamList.value.concat(res.data)
+        hasMore.value = false;
       } else {
-        teamList.value = res.data
+        // 更新 offset 用于下次加载
+        param.offset += param.limit;
       }
+
+      if (is_more) {
+        teamList.value = teamList.value.concat(res.data.team_list);
+      } else {
+        teamList.value = res.data.team_list;
+      }
+
+      loading.value = false;
+    },
+    fail: () => {
+      uni.$tm.u.toast('获取球队列表失败,请重试');
+      loading.value = false;  // 确保失败时也重置加载状态
     }
-  }).finally(() => {
-    uni.hideLoading()
-    loading.value = false  // 重置加载状态
   });
-  */
 }
+
+// 触底加载更多
+onReachBottom(() => {
+  debugLog("reach bottom");
+  debugLog("hasMore: ", hasMore.value);
+  debugLog("loading: ", loading.value);
+  if (hasMore.value && !loading.value) {
+    debugLog("call getTeamList");
+    getTeamList(true);  // 加载下一页
+  }
+})
 
 // 初始加载
 getTeamList();
