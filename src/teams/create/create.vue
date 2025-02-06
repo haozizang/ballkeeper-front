@@ -155,7 +155,7 @@ function confirm(e: any) {
       method: 'POST',
       data: { ...e.data, username: userStore.userInfo.username },
       success: (res: any) => {
-        debugLog("create team res: ", res);
+        debugLog("create_team res: ", res);
         if (res.statusCode !== 200) {
           uni.$tm.u.toast(`${res.data.detail}(${res.statusCode})` || '创建失败');
           return;
@@ -165,7 +165,7 @@ function confirm(e: any) {
           uni.navigateBack();
         } else {
           setTimeout(() => {
-            openLink('/teams/manage/manage?id=' + res.data)
+            openLink('/teams/manage/manage?id=' + res.data.team.id)
           }, 1500)
         }
       }
