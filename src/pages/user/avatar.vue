@@ -29,8 +29,8 @@ const editForm = ref({
   nickname: userStore.userInfo.nickname,
   avatar: userStore.userInfo.avatar,
   // mobile: userStore.userInfo.mobile,
-  email:  userStore.userInfo.email,
-  gender:  userStore.userInfo.gender,
+  email: userStore.userInfo.email,
+  gender: userStore.userInfo.gender,
   password: '',
 });
 

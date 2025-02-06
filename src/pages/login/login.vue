@@ -85,12 +85,12 @@
 
 <script lang="ts" setup>
 import { ref, computed } from 'vue';
-import { login, getCaptcha } from '@/common/index';
+import { login } from '@/common/index';
 import { useAppStore } from '@/stores/app';
 import { useUserStore } from '@/stores/user';
 import { openLink, debugLog } from '@/common/tools';
-import { ApiCode } from '@/common/data';
 import { onLoad } from '@dcloudio/uni-app';
+
 const appStore = useAppStore();
 const userStore = useUserStore();
 const loginForm = ref({
