@@ -103,7 +103,9 @@
 import { ref } from 'vue';
 import { openLink } from '@/common/tools';
 import { onLoad } from '@dcloudio/uni-app';
-import { homeTeam, delTeam } from '@/common/index';
+import { delTeam } from '@/common/index';
+import { debugLog } from '@/common/tools';
+
 const showWin = ref(false);
 const info = ref({
   _id: '',
@@ -115,17 +117,24 @@ const info = ref({
 });
 onLoad((e: any) => {
   if (e.id) {
-    homeTeam({
-      id: e.id
-    }).then(res => {
-      if (res.code === 1000) {
-        info.value = res.data;
-      } else {
-        uni.$tm.u.toast(res.message);
+    uni.request({
+      url: '/ballkeeper/get_team/',
+      method: 'POST',
+      data: { team_id: e.id },
+      success: (res: any) => {
+        debugLog("get_team res: ", res);
+        if (res.statusCode !== 200) {
+          uni.$tm.u.toast(`${res.data.detail}(${res.statusCode})` || '获取失败');
+          return;
+        }
+        uni.$tm.u.toast('获取球队成功!');
+        info.value = res.data.team;
+        debugLog("info: ", info.value);
       }
     })
   }
 });
+
 function deleteConfirm() {
   delTeam({
     id: info.value._id
