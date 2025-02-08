@@ -234,9 +234,9 @@
 		}
 	],
 	"globalStyle": {
-		"navigationBarTextStyle": "white",
+		"navigationBarTextStyle": "black",
 		"navigationBarTitleText": "活动管理",
-		"navigationBarBackgroundColor": "#3c8af8",
-		"backgroundColor": "#3c8af8"
+		"navigationBarBackgroundColor": "#f0f0f0",
+		"backgroundColor": "#f0f0f0"
 	}
 }
