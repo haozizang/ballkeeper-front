@@ -284,7 +284,8 @@ onLoad((e: any) => {
 
 <style lang="scss" scoped>
 .top {
-  background-color: #3c8af8;
+  background: linear-gradient(135deg, #96c0fc 0%, #0359d1 100%);  // 使用更深的绿色作为终点色
+  // background-color: #3c8af8;
   height: 350rpx;
   position: relative;
 
