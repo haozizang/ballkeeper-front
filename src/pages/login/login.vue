@@ -186,12 +186,12 @@ function wechatLogin() {
 const isShowMobileLogin = ref(false);
 function mobileLogin() {
   uni.login({
-	provider: 'univerify',
-	univerifyStyle: { // 自定义登录框样式
+  provider: 'univerify',
+  univerifyStyle: { // 自定义登录框样式
     //参考`univerifyStyle 数据结构`
   },
-	success(res:any){ // 登录成功
-		console.log(res.authResult);  // {openid:'登录授权唯一标识',access_token:'接口返回的 token'}
+  success(res:any){ // 登录成功
+    console.log(res.authResult);  // {openid:'登录授权唯一标识',access_token:'接口返回的 token'}
     login({
       openid: res.authResult.openid,
       access_token: res.authResult.access_token,
@@ -207,10 +207,10 @@ function mobileLogin() {
         uni.$tm.u.toast(res.message);
       }
     });
-	},
-	fail(res){  // 登录失败
-		console.log(res)
-	}
+  },
+  fail(res){  // 登录失败
+    console.log(res)
+  }
 })
 
 }
