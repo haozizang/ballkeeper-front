@@ -1,32 +1,49 @@
 <script setup lang="ts">
 import { onLaunch, onShow, onHide } from '@dcloudio/uni-app';
-import { init } from '@/common/index'
 import { useAppStore } from '@/stores/app'
+import { debugLog } from '@/common/tools'
+
 onLaunch((e) => {
-	console.log('App Launch',e);
-	// #ifdef H5
-	const search = window.location.search;
-	const params = new URLSearchParams(search);
-	const code = params.get('code');
-	const state = params.get('state');
-	// 携带了 # 号的参数
-	if(state?.includes('dxadmin__') && code){
-		let stateArr = state.split('__');
-		window.location.href = window.location.origin + '/#'+stateArr[1]+'?code=' + code + '&state=' + stateArr[0];
-	}
-	// #endif
+    console.log('App Launch',e);
+    // #ifdef H5
+    const search = window.location.search;
+    const params = new URLSearchParams(search);
+    const code = params.get('code');
+    const state = params.get('state');
+    // 携带了 # 号的参数
+    if(state?.includes('dxadmin__') && code){
+        let stateArr = state.split('__');
+        window.location.href = window.location.origin + '/#'+stateArr[1]+'?code=' + code + '&state=' + stateArr[0];
+    }
+    // #endif
 });
 onShow(() => {
-	console.log('App Show');
-	const appStore = useAppStore();
-	init().then(res => {
-		if (res.code === 1000) {
-			appStore.setAppInfo(res.data);
-		}
-	})
+    console.log('App Show');
+    const appStore = useAppStore();
+    uni.request({
+      url: "/ballkeeper/get_app_info/",
+      method: 'GET',
+      success: (res: any) => {
+        debugLog("get app info res: ", res);
+        if (res.statusCode !== 200) {
+          uni.$tm.u.toast(`${res.data.detail}(${res.statusCode})` || '获取应用信息失败');
+          return;
+        }
+        debugLog("get app info succeeded, res: ", res);
+        appStore.setAppInfo(res.data);
+        uni.reLaunch({
+          url: '/pages/login/register',
+        });
+      },
+      fail: (err) => {
+        console.error('login failed: ', err);
+        uni.$tm.u.toast('登录请求失败, 请稍后重试');
+      }
+    });
 });
+
 onHide(() => {
-	console.log('App Hide');
+    console.log('App Hide');
 });
 </script>
 <style>
@@ -38,34 +55,34 @@ onHide(() => {
 
 /* #endif */
 view {
-	box-sizing: border-box;
+    box-sizing: border-box;
 }
 
 .bg-white {
-	background-color: #fff;
+    background-color: #fff;
 }
 
 .align-center {
-	align-items: center;
+    align-items: center;
 }
 
 .tips {
-	font-size: 26rpx;
-	color: #6d6868;
+    font-size: 26rpx;
+    color: #6d6868;
 }
 
 .price {
-	color: #ff0405;
+    color: #ff0405;
 }
 
 .approve {
-	color: #999999;
-	font-size: 26rpx;
+    color: #999999;
+    font-size: 26rpx;
 }
 
 .success {
-	color: #0bbb08;
-	font-size: 26rpx;
+    color: #0bbb08;
+    font-size: 26rpx;
 }
 .input-select{
    padding: 12rpx 0.75rem;
