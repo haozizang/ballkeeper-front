@@ -18,10 +18,10 @@
           </tm-form-item>
           <tm-form-item :border="false">
             <tm-button :margin="[10]" :shadow="0" :round="20" size="small" form-type="submit" block
-              label="立即注册"></tm-button>
+              label="立即注册" color="#4CAF50"></tm-button>
             <view class="login-tips flex flex-between px-30">
-              <text class="" @click="openLink('pages/login/forgot')">忘记密码</text>
-              <text class="" @click="openLink('pages/login/login', 1)">已有账号?立即登录</text>
+              <text class="forgot" @click="openLink('pages/login/forgot')">忘记密码</text>
+              <text class="login-link" @click="openLink('pages/login/login', 1)">已有账号?立即登录</text>
             </view>
           </tm-form-item>
         </tm-form>
@@ -74,9 +74,39 @@ function confirm(e: any) {
 
 <style lang="scss" scoped>
 .top {
-  background-color: #3c8af8;
+  /* 方案1：更强烈的绿色渐变 */
+  background: linear-gradient(135deg, #89cc8c 0%, #198120 100%);  // 使用更深的绿色作为终点色
+
+  /* 方案2：三色渐变 */
+  // background: linear-gradient(135deg, #81C784 0%, #4CAF50 50%, #2E7D32 100%);
+
+  /* 方案3：更生动的渐变角度 */
+  // background: linear-gradient(160deg, #4CAF50 0%, #1B5E20 100%);
+
+  /* 方案4：放射状渐变 */
+  // background: radial-gradient(circle at top right, #4CAF50 0%, #1B5E20 100%);
+
   height: 350rpx;
   position: relative;
+
+  .header-text {
+    position: absolute;
+    left: 50rpx;
+    top: 80rpx;
+    color: white;
+
+    .title {
+      font-size: 48rpx;
+      font-weight: bold;
+      display: block;
+      margin-bottom: 20rpx;
+    }
+
+    .subtitle {
+      font-size: 28rpx;
+      opacity: 0.9;
+    }
+  }
 
   .logo {
     position: absolute;
@@ -101,11 +131,15 @@ function confirm(e: any) {
     background-color: #fff;
     border-top-right-radius: 15rpx;
     border-top-left-radius: 15rpx;
+    box-shadow: 0 -4rpx 16rpx rgba(0, 0, 0, 0.1);
 
     .login-tips {
-      color: #3c8af8;
-      font-size: 24rpx;
+      color: #4CAF50;
+      font-size: 25rpx;
       margin-top: 30rpx;
+
+      // font-weight: bold;
     }
   }
-}</style>
+}
+</style>
