@@ -1,6 +1,8 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import { UserInfoState } from './interface';
+import { getBaseUrl } from '@/common/env';
+
 // 用户store
 export const useUserStore = defineStore('userStore', () => {
 	const initInfo = {
@@ -24,7 +26,21 @@ export const useUserStore = defineStore('userStore', () => {
 	const isLogin = ref(false);
 	// 设置用户信息
 	const setUserInfo = (info : any) => {
-		userInfo.value = info;
+		userInfo.value.username = info.username;
+		if (info.avatar_path) {
+			userInfo.value.avatar = getBaseUrl() + info.avatar_path;
+		}
+
+		// uni.setStorageSync('dx_activity_user_info', info);
+		// uni.setStorageSync('uni_id_token', info.token);
+		// uni.setStorageSync('uni_id_token_expired', info.tokenExpired);
+		isLogin.value = true;
+	};
+	const setAvatarPath = (avatar_path : string) => {
+		if (avatar_path) {
+			userInfo.value.avatar = getBaseUrl() + avatar_path;
+		}
+
 		// uni.setStorageSync('dx_activity_user_info', info);
 		// uni.setStorageSync('uni_id_token', info.token);
 		// uni.setStorageSync('uni_id_token_expired', info.tokenExpired);
@@ -58,6 +74,7 @@ export const useUserStore = defineStore('userStore', () => {
 		isLogin,
 		userInfo,
 		setUserInfo,
+		setAvatarPath,
 		checkLogin,
 		logout,
 	};

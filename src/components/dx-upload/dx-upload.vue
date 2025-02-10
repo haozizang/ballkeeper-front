@@ -45,6 +45,7 @@ const emit = defineEmits(['update:modelValue']);
 
 // 计算属性处理图片URL
 const imageUrl = computed(() => {
+    debugLog("imageUrl: ", props.modelValue);
     return props.modelValue || '';
 });
 
@@ -103,7 +104,7 @@ function selectImage() {
                     const data = JSON.parse(res.data);
                     debugLog("data: ", data);
  
-                    let url = getBaseUrl() + data.avatar_url;
+                    let url = getBaseUrl() + data.avatar_path;
                     emit('update:modelValue', url);
                 },
                 fail: (err) => {
