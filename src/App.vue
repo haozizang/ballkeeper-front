@@ -2,6 +2,7 @@
 import { onLaunch, onShow, onHide } from '@dcloudio/uni-app';
 import { useAppStore } from '@/stores/app'
 import { debugLog } from '@/common/tools'
+import { useUserStore } from '@/stores/user'
 
 onLaunch((e) => {
     console.log('App Launch',e);
@@ -20,6 +21,8 @@ onLaunch((e) => {
 onShow(() => {
     console.log('App Show');
     const appStore = useAppStore();
+    const userStore = useUserStore();
+    debugLog("userStore.userInfo: ", userStore.userInfo);
     uni.request({
       url: "/ballkeeper/get_app_info/",
       method: 'GET',
@@ -31,9 +34,12 @@ onShow(() => {
         }
         debugLog("get app info succeeded, res: ", res);
         appStore.setAppInfo(res.data);
-        uni.reLaunch({
-          url: '/pages/login/register',
-        });
+        /* if not logined, go to login page */
+        if (!userStore.isLogin) {
+          uni.reLaunch({
+            url: '/pages/login/login',
+          });
+        }
       },
       fail: (err) => {
         console.error('login failed: ', err);
