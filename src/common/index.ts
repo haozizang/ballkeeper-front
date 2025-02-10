@@ -2,6 +2,7 @@ import request from './request';
 import { useUserStore } from '../stores/user';
 
 // type:request,upload
+/*
 request.interceptor.request(function (config : any) {
 	console.log('config', config);
 	const userStore = useUserStore();
@@ -18,6 +19,7 @@ request.interceptor.request(function (config : any) {
 	}
 	return config;
 });
+*/
 
 //响应拦截，判断状态码是否通过
 request.interceptor.response(function (res : any) {
