@@ -13,7 +13,7 @@
           :round="20" 
           size="small" 
           block 
-          :label="hasUploadedImage ? '完成' : '跳过头像上传'" 
+          :label="hasUploadedImage ? '完成' : '使用默认头像'" 
           @click="handleButtonClick"
         ></tm-button>
     </view>

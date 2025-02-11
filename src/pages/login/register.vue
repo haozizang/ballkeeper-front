@@ -58,10 +58,10 @@ function confirm(e: any) {
         }
         uni.$tm.u.toast('注册成功!');
         // 保存用户信息
-        userStore.setUserInfo(res.data);
+        userStore.setUserInfo(res.data.user);
         // 跳转到头像设置页面
         setTimeout(() => {
-          openLink('/pages/user/avatar', {username: res.data.username}, 1);
+          openLink('/pages/user/avatar', {username: res.data.user.username}, 1);
         }, 1500);
       },
       fail: () => {

@@ -6,7 +6,7 @@
       </view>
       <view>
         <tm-tabs @change="tabsChange" showTabsLineAni :item-width="80" :width="750" :height="90" default-name="2">
-          <tm-tabs-pane v-for="(item, index) in props.categoryList" :key="index" :name="item._id" :title="item.name"> </tm-tabs-pane>
+          <tm-tabs-pane v-for="(item, index) in props.categoryList" :key="index" :name="item.id" :title="item.name"> </tm-tabs-pane>
         </tm-tabs>
       </view>
     </view>
@@ -18,16 +18,16 @@
       @scrolltolower="onLoadMore"
       :style="{ height: scrollViewHeight }"
     >
-      <view class="list bg-white">
-        <view class="item flex-row-center-between pa-30" 
-              v-for="(item,index) in teamList" 
-              :key="index" 
-              @click="openLink('teams/detail/detail?id='+item._id)"
+      <view class="list mt-40 bg-white">
+        <view class="item flex-row-center-between pa-30"
+              v-for="(item,index) in teamList"
+              :key="index"
+              @click="openLink('teams/detail/detail?id='+item.id)"
         >
           <view class="team-content flex flex-row">
             <!-- 左侧头像 -->
-            <tm-avatar :font-size="120" :round="25" :img="item.logo_url"></tm-avatar>
-            
+            <tm-avatar :font-size="120" :round="25" :img="getBaseUrl() + item.logo_path"></tm-avatar>
+
             <!-- 右侧内容 -->
             <view class="team-info ml-24">
               <view class="title text-overflow-1">{{item.title}}</view>
@@ -48,6 +48,7 @@
 </template>
 <script lang="ts" setup>
 import { ref, reactive, watch, onMounted } from 'vue';
+import { getBaseUrl } from '@/common/env';
 import { openLink, debugLog } from '@/common/tools';
 import { debounce } from '@/tmui/tool/function/util';
 import { useUserStore } from '@/stores/user';
@@ -61,10 +62,10 @@ const hasMore = ref(true);  // 是否还有更多球队
 const loading = ref(false);
 
 const teamList = ref([
-  { _id: 1, logo_url: 'https://img1.baidu.com/it/u=3956679599,3956476954&fm=253&fmt=auto&app=138&f=JPEG?w=510&h=500', title: '万众篮球队', content: '内容' },
-  { _id: 2, logo_url: 'https://www.baidu.com/img/PCtm_d9c8750bed0b3c7d089fa7d55720d6cf.png', title: '功夫足球队', content: '足球' },
-  { _id: 3, logo_url: 'https://www.baidu.com/img/PCtm_d9c8750bed0b3c7d089fa7d55720d6cf.png', title: '兄弟连', content: '足球' },
-  { _id: 4, logo_url: 'https://img1.baidu.com/it/u=1697989098,4244944766&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=586', title: 'FC80S', content: '内容' }
+  { id: 1, logo_path: 'https://img1.baidu.com/it/u=3956679599,3956476954&fm=253&fmt=auto&app=138&f=JPEG?w=510&h=500', title: '万众篮球队', content: '内容' },
+  { id: 2, logo_path: 'https://www.baidu.com/img/PCtm_d9c8750bed0b3c7d089fa7d55720d6cf.png', title: '功夫足球队', content: '足球' },
+  { id: 3, logo_path: 'https://www.baidu.com/img/PCtm_d9c8750bed0b3c7d089fa7d55720d6cf.png', title: '兄弟连', content: '足球' },
+  { id: 4, logo_path: 'https://img1.baidu.com/it/u=1697989098,4244944766&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=586', title: 'FC80S', content: '内容' }
 ]);
 
 const param = reactive<any>({
