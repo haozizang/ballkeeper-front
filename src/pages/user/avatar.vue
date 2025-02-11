@@ -39,7 +39,9 @@ const hasUploadedImage = ref(false);  // 用于跟踪是否有上传的图片
 // 监听图片上传状态
 watch(() => editForm.value.avatar, (newVal) => {
   hasUploadedImage.value = !!newVal;
-  userStore.setAvatarPath(newVal);
+  if (newVal) {
+    userStore.userInfo.avatar = newVal;
+  }
 });
 
 // 按钮点击处理

@@ -27,7 +27,7 @@ export const useUserStore = defineStore('userStore', () => {
 	// 设置用户信息
 	const setUserInfo = (info : any) => {
 		userInfo.value.username = info.username;
-		if (info.avatar_path) {
+		if (!userInfo.value.avatar && info.avatar_path) {
 			userInfo.value.avatar = getBaseUrl() + info.avatar_path;
 		}
 
@@ -37,7 +37,7 @@ export const useUserStore = defineStore('userStore', () => {
 		isLogin.value = true;
 	};
 	const setAvatarPath = (avatar_path : string) => {
-		if (avatar_path) {
+		if (!userInfo.value.avatar && avatar_path) {
 			userInfo.value.avatar = getBaseUrl() + avatar_path;
 		}
 

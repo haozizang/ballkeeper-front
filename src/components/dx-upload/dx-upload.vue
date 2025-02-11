@@ -104,7 +104,7 @@ function selectImage() {
                     const data = JSON.parse(res.data);
                     debugLog("data: ", data);
  
-                    let url = getBaseUrl() + data.avatar_path;
+                    let url = getBaseUrl() + data.img_path;
                     emit('update:modelValue', url);
                 },
                 fail: (err) => {
