@@ -27,26 +27,13 @@ export const useUserStore = defineStore('userStore', () => {
 	// 设置用户信息
 	const setUserInfo = (info : any) => {
 		userInfo.value.username = info.username;
-		if (!userInfo.value.avatar && info.avatar_path) {
-			userInfo.value.avatar = getBaseUrl() + info.avatar_path;
-		}
+		userInfo.value.avatar = info.avatar_path;
 
 		// uni.setStorageSync('dx_activity_user_info', info);
 		// uni.setStorageSync('uni_id_token', info.token);
 		// uni.setStorageSync('uni_id_token_expired', info.tokenExpired);
 		isLogin.value = true;
 	};
-	const setAvatarPath = (avatar_path : string) => {
-		if (!userInfo.value.avatar && avatar_path) {
-			userInfo.value.avatar = getBaseUrl() + avatar_path;
-		}
-
-		// uni.setStorageSync('dx_activity_user_info', info);
-		// uni.setStorageSync('uni_id_token', info.token);
-		// uni.setStorageSync('uni_id_token_expired', info.tokenExpired);
-		isLogin.value = true;
-	};
-	
 	// 退出登录
 	const logout = () => {
 		if (!isLogin.value) return;
@@ -74,7 +61,6 @@ export const useUserStore = defineStore('userStore', () => {
 		isLogin,
 		userInfo,
 		setUserInfo,
-		setAvatarPath,
 		checkLogin,
 		logout,
 	};

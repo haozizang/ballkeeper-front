@@ -3,7 +3,7 @@
     <tm-sheet :margin="[0, 0]" :padding="[0, 0]">
       <view class="manage px-50 pt-30">
         <view class="flex flex-col-top-center">
-          <tm-avatar :size="150" :img="info.logo"></tm-avatar>
+          <tm-avatar :size="150" :img="getBaseUrl() + info.logo_path"></tm-avatar>
           <view class="ml-30">{{ info.title }}</view>
         </view>
         <view class="flex flex-between text-align-center py-50">
@@ -101,6 +101,7 @@
 </template>
 <script setup lang="ts">
 import { ref } from 'vue';
+import { getBaseUrl } from '@/common/env';
 import { openLink } from '@/common/tools';
 import { onLoad } from '@dcloudio/uni-app';
 import { delTeam } from '@/common/index';
@@ -110,7 +111,7 @@ const showWin = ref(false);
 const info = ref({
   _id: '',
   title: '组织名称',
-  logo: '',
+  logo_path: '',
   activityCount: 0,
   joinCount: 0,
   followCount: 0

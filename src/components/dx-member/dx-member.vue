@@ -1,7 +1,7 @@
 <template>
   <view class="member px-50 pt-30">
     <view class="flex flex-col-top-center">
-      <tm-avatar :size="150" :round="25" :img="userStore.userInfo.avatar"></tm-avatar>
+      <tm-avatar :size="150" :round="25" :img="getBaseUrl() + userStore.userInfo.avatar"></tm-avatar>
       <!-- <tm-avatar :size="150" :round="25" :img="userStore.userInfo.avatar || appStore.app_logo"></tm-avatar> -->
       <view class="ml-30 flex-1 flex-row-center-between">
         <template v-if="userStore.isLogin">
@@ -99,6 +99,7 @@ import { onShow } from '@dcloudio/uni-app';
 import { debugLog } from '@/common/tools'
 import { callPhone } from '@/tmui/tool/function/util';
 import { useUserStore } from '@/stores/user';
+import { getBaseUrl } from '@/common/env';
 
 const userStore = useUserStore();
 
