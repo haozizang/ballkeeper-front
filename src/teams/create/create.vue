@@ -170,22 +170,6 @@ function confirm(e: any) {
         }
       }
     })
-
-    // saveTeam(e.data).then(res => {
-    //   if (res.code === 1000) {
-    //     uni.$tm.u.toast(res.message);
-    //     if (e.data.id) {
-    //       uni.navigateBack();
-    //     } else {
-    //       setTimeout(() => {
-    //         openLink('/teams/manage/manage?id=' + res.data)
-    //       }, 1500)
-    //     }
-    //   } else {
-    //     uni.$tm.u.toast(res.message);
-    //   }
-    // })
-
   }
 }
 </script>
