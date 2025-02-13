@@ -1,7 +1,6 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import { UserInfoState } from './interface';
-import { getBaseUrl } from '@/common/env';
 
 // 用户store
 export const useUserStore = defineStore('userStore', () => {
