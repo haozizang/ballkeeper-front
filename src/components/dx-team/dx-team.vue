@@ -136,18 +136,19 @@ function getTeamList(is_more = false) {
 }
 
 // 添加 scrollViewHeight 计算
-const scrollViewHeight = ref('calc(100vh - 200rpx)');  // 减去顶部搜索和标签的高度
+const scrollViewHeight = ref('calc(100vh - 200rpx - 150rpx)');  // 减去顶部搜索和标签的高度
 
 // 计算实际高度
 onMounted(() => {
   // #ifdef H5
-  scrollViewHeight.value = 'calc(100vh - 244rpx)';  // H5 环境需要考虑导航栏高度
+  scrollViewHeight.value = 'calc(100vh - 244rpx - 150rpx)';  // H5 环境需要考虑导航栏高度
   // #endif
 })
 
 // 触底加载更多的处理函数
 function onLoadMore() {
   console.log('触底加载更多');
+  debugLog('scrollViewHeight: ', scrollViewHeight.value);
   if (hasMore.value && !loading.value) {
     getTeamList(true);
   }
