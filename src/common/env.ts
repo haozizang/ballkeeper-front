@@ -1,5 +1,5 @@
 export const DEV_PROXY = {
-    target: 'http://172.25.176.234:8888',
+    target: 'http://172.20.84.37:8888',
     prefix: '/ballkeeper'
 };
 
