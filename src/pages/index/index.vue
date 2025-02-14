@@ -4,9 +4,9 @@
       <tm-sheet :margin="[0, 0]" :padding="[0, 0]" :transprent="true">
         <view class="py-20 bg-white">
           <tm-grid :width="750" :col="2">
-            <tm-grid-item 
-              :height="180" 
-              @click="grid_ind = 0" 
+            <tm-grid-item
+              :height="180"
+              @click="grid_ind = 0"
               :shadow="grid_ind === 0 ? 3 : 0"
               :round="10"
               hover-class="grid-hover"
@@ -14,28 +14,28 @@
             >
               <view class="grid-content">
                 <view class="icon-wrapper">
-                  <image 
-                    class="icon" 
+                  <image
+                    class="icon"
                     :class="{
                       'active-icon': grid_ind === 0,
                       'inactive-icon': grid_ind !== 0
-                    }" 
+                    }"
                     src="../../static/a3.png"
                   ></image>
                 </view>
                 <view class="text-wrapper" :class="{ 'active-text': grid_ind === 0 }">
-                  <tm-text 
-                    :font-size="grid_ind === 0 ? 30 : 24" 
-                    :color="grid_ind === 0 ? 'white' : ''" 
+                  <tm-text
+                    :font-size="grid_ind === 0 ? 30 : 24"
+                    :color="grid_ind === 0 ? 'white' : ''"
                     label="当前活动"
                   ></tm-text>
                 </view>
               </view>
             </tm-grid-item>
- 
-            <tm-grid-item 
-              :height="180" 
-              @click="grid_ind = 1" 
+
+            <tm-grid-item
+              :height="180"
+              @click="grid_ind = 1"
               :shadow="grid_ind === 1 ? 3 : 0"
               :round="10"
               hover-class="grid-hover"
@@ -43,19 +43,19 @@
             >
               <view class="grid-content">
                 <view class="icon-wrapper">
-                  <image 
-                    class="icon" 
+                  <image
+                    class="icon"
                     :class="{
                       'active-icon': grid_ind === 1,
                       'inactive-icon': grid_ind !== 1
-                    }" 
+                    }"
                     src="../../static/a4.png"
                   ></image>
                 </view>
                 <view class="text-wrapper" :class="{ 'active-text': grid_ind === 1 }">
-                  <tm-text 
-                    :font-size="grid_ind === 1 ? 30 : 24" 
-                    :color="grid_ind === 1 ? 'white' : ''" 
+                  <tm-text
+                    :font-size="grid_ind === 1 ? 30 : 24"
+                    :color="grid_ind === 1 ? 'white' : ''"
                     label="历史活动"
                   ></tm-text>
                 </view>
