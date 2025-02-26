@@ -138,6 +138,17 @@
 			]
 		},
 		{
+			"root": "leagues",
+			"pages": [
+				{
+					"path": "create/create",
+					"style": {
+						"navigationBarTitleText": "创建联赛"
+					}
+				}
+			]
+		},
+		{
 			"root": "others",
 			"pages": [
 				{
