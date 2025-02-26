@@ -1,32 +1,23 @@
 <template>
   <tm-app>
-    <!-- 透明导航栏 -->
+    <!-- 透明导航栏:暂不启用 -->
     <!-- <view> <custom-nav title="创建联赛"></custom-nav> </view> -->
 
+
     <tm-sheet :margin="[0, 0]" :padding="[0, 0]" :round="3" :shadow="2">
-      <!-- <view class="cover" @click="uploadCover">
+      <view class="cover" @click="uploadCover">
         <image :src="formData.cover || '../../static/image.jpg'" mode="aspectFill"></image>
         <view class="upload round-3 flex-row-center-center">
           <tm-icon name="tmicon-plus" color="white" :font-size="25"></tm-icon>
           <text class="ml-5">上传封面(800*500)</text>
         </view>
-      </view> -->
+      </view>
       <tm-form @submit="confirm" :margin="[0, 0]" ref="form" v-model="formData" :label-width="150">
-        <tm-form-item :margin="[15, 0]" required label="组织名称" field="title" :rules="[{ required: true, message: '请输入组织名称' }]">
+        <tm-form-item :margin="[15, 0]" required label="联赛名称" field="title" :rules="[{ required: true, message: '请输入联赛名称' }]">
           <tm-input v-model="formData.title" showClear></tm-input>
         </tm-form-item>
-        <tm-form-item :margin="[15, 0]" required label="组织分类" field="category_id" :rules="[{ required: true, message: '请选择活动分类' }]">
-          <view @click="showCategory = true" class="input-select round-3" :class="{ 'no-select': !formData.category_id }"> {{ categoryText }}</view>
-        </tm-form-item>
-        <!-- <tm-form-item :margin="[15, 0]" required label="组织地址" field="address" :rules="[{ required: true, message: '请输入或点击地图定位' }]">
-          <tm-input v-model="formData.address" showClear>
-            <template #right>
-              <tm-icon name="tmicon-location" color="#999999" :font-size="30" @click="chooseAddress"></tm-icon>
-            </template>
-          </tm-input>
-        </tm-form-item> -->
-        <tm-form-item :margin="[15, 0]" label="是否公开" field="is_public">
-          <tm-switch v-model="formData.is_public"></tm-switch>
+        <tm-form-item :margin="[15, 0]" required label="赛制" field="league_type_ind" :rules="[{ required: true, message: '请选择赛制' }]">
+          <view @click="showCategory = true" class="input-select round-3" :class="{ 'no-select': !formData.league_type_ind }"> {{ leagueTypeText }}</view>
         </tm-form-item>
         <tm-form-item
           :margin="[15, 0]"
@@ -47,7 +38,7 @@
         <tm-form-item :margin="[15, 0]" required label="联系姓名" field="name" :rules="[{ required: true, message: '请输入联系人姓名' }]">
           <tm-input v-model="formData.name" showClear></tm-input>
         </tm-form-item>
-        <tm-form-item :margin="[15, 0]" label="组织介绍" field="content">
+        <tm-form-item :margin="[15, 0]" label="联赛介绍" field="content">
           <tm-input type="textarea" :inputPadding="[24, 15]" :height="100" v-model="formData.content" showClear></tm-input>
         </tm-form-item>
         <tm-form-item :margin="[15, 0]" :border="false">
@@ -55,8 +46,7 @@
         </tm-form-item>
       </tm-form>
     </tm-sheet>
-    <!--  -->
-    <tm-picker v-model:show="showCategory" :columns="categoryList" mapKey="name" v-model="categoryIndex"></tm-picker>
+    <tm-picker v-model:show="showCategory" :columns="leagueTypeList" mapKey="name" v-model="categoryIndex"></tm-picker>
   </tm-app>
 </template>
 <script setup lang="ts">
@@ -66,12 +56,11 @@ import { upload, myTeamDetail } from '@/common/index'
 import { openLink } from '@/common/tools';
 import { onLoad } from '@dcloudio/uni-app';
 import {useUserStore} from '@/stores/user';
-import CustomNav from '@/components/dx-navi/dx-navi.vue';
 
 const userStore = useUserStore();
-const categoryList = ref([
-  { id: 2, name: '足球' },
-  { id: 3, name: '其他' }
+const leagueTypeList = ref([
+  { id: 0, name: '循环赛' },
+  { id: 1, name: '淘汰赛' }
 ]);
 const showCategory = ref(false);
 const categoryIndex = ref<number[]>([]);
@@ -79,8 +68,7 @@ const categoryStr = ref('');
 const formData = ref({
   cover: '',
   title: '',
-  category_id: categoryList.value.length > 0 ? categoryList.value[0].id : '',
-  is_public: false,
+  league_type_ind: leagueTypeList.value.length > 0 ? leagueTypeList.value[0].id : '',
   address: '',
   mobile: '',
   name: '',
@@ -89,23 +77,23 @@ const formData = ref({
   lon: 0,
   id: ''
 });
-const categoryText = computed(() => {
-  if (!categoryList.value.length) return '请选择分类'
-  if (!formData.value.category_id && formData.value.category_id !== 0) return '请选择分类'
+const leagueTypeText = computed(() => {
+  if (!leagueTypeList.value.length) return '请选择赛制'
+  if (!formData.value.league_type_ind && formData.value.league_type_ind !== 0) return '请选择赛制'
 
-  const category = categoryList.value.find(item => item.id === formData.value.category_id)
-  return category ? category.name : '请选择分类'
+  const leagueType = leagueTypeList.value.find(item => item.id === formData.value.league_type_ind)
+  return leagueType ? leagueType.name : '请选择赛制'
 })
 watch(categoryIndex, (val) => {
-  const selectedCategory = categoryList.value[val[0]];
+  const selectedCategory = leagueTypeList.value[val[0]];
   if (selectedCategory) {
-    formData.value.category_id = selectedCategory.id;
+    formData.value.league_type_ind = selectedCategory.id;
     categoryStr.value = selectedCategory.name;
   }
 });
 onMounted(() => {
-  if (!formData.value.category_id && categoryList.value.length > 0) {
-    formData.value.category_id = categoryList.value[0].id
+  if (!formData.value.league_type_ind && leagueTypeList.value.length > 0) {
+    formData.value.league_type_ind = leagueTypeList.value[0].id
   }
 })
 onLoad(async (e: any) => {
@@ -113,16 +101,15 @@ onLoad(async (e: any) => {
     myTeamDetail({ id: e.id }).then(res => {
       if (res.code === 1000) {
         formData.value.id = e.id;
-        formData.value.is_public = res.data.is_public;
         formData.value.title = res.data.title;
         formData.value.address = res.data.address;
         formData.value.mobile = res.data.mobile;
         formData.value.name = res.data.name;
         formData.value.content = res.data.content;
         formData.value.cover = res.data.cover;
-        categoryList.value.map((item: any, index: number) => {
+        leagueTypeList.value.map((item: any, index: number) => {
           item.children.map((row: any, rowIndex: number) => {
-            if (row.id === res.data.category_id) {
+            if (row.id === res.data.league_type_ind) {
               categoryIndex.value = [index, rowIndex];
             }
           })
@@ -141,25 +128,17 @@ function uploadCover() {
     },
   });
 }
-function chooseAddress() {
-  uni.chooseLocation({
-    success: function (res) {
-      formData.value.address = res.address;
-      formData.value.lat = res.latitude;
-      formData.value.lon = res.longitude;
-    }
-  });
-}
+
 function confirm(e: any) {
   if (e.validate) {
     debugLog("e.data: ", e.data);
     debugLog("formData: ", formData.value);
     uni.request({
-      url: '/ballkeeper/create_team/',
+      url: '/ballkeeper/create_league/',
       method: 'POST',
-      data: { ...e.data, username: userStore.userInfo.username },
+      data: { ...e.data, creator: userStore.userInfo.username },
       success: (res: any) => {
-        debugLog("create_team res: ", res);
+        debugLog("create_league res: ", res);
         if (res.statusCode !== 200) {
           uni.$tm.u.toast(`${res.data.detail}(${res.statusCode})` || '创建失败');
           return;
