@@ -1,17 +1,7 @@
 <template>
   <tm-app>
-  <view>
     <!-- 透明导航栏 -->
-    <custom-nav title="创建联赛"></custom-nav>
-
-    <!-- 页面内容 -->
-    <view class="page-content">
-      <!-- 页面内容 -->
-    </view>
-  </view>
-
-
-
+    <!-- <view> <custom-nav title="创建联赛"></custom-nav> </view> -->
 
     <tm-sheet :margin="[0, 0]" :padding="[0, 0]" :round="3" :shadow="2">
       <!-- <view class="cover" @click="uploadCover">
