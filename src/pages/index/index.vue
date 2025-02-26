@@ -68,14 +68,14 @@
       </tm-sheet>
     </view>
     <dx-team :category-list="categoryList" v-else-if="tab_ind === 1"></dx-team>
-    <view v-else-if="tab_ind === 3" class="py-30 bg-white">TODO: 数据页</view>
+    <dx-league v-else-if="tab_ind === 3"></dx-league>
     <dx-member v-else-if="tab_ind === 4"></dx-member>
     <view style="height: 150rpx"></view>
     <tm-tabbar :autoSelect="false" v-model:active="tab_ind" :showSafe="false" @change="tabbarChange">
       <tm-tabbar-item @click="tab_ind = 0" activeColor="#3c8af8" open-type="reLaunch" text="活动" icon="tmicon-md-home"></tm-tabbar-item>
       <tm-tabbar-item @click="tab_ind = 1" activeColor="#3c8af8" text="球队" icon="tmicon-flag-fill"></tm-tabbar-item>
       <tm-tabbar-item :shadow="2" btn-top fontColor="white" activeColor="white" linear="top" linearDeep="accent" color="#38cdde" icon="tmicon-paperplane-fill" url="/others/publish/publish" text="发起活动"></tm-tabbar-item>
-      <tm-tabbar-item @click="tab_ind = 3" activeColor="#3c8af8" text="数据" icon="tmicon-layergroup-fill"></tm-tabbar-item>
+      <tm-tabbar-item @click="tab_ind = 3" activeColor="#3c8af8" text="联赛" icon="tmicon-layergroup-fill"></tm-tabbar-item>
       <tm-tabbar-item @click="tab_ind = 4" activeColor="#3c8af8" text="我的" icon="tmicon-md-person"></tm-tabbar-item>
     </tm-tabbar>
   </tm-app>
@@ -110,12 +110,12 @@ function tabbarChange(e: number) {
         title: '球队',
       });
       break;
-    case 2:
+    case 3:
       uni.setNavigationBarTitle({
-        title: '数据',
+        title: '联赛',
       });
       break;
-    case 3:
+    case 4:
       uni.setNavigationBarTitle({
         title: '我的',
       });
