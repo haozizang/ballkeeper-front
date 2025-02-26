@@ -1,5 +1,18 @@
 <template>
   <tm-app>
+  <view>
+    <!-- 透明导航栏 -->
+    <custom-nav title="创建联赛"></custom-nav>
+
+    <!-- 页面内容 -->
+    <view class="page-content">
+      <!-- 页面内容 -->
+    </view>
+  </view>
+
+
+
+
     <tm-sheet :margin="[0, 0]" :padding="[0, 0]" :round="3" :shadow="2">
       <!-- <view class="cover" @click="uploadCover">
         <image :src="formData.cover || '../../static/image.jpg'" mode="aspectFill"></image>
@@ -63,6 +76,7 @@ import { upload, myTeamDetail } from '@/common/index'
 import { openLink } from '@/common/tools';
 import { onLoad } from '@dcloudio/uni-app';
 import {useUserStore} from '@/stores/user';
+import CustomNav from '@/components/dx-navi/dx-navi.vue';
 
 const userStore = useUserStore();
 const categoryList = ref([
@@ -174,6 +188,10 @@ function confirm(e: any) {
 }
 </script>
 <style lang="scss" scoped>
+.page-content {
+  /* 确保内容不被导航栏遮挡 */
+  padding-top: 160rpx; /* 状态栏 + 导航栏高度 */
+}
 .cover {
   position: relative;
   width: 100%;

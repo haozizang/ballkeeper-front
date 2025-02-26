@@ -143,7 +143,9 @@
 				{
 					"path": "create/create",
 					"style": {
-						"navigationBarTitleText": "创建联赛"
+						"navigationBarTitleText": "创建联赛",
+						"navigationStyle": "custom",
+						"navigationBarTextStyle": "white"
 					}
 				}
 			]
