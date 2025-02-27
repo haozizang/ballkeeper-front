@@ -10,6 +10,7 @@
         <tm-form @submit="confirm" ref="form" v-model="registForm" :label-width="190">
           <view class="upload-wrapper">
             <dx-upload v-model="registForm.avatar_path" image_type="avatar"></dx-upload>
+            <text>上传头像</text>
           </view>
           <tm-form-item required field="username" :rules="[{ required: true, message: '请输入账号' }]">
             <tm-input :inputPadding="[20, 0]" :round="20" prefix="tmicon-account" v-model.lazy="registForm.username"
@@ -148,10 +149,40 @@ function confirm(e: any) {
 }
 
 .upload-wrapper {
-  margin-top: 50rpx;
+  margin: 30rpx auto;
+  padding-bottom: 100rpx;
   display: flex;
+  flex-direction: column;
   justify-content: center;
-  width: 100%;
-  margin-bottom: 20rpx;
+  align-items: center;
+  width: 80%;
+  font-size: 40rpx;
+  
+  /* 添加更现代的样式 */
+  border-radius: 16rpx;
+  background: rgba(76, 175, 80, 0.05);
+  box-shadow: 0 6rpx 16rpx rgba(76, 175, 80, 0.1);
+  padding: 30rpx;
+  position: relative;
+  overflow: hidden;
+  
+  text {
+    margin-top: 20rpx;
+    color: #4CAF50;
+    font-weight: 500;
+    letter-spacing: 2rpx;
+  }
+  
+  /* 让里面的上传组件获得交互感 */
+  :deep(.dx-upload .item) {
+    transition: all 0.3s ease;
+    border-color: rgba(76, 175, 80, 0.5);
+    
+    &:hover, &:active {
+      border-color: #4CAF50;
+      background: rgba(76, 175, 80, 0.05);
+    }
+  }
 }
 </style>
+n
