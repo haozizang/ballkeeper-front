@@ -32,21 +32,17 @@ import { getBaseUrl } from '@/common/env';
 const props = withDefaults(defineProps<{
     modelValue: any,
     limit?: number,
-    image_name?: string,
     image_type?: string,
-    username?: string,
 }>(), {
     limit: 1,
-    image_name: '',
     image_type: '',
-    username: '',
 })
 const emit = defineEmits(['update:modelValue']);
 
 // 计算属性处理图片URL
 const imageUrl = computed(() => {
     debugLog("imageUrl: ", props.modelValue);
-    return props.modelValue || '';
+    return props.modelValue ? getBaseUrl() + props.modelValue : '';
 });
 
 // 是否显示上传按钮
@@ -75,8 +71,6 @@ function clearImage() {
 }
 
 function selectImage() {
-    debugLog("username: ", props.username);
-    debugLog("image_name: ", props.image_name);
     debugLog("image_type: ", props.image_type);
     uni.chooseImage({
         count: 1,
@@ -90,8 +84,6 @@ function selectImage() {
                 filePath: tempFilePath,
                 name: 'image',
                 formData: {
-                    'username': props.username,
-                    'image_name': props.image_name,
                     'image_type': props.image_type,
                 },
                 success: (res) => {
@@ -104,8 +96,7 @@ function selectImage() {
                     const data = JSON.parse(res.data);
                     debugLog("data: ", data);
  
-                    let url = getBaseUrl() + data.img_path;
-                    emit('update:modelValue', url);
+                    emit('update:modelValue', data.img_path);
                 },
                 fail: (err) => {
                     console.error('上传失败:', err);
