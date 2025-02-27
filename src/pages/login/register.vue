@@ -66,7 +66,15 @@ function confirm(e: any) {
         userStore.setUserInfo(res.data.user);
         // 跳转到头像设置页面
         setTimeout(() => {
-          openLink('/pages/user/avatar', {username: res.data.user.username}, 1);
+          debugLog("registForm.value.avatar_path: ", registForm.value.avatar_path);
+          if (registForm.value.avatar_path) {
+            uni.reLaunch({
+              url: '/pages/index/index',
+            });
+          }
+          else {
+            openLink('/pages/user/avatar', {username: res.data.user.username}, 1);
+          }
         }, 1500);
       },
       fail: () => {
