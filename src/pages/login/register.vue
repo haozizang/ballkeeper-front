@@ -7,17 +7,17 @@
     </view>
     <view class="login">
       <view class="box pt-50">
-        <tm-form @submit="confirm" ref="form" v-model="registFrom" :label-width="190">
+        <tm-form @submit="confirm" ref="form" v-model="registForm" :label-width="190">
           <view class="upload-wrapper">
-            <dx-upload v-model="registFrom.avatar_path" image_type="avatar"></dx-upload>
+            <dx-upload v-model="registForm.avatar_path" image_type="avatar"></dx-upload>
           </view>
           <tm-form-item required field="username" :rules="[{ required: true, message: '请输入账号' }]">
-            <tm-input :inputPadding="[20, 0]" :round="20" prefix="tmicon-account" v-model.lazy="registFrom.username"
+            <tm-input :inputPadding="[20, 0]" :round="20" prefix="tmicon-account" v-model.lazy="registForm.username"
               placeholder="请输入账号" :showBottomBotder="false"> </tm-input>
           </tm-form-item>
           <tm-form-item required field="password" :rules="[{ required: true, message: '请输入密码' }]">
             <tm-input :inputPadding="[20, 0]" type="password" :round="20" prefix="tmicon-lock"
-              v-model.lazy="registFrom.password" placeholder="请输入密码" :showBottomBotder="false"> </tm-input>
+              v-model.lazy="registForm.password" placeholder="请输入密码" :showBottomBotder="false"> </tm-input>
           </tm-form-item>
           <tm-form-item :border="false">
             <tm-button :margin="[10]" :shadow="0" :round="20" size="small" form-type="submit" block
@@ -41,7 +41,7 @@ import { useUserStore } from '@/stores/user';
 
 const appStore = useAppStore();
 const userStore = useUserStore();
-const registFrom = ref({
+const registForm = ref({
   username: '',
   password: '',
   avatar_path: '',
