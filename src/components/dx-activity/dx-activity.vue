@@ -65,6 +65,7 @@ const other_activities = ref<any>([]);
 const team = ref<any>([]);
 
 function init() {
+  /*
 	indexHome().then(res => {
 		if (res.code === 1000) {
 			my_activities.value = res.data.activity;
@@ -72,6 +73,8 @@ function init() {
 			team.value = res.data.team;
 		}
 	});
+  */
+
   // DEL: 模拟活动数据
   my_activities.value = [
     {
@@ -145,13 +148,14 @@ function init() {
 
 init();
 function toFollow(id: string) {
-	// 关注
+	/* 关注
   followTeam({id}).then(res=>{
     uni.$tm.u.toast(res.message);
     if(res.code===1000){
       init()
     }
   })
+  */
 }
 </script>
 <style lang="scss" scoped>

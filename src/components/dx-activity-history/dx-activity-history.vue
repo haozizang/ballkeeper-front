@@ -59,12 +59,12 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { openLink,timeText } from '@/common/tools';
-import { indexHome,followTeam } from '@/common/index'
 const my_activities = ref<any>([]);
 const other_activities = ref<any>([]);
 const team = ref<any>([]);
 
 function init() {
+  /*
 	indexHome().then(res => {
 		if (res.code === 1000) {
 			my_activities.value = res.data.activity;
@@ -72,6 +72,7 @@ function init() {
 			team.value = res.data.team;
 		}
 	});
+  */
   // DEL: 模拟活动数据
   my_activities.value = [
   ];

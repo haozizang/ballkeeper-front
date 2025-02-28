@@ -63,8 +63,8 @@
             </tm-grid-item>
           </tm-grid>
         </view>
-        <dx-activity :category-list="categoryList" v-if="grid_ind === 0"></dx-activity>
-        <dx-activity-history :category-list="categoryList" v-else-if="grid_ind === 1"></dx-activity-history>
+        <dx-activity v-if="grid_ind === 0"></dx-activity>
+        <dx-activity-history v-else-if="grid_ind === 1"></dx-activity-history>
       </tm-sheet>
     </view>
     <dx-team :category-list="categoryList" v-else-if="tab_ind === 1"></dx-team>
@@ -83,21 +83,23 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import { getCategory } from '@/common/index';
 
 const categoryList = ref<any>([]);
 const tab_ind = ref(0);
 const grid_ind = ref(0);
-getCategory({
-  level: 1,
-}).then((res) => {
-  if(res.code === 1000){
-    categoryList.value = [{
-      name:'全部',
-      _id:'0'
-    },...res.data];
-  }
-});
+
+
+// getCategory({
+//   level: 1,
+// }).then((res) => {
+//   if(res.code === 1000){
+//     categoryList.value = [{
+//       name:'全部',
+//       _id:'0'
+//     },...res.data];
+//   }
+// });
+
 function tabbarChange(e: number) {
   switch(e){
     case 0:
