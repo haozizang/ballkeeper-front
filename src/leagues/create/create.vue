@@ -13,11 +13,14 @@
         </view>
       </view>
       <tm-form @submit="confirm" :margin="[0, 0]" ref="form" v-model="formData" :label-width="150">
-        <tm-form-item :margin="[15, 0]" required label="联赛名称" field="title" :rules="[{ required: true, message: '请输入联赛名称' }]">
-          <tm-input v-model="formData.title" showClear></tm-input>
+        <tm-form-item :margin="[15, 0]" required label="联赛名称" field="name" :rules="[{ required: true, message: '请输入联赛名称' }]">
+          <tm-input v-model="formData.name" showClear></tm-input>
         </tm-form-item>
         <tm-form-item :margin="[15, 0]" required label="赛制" field="league_type_ind" :rules="[{ required: true, message: '请选择赛制' }]">
-          <view @click="showCategory = true" class="input-select round-3" :class="{ 'no-select': !formData.league_type_ind }"> {{ leagueTypeText }}</view>
+          <view @click="showLeagueTypeList = true" class="input-select round-3" :class="{ 'no-select': !formData.league_type_ind }"> {{ leagueTypeText }}</view>
+        </tm-form-item>
+        <tm-form-item :margin="[15, 0]" label="球场地址" field="address" :rules="[{ message: '请输入球场地址' }]">
+          <tm-input v-model="formData.address" showClear></tm-input>
         </tm-form-item>
         <tm-form-item
           :margin="[15, 0]"
@@ -35,8 +38,8 @@
         >
           <tm-input v-model="formData.mobile" showClear></tm-input>
         </tm-form-item>
-        <tm-form-item :margin="[15, 0]" required label="联系姓名" field="name" :rules="[{ required: true, message: '请输入联系人姓名' }]">
-          <tm-input v-model="formData.name" showClear></tm-input>
+        <tm-form-item :margin="[15, 0]" required label="联系姓名" field="contactor" :rules="[{ required: true, message: '请输入联系人姓名' }]">
+          <tm-input v-model="formData.contactor" showClear></tm-input>
         </tm-form-item>
         <tm-form-item :margin="[15, 0]" label="联赛介绍" field="content">
           <tm-input type="textarea" :inputPadding="[24, 15]" :height="100" v-model="formData.content" showClear></tm-input>
@@ -46,7 +49,7 @@
         </tm-form-item>
       </tm-form>
     </tm-sheet>
-    <tm-picker v-model:show="showCategory" :columns="leagueTypeList" mapKey="name" v-model="categoryIndex"></tm-picker>
+    <tm-picker v-model:show="showLeagueTypeList" :columns="leagueTypeList" mapKey="name" v-model="leagueTypeInd"></tm-picker>
   </tm-app>
 </template>
 <script setup lang="ts">
@@ -63,16 +66,16 @@ const leagueTypeList = ref([
   { id: 0, name: '循环赛' },
   { id: 1, name: '淘汰赛' }
 ]);
-const showCategory = ref(false);
-const categoryIndex = ref<number[]>([]);
-const categoryStr = ref('');
+const showLeagueTypeList = ref(false);
+const leagueTypeInd = ref<number[]>([]);
+const leagueTypeStr = ref('');
 const formData = ref({
   cover: '',
-  title: '',
+  name: '',
   league_type_ind: leagueTypeList.value.length > 0 ? leagueTypeList.value[0].id : '',
   address: '',
   mobile: '',
-  name: '',
+  contactor: '',
   content: '',
   lat: 0,
   lon: 0,
@@ -85,11 +88,11 @@ const leagueTypeText = computed(() => {
   const leagueType = leagueTypeList.value.find(item => item.id === formData.value.league_type_ind)
   return leagueType ? leagueType.name : '请选择赛制'
 })
-watch(categoryIndex, (val) => {
-  const selectedCategory = leagueTypeList.value[val[0]];
-  if (selectedCategory) {
-    formData.value.league_type_ind = selectedCategory.id;
-    categoryStr.value = selectedCategory.name;
+watch(leagueTypeInd, (val) => {
+  const selectedLeagueType = leagueTypeList.value[val[0]];
+  if (selectedLeagueType) {
+    formData.value.league_type_ind = selectedLeagueType.id;
+    leagueTypeStr.value = selectedLeagueType.name;
   }
 });
 onMounted(() => {
@@ -102,7 +105,7 @@ onLoad(async (e: any) => {
     myTeamDetail({ id: e.id }).then(res => {
       if (res.code === 1000) {
         formData.value.id = e.id;
-        formData.value.title = res.data.title;
+        formData.value.name = res.data.name;
         formData.value.address = res.data.address;
         formData.value.mobile = res.data.mobile;
         formData.value.name = res.data.name;
@@ -111,7 +114,7 @@ onLoad(async (e: any) => {
         leagueTypeList.value.map((item: any, index: number) => {
           item.children.map((row: any, rowIndex: number) => {
             if (row.id === res.data.league_type_ind) {
-              categoryIndex.value = [index, rowIndex];
+              leagueTypeInd.value = [index, rowIndex];
             }
           })
         })
@@ -167,11 +170,15 @@ function confirm(e: any) {
         }
         uni.$tm.u.toast('创建成功!');
         if (e.data.id) {
+          debugLog("DBG: 1");
           uni.navigateBack();
         } else {
+          debugLog("DBG: 2");
           setTimeout(() => {
-            openLink('/teams/manage/manage?id=' + res.data.team.id)
+            debugLog("DBG: 3");
+            openLink('/leagues/manage/manage?id=' + res.data.league.id)
           }, 1500)
+          debugLog("DBG: 4");
         }
       }
     })
