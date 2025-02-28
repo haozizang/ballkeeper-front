@@ -60,12 +60,10 @@ import { openLink } from '@/common/tools';
 import { onLoad } from '@dcloudio/uni-app';
 import {useUserStore} from '@/stores/user';
 import { getBaseUrl } from '@/common/env';
+import { LEAGUE_TYPES } from '@/common/data';
 
 const userStore = useUserStore();
-const leagueTypeList = ref([
-  { id: 0, name: '循环赛' },
-  { id: 1, name: '淘汰赛' }
-]);
+const leagueTypeList = ref(LEAGUE_TYPES);
 const showLeagueTypeList = ref(false);
 const leagueTypeInd = ref<number[]>([]);
 const leagueTypeStr = ref('');
@@ -170,15 +168,11 @@ function confirm(e: any) {
         }
         uni.$tm.u.toast('创建成功!');
         if (e.data.id) {
-          debugLog("DBG: 1");
           uni.navigateBack();
         } else {
-          debugLog("DBG: 2");
           setTimeout(() => {
-            debugLog("DBG: 3");
             openLink('/leagues/manage/manage?id=' + res.data.league.id)
           }, 1500)
-          debugLog("DBG: 4");
         }
       }
     })

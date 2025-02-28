@@ -1,7 +1,4 @@
-export enum ApiCode {
-  SUCCESS = 0,          // 成功
-  FAIL = -1,           // 通用失败
-  INVALID_PARAMS = 400, // 参数错误
-  UNAUTHORIZED = 401,   // 未授权
-  SERVER_ERROR = 500,   // 服务器错误
-}
+export const LEAGUE_TYPES = [
+  { id: 0, name: '循环赛' },
+  { id: 1, name: '淘汰赛' }
+];
