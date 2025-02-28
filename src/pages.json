@@ -147,6 +147,12 @@
 						// "navigationStyle": "custom",
 						// "navigationBarTextStyle": "white"
 					}
+				},
+				{
+					"path": "manage/manage",
+					"style": {
+						"navigationBarTitleText": "联赛管理"
+					}
 				}
 			]
 		},
