@@ -52,10 +52,11 @@
 <script setup lang="ts">
 import { ref, watch, computed, onMounted } from 'vue';
 import { debugLog } from '@/common/tools';
-import { upload, myTeamDetail } from '@/common/index'
+import { myTeamDetail } from '@/common/index'
 import { openLink } from '@/common/tools';
 import { onLoad } from '@dcloudio/uni-app';
 import {useUserStore} from '@/stores/user';
+import { getBaseUrl } from '@/common/env';
 
 const userStore = useUserStore();
 const leagueTypeList = ref([
@@ -122,9 +123,30 @@ function uploadCover() {
   uni.chooseImage({
     count: 1,
     success(res: any) {
-      upload(res.tempFiles[0]).then((url: any) => {
-        formData.value.cover = url;
-      });
+        const tempFilePath = res.tempFilePaths[0];
+        uni.uploadFile({
+            url: '/ballkeeper/upload_image/',
+            filePath: tempFilePath,
+            name: 'image',
+            formData: {
+                'image_type': 'cover',
+            },
+            success: (res) => {
+                debugLog("uploadCover res: ", res);
+                if (res.statusCode !== 200) {
+                    const data_json = typeof res.data === 'string' ? JSON.parse(res.data) : res.data;
+                    uni.$tm.u.toast(`${data_json.detail}(${res.statusCode})` || '上传失败');
+                    return;
+                }
+                const data = JSON.parse(res.data);
+                debugLog("data: ", data);
+                formData.value.cover = getBaseUrl() + data.img_path;
+            },
+            fail: (err) => {
+                console.error('上传失败:', err);
+                uni.$tm.u.toast('上传请求失败,请重试');
+            }
+        })
     },
   });
 }
