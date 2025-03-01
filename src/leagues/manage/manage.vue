@@ -8,11 +8,14 @@
           <text class="hint-text">点击查看完整图片</text>
         </view>
       </view>
-
-      <view class="manage px-50 pt-30">
+    </tm-sheet>
+    <tm-sheet :margin="[0, 30]" :padding="[0, 0]">
         <view class="flex flex-col-top-center">
           <view class="league-name">{{ leagueInfo.name }}</view>
         </view>
+    </tm-sheet>
+    <tm-sheet :margin="[0, 0]" :padding="[0, 0]">
+      <view class="basic-info px-50 pt-30">
         <view class="flex flex-between text-align-center py-50">
           <view class="league-info">
             <view class="info-label">赛制</view>
@@ -141,20 +144,20 @@ function previewImage() {
 }
 </script>
 <style lang="scss" scoped>
-.manage {
+.league-name {
+  font-size: 50rpx;
+  font-weight: bold;
+  text-align: center;
+  letter-spacing: 2rpx;
+  text-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.2);
+  margin: 10rpx 0 30rpx;
+  position: relative;
+  display: inline-block;
+}
+
+.basic-info {
   // background: linear-gradient(180deg, #3c8af8, #38cddd);
   // color: #ffffff;
-
-  .league-name {
-    font-size: 50rpx;
-    font-weight: bold;
-    text-align: center;
-    letter-spacing: 2rpx;
-    text-shadow: 0 2rpx 4rpx rgba(0, 0, 0, 0.2);
-    margin: 10rpx 0 30rpx;
-    position: relative;
-    display: inline-block;
-  }
 
   .league-info {
     display: flex;
