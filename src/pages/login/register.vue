@@ -165,7 +165,7 @@ function confirm(e: any) {
   align-items: center;
   width: 80%;
   font-size: 40rpx;
-  
+
   /* 添加更现代的样式 */
   border-radius: 16rpx;
   background: rgba(76, 175, 80, 0.05);
@@ -173,19 +173,19 @@ function confirm(e: any) {
   padding: 30rpx;
   position: relative;
   overflow: hidden;
-  
+
   text {
     margin-top: 20rpx;
     color: #4CAF50;
     font-weight: 500;
     letter-spacing: 2rpx;
   }
-  
+
   /* 让里面的上传组件获得交互感 */
   :deep(.dx-upload .item) {
     transition: all 0.3s ease;
     border-color: rgba(76, 175, 80, 0.5);
-    
+
     &:hover, &:active {
       border-color: #4CAF50;
       background: rgba(76, 175, 80, 0.05);
