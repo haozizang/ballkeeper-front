@@ -9,8 +9,8 @@
         </view>
       </view>
     </tm-sheet>
-    <tm-sheet :margin="[0, 30]" :padding="[0, 0]">
-        <view class="flex flex-col-top-center">
+    <tm-sheet :margin="[0, 0, 0, 30]" :padding="[0, 0]">
+        <view class="header-container">
           <view class="league-name">{{ leagueInfo.name }}</view>
         </view>
     </tm-sheet>
@@ -18,22 +18,22 @@
       <view class="basic-info px-50 pt-30">
         <view class="flex flex-between text-align-center py-50">
           <view class="league-info">
-            <view class="info-label">赛制</view>
             <view class="info-circle">
               <text>{{ getLeagueType(leagueInfo.league_type_ind) }}</text>
             </view>
+            <view class="info-label">赛制</view>
           </view>
           <view class="league-info">
-            <view class="info-label">参赛球队</view>
             <view class="info-circle">
               <text>{{ 10 }}</text>
             </view>
+            <view class="info-label">参赛球队</view>
           </view>
           <view class="league-info">
-            <view class="info-label">状态</view>
             <view class="info-circle">
               <text>{{ '进行中' }}</text>
             </view>
+            <view class="info-label">状态</view>
           </view>
         </view>
       </view>
@@ -144,6 +144,14 @@ function previewImage() {
 }
 </script>
 <style lang="scss" scoped>
+.header-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10rpx 0;
+}
+
 .league-name {
   font-size: 50rpx;
   font-weight: bold;
@@ -166,8 +174,8 @@ function previewImage() {
     width: 33%;
 
     .info-label {
-      font-size: 28rpx;
-      margin-bottom: 20rpx;
+      font-size: 40rpx;
+      margin-top: 20rpx;
       opacity: 0.9;
     }
 
