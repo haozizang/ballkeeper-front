@@ -14,55 +14,116 @@
           <view class="league-name">{{ leagueInfo.name }}</view>
         </view>
     </tm-sheet>
-    <tm-sheet :margin="[0, 0]" :padding="[0, 0]">
-      <view class="basic-info px-50 pt-30">
-        <view class="flex flex-between text-align-center py-50">
-          <view class="league-info">
-            <view class="info-circle">
-              <text>{{ getLeagueType(leagueInfo.league_type_ind) }}</text>
+
+    <!-- 添加标签导航栏 -->
+    <view class="tabs-container">
+      <view 
+        class="tab-item" 
+        v-for="(tab, index) in tabs" 
+        :key="index"
+        :class="{ 'active-tab': activeTabIndex === index }"
+        @click="activeTabIndex = index"
+      >
+        <text>{{ tab }}</text>
+        <view class="tab-indicator" v-if="activeTabIndex === index"></view>
+      </view>
+    </view>
+
+    <!-- 标签内容区域 -->
+    <view class="tab-content">
+
+      <view v-if="activeTabIndex === 0">
+        <tm-sheet :margin="[0, 0]" :padding="[0, 0]">
+          <view class="basic-info px-50 pt-30">
+            <view class="flex flex-between text-align-center py-50">
+              <view class="league-info">
+                <view class="info-circle">
+                  <text>{{ getLeagueType(leagueInfo.league_type_ind) }}</text>
+                </view>
+                <view class="info-label">赛制</view>
+              </view>
+              <view class="league-info">
+                <view class="info-circle">
+                  <text>{{ 10 }}</text>
+                </view>
+                <view class="info-label">参赛球队</view>
+              </view>
+              <view class="league-info">
+                <view class="info-circle">
+                  <text>{{ '进行中' }}</text>
+                </view>
+                <view class="info-label">状态</view>
+              </view>
             </view>
-            <view class="info-label">赛制</view>
           </view>
-          <view class="league-info">
-            <view class="info-circle">
-              <text>{{ 10 }}</text>
+        </tm-sheet>
+      </view>
+
+      <!-- 参赛球队 -->
+      <view v-if="activeTabIndex === 1">
+        <view class="list">
+          <view class="item flex-row-center-between pa-30"
+                v-for="(item,index) in teamList"
+                :key="index"
+                @click="openLink('teams/detail/detail?id='+item.id)"
+          >
+            <view class="team-content flex flex-row">
+              <!-- 左侧头像 -->
+              <tm-avatar :font-size="120" :round="25" :img="getBaseUrl() + item.logo_path"></tm-avatar>
+
+              <!-- 右侧内容 -->
+              <view class="team-info ml-24">
+                <view class="title text-overflow-1">{{item.title}}</view>
+                <view class="tips text-overflow-2 mt-15">{{ item.content }}</view>
+              </view>
             </view>
-            <view class="info-label">参赛球队</view>
-          </view>
-          <view class="league-info">
-            <view class="info-circle">
-              <text>{{ '进行中' }}</text>
-            </view>
-            <view class="info-label">状态</view>
           </view>
         </view>
       </view>
-    </tm-sheet>
 
-  <view class="flex-row-center-between py-20 px-30 mt-20" :style="{ backgroundColor: '#dddddd' }">
-    <view class="text-black">参赛球队</view>
-    <view>
-      <tm-icon name="tmicon-angle-right" color="#ffffff"></tm-icon>
-    </view>
-  </view>
-  <view class="list bg-white">
-    <view class="item flex-row-center-between pa-30"
-          v-for="(item,index) in teamList"
-          :key="index"
-          @click="openLink('teams/detail/detail?id='+item.id)"
-    >
-      <view class="team-content flex flex-row">
-        <!-- 左侧头像 -->
-        <tm-avatar :font-size="120" :round="25" :img="getBaseUrl() + item.logo_path"></tm-avatar>
+      <!-- 赛程 -->
+      <view v-else-if="activeTabIndex === 2">
+        <view class="schedule-list">
+          <view class="schedule-header">近期赛程</view>
+          <view class="schedule-item" v-for="(item, index) in scheduleList" :key="index">
+            <view class="match-date">{{ item.date }} {{ item.time }}</view>
+            <view class="match-teams">
+              <view class="team-left">
+                <text>{{ item.teamA }}</text>
+                <tm-avatar size="60" :round="12" :img="item.teamALogo"></tm-avatar>
+              </view>
+              <view class="match-vs">VS</view>
+              <view class="team-right">
+                <tm-avatar size="60" :round="12" :img="item.teamBLogo"></tm-avatar>
+                <text>{{ item.teamB }}</text>
+              </view>
+            </view>
+            <view class="match-location">{{ item.location }}</view>
+          </view>
+        </view>
+      </view>
 
-        <!-- 右侧内容 -->
-        <view class="team-info ml-24">
-          <view class="title text-overflow-1">{{item.title}}</view>
-          <view class="tips text-overflow-2 mt-15">{{ item.content }}</view>
+      <!-- 积分榜 -->
+      <view v-else-if="activeTabIndex === 3">
+        <view class="standings">
+          <view class="standings-header">
+            <view class="rank-column">排名</view>
+            <view class="team-column">球队</view>
+            <view class="stats-column">胜/平/负</view>
+            <view class="points-column">积分</view>
+          </view>
+          <view class="standings-item" v-for="(item, index) in standingsList" :key="index">
+            <view class="rank-column">{{ index + 1 }}</view>
+            <view class="team-column">
+              <tm-avatar size="40" :round="8" :img="item.logo"></tm-avatar>
+              <text class="team-name">{{ item.name }}</text>
+            </view>
+            <view class="stats-column">{{ item.wins }}/{{ item.draws }}/{{ item.losses }}</view>
+            <view class="points-column">{{ item.points }}</view>
+          </view>
         </view>
       </view>
     </view>
-  </view>
   </tm-app>
 </template>
 <script setup lang="ts">
@@ -70,7 +131,6 @@ import { ref } from 'vue';
 import { getBaseUrl } from '@/common/env';
 import { openLink,timeText } from '@/common/tools';
 import { onLoad } from '@dcloudio/uni-app';
-import { delTeam } from '@/common/index';
 import { debugLog } from '@/common/tools';
 import { LEAGUE_TYPES } from '@/common/data';
 
@@ -128,7 +188,6 @@ function getLeagueType(typeId: number): string {
   return type ? type.name : '未知类型';
 }
 
-const showWin = ref(false);
 const leagueInfo = ref({});
 onLoad((e: any) => {
   if (e.id) {
@@ -150,20 +209,6 @@ onLoad((e: any) => {
   }
 });
 
-function deleteConfirm() {
-  delTeam({
-    id: leagueInfo.value.id
-  }).then(res => {
-    if (res.code === 1000) {
-      uni.$tm.u.toast('删除成功');
-      showWin.value = false;
-      uni.navigateBack();
-    } else {
-      uni.$tm.u.toast(res.message);
-    }
-  })
-}
-
 function previewImage() {
   if (leagueInfo.value && leagueInfo.value.cover_path) {
     const imageUrl = getBaseUrl() + leagueInfo.value.cover_path;
@@ -182,6 +227,49 @@ function previewImage() {
     });
   }
 }
+
+// 添加标签和内容切换相关代码
+const tabs = ref(['基本信息', '参赛球队', '赛程', '积分榜']);
+const activeTabIndex = ref(0);
+
+const scheduleList = ref([
+  { 
+    date: '2025-03-02', 
+    time: '11:00', 
+    teamA: '云动足球队', 
+    teamB: '嘟嘟妈妈英货铺',
+    teamALogo: '/static/teams/team1.png',
+    teamBLogo: '/static/teams/team2.png',
+    location: '北京市第五十四中学东操场(黄-松)'
+  },
+  { 
+    date: '2025-03-02', 
+    time: '13:00', 
+    teamA: '六艺足球队', 
+    teamB: '鱼腩FC',
+    teamALogo: '/static/teams/team3.png',
+    teamBLogo: '/static/teams/team4.png',
+    location: '北京市第五十四中学左操场(红-蓝)'
+  },
+  { 
+    date: '2025-03-02', 
+    time: '13:00', 
+    teamA: '万聚广宏足球队', 
+    teamB: '晋大狼足球队',
+    teamALogo: '/static/teams/team5.png',
+    teamBLogo: '/static/teams/team6.png',
+    location: '北京市第五十四中学西操场(绿-白)'
+  }
+]);
+
+const standingsList = ref([
+  { name: '云动足球队', logo: '/static/teams/team1.png', wins: 5, draws: 2, losses: 1, points: 17 },
+  { name: '六艺足球队', logo: '/static/teams/team2.png', wins: 4, draws: 3, losses: 1, points: 15 },
+  { name: '万聚FC', logo: '/static/teams/team3.png', wins: 4, draws: 2, losses: 2, points: 14 },
+  { name: '鱼腩FC', logo: '/static/teams/team4.png', wins: 3, draws: 3, losses: 2, points: 12 },
+  { name: '嘟嘟妈妈英货铺', logo: '/static/teams/team5.png', wins: 3, draws: 2, losses: 3, points: 11 },
+  { name: '晋大狼足球队', logo: '/static/teams/team6.png', wins: 2, draws: 2, losses: 4, points: 8 }
+]);
 </script>
 <style lang="scss" scoped>
 .header-container {
@@ -273,6 +361,198 @@ function previewImage() {
 
   &:active {
     opacity: 0.9;
+  }
+}
+
+// 添加标签样式
+.tabs-container {
+  display: flex;
+  border-bottom: 1rpx solid #eee;
+  background-color: #fff;
+}
+
+.tab-item {
+  flex: 1;
+  height: 80rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  font-size: 28rpx;
+  color: #666;
+
+  &.active-tab {
+    color: #ff6b00;
+    font-weight: 500;
+  }
+
+  .tab-indicator {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60rpx;
+    height: 6rpx;
+    background-color: #ff6b00;
+    border-radius: 6rpx;
+  }
+}
+
+// 标签内容区域样式
+.tab-content {
+  background-color: #f5f7fa;
+  min-height: 600rpx;
+}
+
+// 列表样式
+.list {
+  background-color: #fff;
+
+  .item {
+    border-bottom: 1rpx solid #eee;
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    .team-content {
+      width: 100%;
+    }
+
+    .team-info {
+      flex: 1;
+
+      .title {
+        font-size: 32rpx;
+        font-weight: 500;
+      }
+
+      .tips {
+        font-size: 24rpx;
+        color: #999;
+      }
+    }
+  }
+}
+
+// 赛程样式
+.schedule-list {
+  background-color: #fff;
+  padding: 20rpx;
+
+  .schedule-header {
+    font-size: 28rpx;
+    color: #999;
+    padding: 20rpx;
+    background-color: #f5f7fa;
+    border-radius: 8rpx;
+  }
+
+  .schedule-item {
+    margin: 20rpx 0;
+    padding: 20rpx;
+    border-radius: 12rpx;
+    box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.05);
+    background-color: #fff;
+
+    .match-date {
+      font-size: 24rpx;
+      color: #666;
+      margin-bottom: 20rpx;
+    }
+
+    .match-teams {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20rpx;
+
+      .team-left, .team-right {
+        display: flex;
+        align-items: center;
+        gap: 20rpx;
+        width: 40%;
+
+        text {
+          font-size: 28rpx;
+          font-weight: 500;
+        }
+      }
+
+      .team-left {
+        justify-content: flex-end;
+      }
+
+      .team-right {
+        flex-direction: row-reverse;
+      }
+
+      .match-vs {
+        font-size: 28rpx;
+        color: #ff6b00;
+        font-weight: bold;
+      }
+    }
+
+    .match-location {
+      font-size: 24rpx;
+      color: #999;
+      text-align: center;
+    }
+  }
+}
+
+// 积分榜样式
+.standings {
+  background-color: #fff;
+  padding: 20rpx;
+
+  .standings-header, .standings-item {
+    display: flex;
+    align-items: center;
+    padding: 20rpx 0;
+    border-bottom: 1rpx solid #eee;
+
+    .rank-column {
+      width: 15%;
+      text-align: center;
+      font-weight: 500;
+    }
+
+    .team-column {
+      width: 45%;
+      display: flex;
+      align-items: center;
+      gap: 10rpx;
+
+      .team-name {
+        font-size: 28rpx;
+        margin-left: 10rpx;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+
+    .stats-column {
+      width: 20%;
+      text-align: center;
+      font-size: 24rpx;
+    }
+
+    .points-column {
+      width: 20%;
+      text-align: center;
+      font-weight: 600;
+      color: #ff6b00;
+    }
+  }
+
+  .standings-header {
+    font-size: 24rpx;
+    color: #999;
+    background-color: #f5f7fa;
   }
 }
 </style>

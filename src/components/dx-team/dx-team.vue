@@ -10,7 +10,7 @@
         </tm-tabs>
       </view>
     </view>
-    
+
     <!-- 使用 scroll-view 替换原来的 view, 在组件中onReachBottom无效! -->
     <scroll-view 
       scroll-y 
@@ -91,12 +91,12 @@ function tabsChange(e: string) {
 
 function getTeamList(is_more = false) {
   loading.value = true;
-  
+
   // 如果不是加载更多，重置 offset
   if (!is_more) {
     param.offset = 0;
   }
-  
+
   uni.request({
     url: "/ballkeeper/get_team_list/",
     method: 'POST',
@@ -189,11 +189,11 @@ getTeamList();
 
 .list {
   width: 100%;
-  
+
   .item {
     border-bottom: 6rpx solid rgb(230, 230, 230);  // 添加底部分割线
     background-color: #fff;
-    
+
     &:last-child {
       border-bottom: none;  // 最后一个元素不需要分割线
     }
@@ -225,7 +225,7 @@ getTeamList();
 // 添加点击效果
 .item {
   transition: background-color 0.3s;
-  
+
   &:active {
     background-color: #f5f5f5;
   }
