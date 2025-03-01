@@ -6,7 +6,7 @@
     </view>
   </view>
   <view class="list bg-white">
-    <view class="item flex-row-center-between pa-30" v-for="(item, index) in my_activities" :key="index" @click="openLink('others/activity/detail?id=' + item._id)">
+    <view class="item flex-row-center-between pa-30" v-for="(item, index) in myActivities" :key="index" @click="openLink('others/activity/detail?id=' + item.id)">
       <view class="pl-20 flex flex-1 flex-col flex-between" style="height: 200rpx">
         <view>
           <view class="title text-overflow-2">{{ item.title }}</view>
@@ -34,7 +34,7 @@
   </view>
 
   <view class="list bg-white">
-    <view class="item flex-row-center-between pa-30" v-for="(item, index) in other_activities" :key="index" @click="openLink('others/activity/detail?id=' + item._id)">
+    <view class="item flex-row-center-between pa-30" v-for="(item, index) in other_activities" :key="index" @click="openLink('others/activity/detail?id=' + item.id)">
       <view class="pl-20 flex flex-1 flex-col flex-between" style="height: 200rpx">
         <view>
           <view class="title text-overflow-2">{{ item.title }}</view>
@@ -60,14 +60,14 @@
 import { ref } from 'vue';
 import { openLink,timeText } from '@/common/tools';
 import { onLoad } from '@dcloudio/uni-app';
-const my_activities = ref<any>([]);
+const myActivities = ref<any>([]);
 const other_activities = ref<any>([]);
 
 onLoad((e: any) => {
   /*
 	indexHome().then(res => {
 		if (res.code === 1000) {
-			my_activities.value = res.data.activity;
+			myActivities.value = res.data.activity;
 			other_activities.value = res.data.other_activities;
 			team.value = res.data.team;
 		}
@@ -75,7 +75,7 @@ onLoad((e: any) => {
   */
 
   // DEL: 模拟活动数据
-  my_activities.value = [
+  myActivities.value = [
     {
       title: '我创建的比赛',
       cover: 'https://example.com/image1.jpg',
@@ -83,7 +83,7 @@ onLoad((e: any) => {
       start_date: '2023-04-15',
       views: 150,
       is_hidden_views: false,
-      _id: '1',
+      id: '1',
     },
     {
       title: '我报名的比赛',
@@ -92,7 +92,7 @@ onLoad((e: any) => {
       start_date: '2023-06-20',
       views: 100,
       is_hidden_views: false,
-      _id: '2',
+      id: '2',
     },
     {
       title: '我报名的聚餐',
@@ -101,7 +101,7 @@ onLoad((e: any) => {
       start_date: '2023-09-10',
       views: 75,
       is_hidden_views: false,
-      _id: '3',
+      id: '3',
     },
   ];
 
@@ -113,7 +113,7 @@ onLoad((e: any) => {
       start_date: '2023-04-15',
       views: 150,
       is_hidden_views: false,
-      _id: '1',
+      id: '1',
     },
     {
       title: '丰台区足球联赛',
@@ -122,7 +122,7 @@ onLoad((e: any) => {
       start_date: '2023-06-20',
       views: 100,
       is_hidden_views: false,
-      _id: '2',
+      id: '2',
     },
     {
       title: '奥体中心篮球赛',
@@ -131,7 +131,7 @@ onLoad((e: any) => {
       start_date: '2023-09-10',
       views: 75,
       is_hidden_views: false,
-      _id: '3',
+      id: '3',
     },
     {
       title: '冬季滑雪活动',
@@ -140,7 +140,7 @@ onLoad((e: any) => {
       start_date: '2023-12-05',
       views: 200,
       is_hidden_views: false,
-      _id: '4',
+      id: '4',
     },
   ];
 });
