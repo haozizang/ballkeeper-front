@@ -38,50 +38,90 @@
         </view>
       </view>
     </tm-sheet>
-    <tm-sheet :margin="[0, 30]" :padding="[0, 0]">
-      <!-- 组织管理 -->
-      <tm-cell :margin="[0, 0]" title="组织管理" :bottomBorder="true" rightIcon=""> </tm-cell>
-      <tm-grid :width="750" :col="4">
-        <tm-grid-item :height="150" @click="openLink('teams/activity/activity?team_id=' + (leagueInfo.id || ''))">
-          <tm-icon name="tmicon-flag-fill" :font-size="40"></tm-icon>
-          <tm-text _class="pt-10" :font-size="22" label="全部活动"></tm-text>
-        </tm-grid-item>
-        <tm-grid-item color="orange" :height="150" @click="openLink('teams/create/create?id=' + (leagueInfo.id || ''))">
-          <tm-icon name="tmicon-edit" :font-size="44"></tm-icon>
-          <tm-text _class="pt-10" :font-size="22" label="修改组织"></tm-text>
-        </tm-grid-item>
-        <tm-grid-item color="green" :height="150" @click="openLink('teams/approve/approve?team_id=' + (leagueInfo.id || ''))">
-          <tm-icon name="tmicon-md-ribbon" :font-size="44"></tm-icon>
-          <tm-text :font-size="22" label="组织认证"></tm-text>
-        </tm-grid-item>
-        <tm-grid-item color="pink" :height="150" @click="showWin = true">
-          <tm-icon name="tmicon-delete" :font-size="42"></tm-icon>
-          <tm-text _class="pt-10" :font-size="22" label="删除组织"></tm-text>
-        </tm-grid-item>
-      </tm-grid>
-    </tm-sheet>
-    <tm-sheet :margin="[0, 0]" :padding="[0, 0]">
-    </tm-sheet>
-    <tm-sheet :margin="[0, 0]" :padding="[0, 0]">
-      <tm-cell :margin="[0, 0]" title="相册管理" :bottomBorder="true" rightIcon=""> </tm-cell>
-      <tm-grid :width="750" :col="4">
-        <tm-grid-item :height="150" @click="openLink('teams/images/images?team_id=' + (leagueInfo.id || ''))">
-          <tm-icon name="tmicon-picture-fill" :font-size="42"></tm-icon>
-          <tm-text _class="pt-10" :font-size="22" label="相册"></tm-text>
-        </tm-grid-item>
-      </tm-grid>
-    </tm-sheet>
-    <tm-modal title="温馨提示" content="您确认删除当前组织嘛？" :height="300" okText="确定" v-model:show="showWin" @ok="deleteConfirm"></tm-modal>
+
+  <view class="flex-row-center-between py-20 px-30 mt-20" :style="{ backgroundColor: '#dddddd' }">
+    <view class="text-black">参赛球队</view>
+    <view>
+      <tm-icon name="tmicon-angle-right" color="#ffffff"></tm-icon>
+    </view>
+  </view>
+  <view class="list bg-white">
+    <view class="item flex-row-center-between pa-30"
+          v-for="(item,index) in teamList"
+          :key="index"
+          @click="openLink('teams/detail/detail?id='+item.id)"
+    >
+      <view class="team-content flex flex-row">
+        <!-- 左侧头像 -->
+        <tm-avatar :font-size="120" :round="25" :img="getBaseUrl() + item.logo_path"></tm-avatar>
+
+        <!-- 右侧内容 -->
+        <view class="team-info ml-24">
+          <view class="title text-overflow-1">{{item.title}}</view>
+          <view class="tips text-overflow-2 mt-15">{{ item.content }}</view>
+        </view>
+      </view>
+    </view>
+  </view>
   </tm-app>
 </template>
 <script setup lang="ts">
 import { ref } from 'vue';
 import { getBaseUrl } from '@/common/env';
-import { openLink } from '@/common/tools';
+import { openLink,timeText } from '@/common/tools';
 import { onLoad } from '@dcloudio/uni-app';
 import { delTeam } from '@/common/index';
 import { debugLog } from '@/common/tools';
 import { LEAGUE_TYPES } from '@/common/data';
+
+const teamList = ref([
+  { id: 1, logo_path: 'https://img1.baidu.com/it/u=3956679599,3956476954&fm=253&fmt=auto&app=138&f=JPEG?w=510&h=500', title: '万众篮球队', content: '内容' },
+  { id: 2, logo_path: 'https://www.baidu.com/img/PCtm_d9c8750bed0b3c7d089fa7d55720d6cf.png', title: '功夫足球队', content: '足球' },
+  { id: 3, logo_path: 'https://www.baidu.com/img/PCtm_d9c8750bed0b3c7d089fa7d55720d6cf.png', title: '兄弟连', content: '足球' },
+  { id: 4, logo_path: 'https://img1.baidu.com/it/u=1697989098,4244944766&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=586', title: 'FC80S', content: '内容' }
+]);
+
+const teams = ref<any>([]);
+onLoad((e: any) => {
+  teams.value = [
+    {
+      title: '精神糖训练赛',
+      cover: 'https://example.com/image1.jpg',
+      address: '精神糖足球场',
+      start_date: '2023-04-15',
+      views: 150,
+      is_hidden_views: false,
+      _id: '1',
+    },
+    {
+      title: '丰台区足球联赛',
+      cover: 'https://example.com/image2.jpg',
+      address: '上海博物馆',
+      start_date: '2023-06-20',
+      views: 100,
+      is_hidden_views: false,
+      _id: '2',
+    },
+    {
+      title: '奥体中心篮球赛',
+      cover: 'https://example.com/image3.jpg',
+      address: '广州国际美食中心',
+      start_date: '2023-09-10',
+      views: 75,
+      is_hidden_views: false,
+      _id: '3',
+    },
+    {
+      title: '冬季滑雪活动',
+      cover: 'https://example.com/image4.jpg',
+      address: '长白山滑雪场',
+      start_date: '2023-12-05',
+      views: 200,
+      is_hidden_views: false,
+      _id: '4',
+    },
+  ];
+});
 
 function getLeagueType(typeId: number): string {
   const type = LEAGUE_TYPES.find(item => item.id === typeId);
@@ -183,9 +223,8 @@ function previewImage() {
       width: 130rpx;
       height: 130rpx;
       border-radius: 50%;
-      background: rgba(170, 170, 170, 0.2);
-      border: 2rpx solid rgba(128, 128, 128, 0.4);
-      backdrop-filter: blur(5rpx);
+      background: #eeeeee;
+      border: 5rpx solid #cccccc;
       display: flex;
       align-items: center;
       justify-content: center;
