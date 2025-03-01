@@ -6,7 +6,7 @@
 
     <tm-sheet :margin="[0, 0]" :padding="[0, 0]" :round="3" :shadow="2">
       <view class="cover" @click="uploadCover">
-        <image :src="formData.cover || '../../static/image.jpg'" mode="aspectFill"></image>
+        <image :src="getBaseUrl() + formData.cover_path" mode="aspectFill"></image>
         <view class="upload round-3 flex-row-center-center">
           <tm-icon name="tmicon-plus" color="white" :font-size="25"></tm-icon>
           <text class="ml-5">上传封面(800*500)</text>
@@ -68,7 +68,7 @@ const showLeagueTypeList = ref(false);
 const leagueTypeInd = ref<number[]>([]);
 const leagueTypeStr = ref('');
 const formData = ref({
-  cover: '',
+  cover_path: '',
   name: '',
   league_type_ind: leagueTypeList.value.length > 0 ? leagueTypeList.value[0].id : '',
   address: '',
@@ -108,7 +108,7 @@ onLoad(async (e: any) => {
         formData.value.mobile = res.data.mobile;
         formData.value.name = res.data.name;
         formData.value.content = res.data.content;
-        formData.value.cover = res.data.cover;
+        formData.value.cover_path = res.data.cover_path;
         leagueTypeList.value.map((item: any, index: number) => {
           item.children.map((row: any, rowIndex: number) => {
             if (row.id === res.data.league_type_ind) {
@@ -141,7 +141,7 @@ function uploadCover() {
                 }
                 const data = JSON.parse(res.data);
                 debugLog("data: ", data);
-                formData.value.cover = getBaseUrl() + data.img_path;
+                formData.value.cover_path = data.img_path;
             },
             fail: (err) => {
                 console.error('上传失败:', err);
