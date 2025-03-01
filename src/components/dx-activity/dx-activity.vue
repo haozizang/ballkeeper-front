@@ -59,12 +59,11 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { openLink,timeText } from '@/common/tools';
-import { indexHome,followTeam } from '@/common/index'
+import { onLoad } from '@dcloudio/uni-app';
 const my_activities = ref<any>([]);
 const other_activities = ref<any>([]);
-const team = ref<any>([]);
 
-function init() {
+onLoad((e: any) => {
   /*
 	indexHome().then(res => {
 		if (res.code === 1000) {
@@ -144,9 +143,8 @@ function init() {
       _id: '4',
     },
   ];
-}
+});
 
-init();
 function toFollow(id: string) {
 	/* 关注
   followTeam({id}).then(res=>{
