@@ -12,7 +12,7 @@
     </view>
 
     <!-- 使用 scroll-view 替换原来的 view, 在组件中onReachBottom无效! -->
-    <scroll-view 
+    <scroll-view
       scroll-y 
       class="content-wrapper"
       @scrolltolower="onLoadMore"

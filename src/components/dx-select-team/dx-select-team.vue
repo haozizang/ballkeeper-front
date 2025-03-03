@@ -1,6 +1,5 @@
 <template>
-  <view class="input-select round-3" :class="{ 'no-select': !teamTitle }" @click="showWin = true">{{teamTitle||'请选择组织'}}</view>
-  <!--  -->
+  <view class="input-select round-3" :class="{ 'no-select': !teamTitle }" @click="showWin = true">{{teamTitle||'请选择球队'}}</view>
   <tm-drawer ref="calendarView" placement="bottom" v-model:show="showWin" @ok="confirm">
     <tm-radio-group v-model="radio">
       <view class="item flex" v-for="(item,index) in list" :key="index">
