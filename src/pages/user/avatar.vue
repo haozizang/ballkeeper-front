@@ -2,7 +2,7 @@
   <tm-app color="white">
     <view class="top">
       <view class="content">
-        <dx-upload v-model="editForm.avatar" image_type="avatar"></dx-upload>
+        <dx-upload v-model="editForm.avatar_path" image_type="avatar"></dx-upload>
         <view class="ml-30 mt-10 text-size-xl">{{ userStore.userInfo.username }}</view>
       </view>
     </view>
@@ -26,21 +26,18 @@ import {useUserStore} from '@/stores/user';
 
 const userStore = useUserStore();
 const editForm = ref({
-  nickname: userStore.userInfo.nickname,
-  avatar: userStore.userInfo.avatar,
-  // mobile: userStore.userInfo.mobile,
-  email: userStore.userInfo.email,
+  avatar_path: userStore.userInfo.avatar_path,
+  mobile: userStore.userInfo.mobile,
   gender: userStore.userInfo.gender,
-  password: '',
 });
 
 const hasUploadedImage = ref(false);  // 用于跟踪是否有上传的图片
 
 // 监听图片上传状态
-watch(() => editForm.value.avatar, (newVal) => {
+watch(() => editForm.value.avatar_path, (newVal) => {
   hasUploadedImage.value = !!newVal;
   if (newVal) {
-    userStore.userInfo.avatar = newVal;
+    userStore.userInfo.avatar_path = newVal;
   }
 });
 

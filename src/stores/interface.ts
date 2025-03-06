@@ -1,13 +1,10 @@
 export interface UserInfoState {
-  user_id: string;
-  avatar: string;
-  mobile: string;
-  email: string;
-  nickname: string;
+  id: number;
   username: string;
+  avatar_path: string;
   gender: number;
-  permission: string[];
-  role: string[];
+  mobile: string;
   token: string;
   tokenExpired: number;
+  create_time: number;
 }

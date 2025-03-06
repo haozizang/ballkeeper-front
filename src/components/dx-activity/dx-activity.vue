@@ -9,10 +9,13 @@
     <view class="item flex-row-center-between pa-30" v-for="(item, index) in myActivities" :key="index" @click="openLink('others/activity/detail?id=' + item.id)">
       <view class="pl-20 flex flex-1 flex-col flex-between" style="height: 200rpx">
         <view>
-          <view class="title text-overflow-2">{{ item.title }}</view>
+          <view class="text-overflow-2">{{ item.name }}</view>
           <view class="address mt-20 flex-col-top-center">
             <tm-icon name="tmicon-position" color="#999999" :font-size="24"></tm-icon>
             <text class="ml-8 text-overflow-1">{{ item.address }}</text>
+          </view>
+          <view class="content mt-20">
+            <text class="ml-8 text-overflow-1">简介: {{ item.content }}</text>
           </view>
         </view>
         <view class="time flex flex-between">
@@ -37,7 +40,7 @@
     <view class="item flex-row-center-between pa-30" v-for="(item, index) in other_activities" :key="index" @click="openLink('others/activity/detail?id=' + item.id)">
       <view class="pl-20 flex flex-1 flex-col flex-between" style="height: 200rpx">
         <view>
-          <view class="title text-overflow-2">{{ item.title }}</view>
+          <view class="text-overflow-2">{{ item.name }}</view>
           <view class="address mt-20 flex-col-top-center">
             <tm-icon name="tmicon-position" color="#999999" :font-size="24"></tm-icon>
             <text class="ml-8 text-overflow-1">{{ item.address }}</text>
@@ -57,27 +60,76 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
-import { openLink,timeText } from '@/common/tools';
+import { ref, reactive } from 'vue';
+import { openLink,timeText, debugLog } from '@/common/tools';
 import { onLoad } from '@dcloudio/uni-app';
+import { useUserStore } from '@/stores/user';
+
+const userStore = useUserStore();
+
 const myActivities = ref<any>([]);
 const other_activities = ref<any>([]);
 
-onLoad((e: any) => {
-  /*
-	indexHome().then(res => {
-		if (res.code === 1000) {
-			myActivities.value = res.data.activity;
-			other_activities.value = res.data.other_activities;
-			team.value = res.data.team;
-		}
-	});
-  */
+const param = reactive({
+  offset: 0,
+  limit: 10,
+});
 
+const hasMore = ref(true);
+const loading = ref(false);
+
+function getMyActivities(is_more = false) {
+  loading.value = true;
+
+  // 如果不是加载更多，重置 offset
+  if (!is_more) {
+    param.offset = 0;
+  }
+  uni.request({
+    url: "/ballkeeper/get_my_activities/",
+    method: 'GET',
+    data: {
+      user_id: userStore.userInfo.id,
+      limit: param.limit,
+      offset: param.offset
+    },
+    success: (res: any) => {
+      debugLog("get_my_activities res: ", res);
+      if (res.statusCode !== 200) {
+        uni.$tm.u.toast(`${res.data.detail}(${res.statusCode})` || '获取球队列表失败');
+        return;
+      }
+
+      if (res.data.activities.length < param.limit || res.data.activities.length === 0) {
+        hasMore.value = false;
+      } else {
+        // 更新 offset 用于下次加载
+        param.offset += param.limit;
+      }
+
+      if (is_more) {
+        myActivities.value = myActivities.value.concat(res.data.activities);
+      } else {
+        myActivities.value = res.data.activities;
+      }
+
+      loading.value = false;
+    },
+    fail: () => {
+      uni.$tm.u.toast('获取球队列表失败,请重试');
+      loading.value = false;  // 确保失败时也重置加载状态
+    }
+  });
+}
+
+onLoad((e: any) => {
+  getMyActivities(false);
+
+  /*
   // DEL: 模拟活动数据
   myActivities.value = [
     {
-      title: '我创建的比赛',
+      name: '我创建的比赛',
       cover: 'https://example.com/image1.jpg',
       address: '北京音乐厅',
       start_date: '2023-04-15',
@@ -86,7 +138,7 @@ onLoad((e: any) => {
       id: '1',
     },
     {
-      title: '我报名的比赛',
+      name: '我报名的比赛',
       cover: 'https://example.com/image2.jpg',
       address: '上海博物馆',
       start_date: '2023-06-20',
@@ -95,7 +147,7 @@ onLoad((e: any) => {
       id: '2',
     },
     {
-      title: '我报名的聚餐',
+      name: '我报名的聚餐',
       cover: 'https://example.com/image3.jpg',
       address: '广州国际美食中心',
       start_date: '2023-09-10',
@@ -107,7 +159,7 @@ onLoad((e: any) => {
 
   other_activities.value = [
     {
-      title: '精神糖训练赛',
+      name: '精神糖训练赛',
       cover: 'https://example.com/image1.jpg',
       address: '精神糖足球场',
       start_date: '2023-04-15',
@@ -116,7 +168,7 @@ onLoad((e: any) => {
       id: '1',
     },
     {
-      title: '丰台区足球联赛',
+      name: '丰台区足球联赛',
       cover: 'https://example.com/image2.jpg',
       address: '上海博物馆',
       start_date: '2023-06-20',
@@ -125,7 +177,7 @@ onLoad((e: any) => {
       id: '2',
     },
     {
-      title: '奥体中心篮球赛',
+      name: '奥体中心篮球赛',
       cover: 'https://example.com/image3.jpg',
       address: '广州国际美食中心',
       start_date: '2023-09-10',
@@ -134,7 +186,7 @@ onLoad((e: any) => {
       id: '3',
     },
     {
-      title: '冬季滑雪活动',
+      name: '冬季滑雪活动',
       cover: 'https://example.com/image4.jpg',
       address: '长白山滑雪场',
       start_date: '2023-12-05',
@@ -143,18 +195,9 @@ onLoad((e: any) => {
       id: '4',
     },
   ];
+  */
 });
 
-function toFollow(id: string) {
-	/* 关注
-  followTeam({id}).then(res=>{
-    uni.$tm.u.toast(res.message);
-    if(res.code===1000){
-      init()
-    }
-  })
-  */
-}
 </script>
 <style lang="scss" scoped>
 .icon {

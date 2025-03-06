@@ -22,7 +22,6 @@
 
 <script setup lang="ts">
 import { ref,watch } from 'vue';
-import { myTeamList } from '@/common/index'
 
 const props = defineProps<{
   modelValue: any;
@@ -33,12 +32,14 @@ const radio = ref('');
 const teamTitle = ref('');
 const list = ref<any>([]);
 
+/*
 myTeamList({limit:500}).then(res=>{
   if(res.code === 1000){
     list.value = res.data;
     teamTitle.value = res.data.find((item:any)=>item._id === props.modelValue)?.title;
   }
 })
+*/
 watch(() => props.modelValue, (val) => {
   radio.value = val;
   teamTitle.value = list.value.find((item:any)=>item._id === val)?.title;

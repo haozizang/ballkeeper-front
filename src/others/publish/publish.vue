@@ -1,43 +1,42 @@
 <template>
   <tm-app>
     <tm-sheet :margin="[0, 0]" :padding="[0, 0]" :round="3" :shadow="2">
-      <tm-form @submit="confirm" :margin="[0, 0]" ref="form" v-model="formData" :label-width="180">
-        <tm-form-item :margin="[15, 0]" required label="活动标题" field="title" :rules="[{ required: true, message: '请输入活动标题' }]">
-          <tm-input v-model="formData.title" showClear placeholder="请输入活动标题"></tm-input>
+      <tm-form @submit="confirm" :margin="[0, 0]" ref="form" v-model="ActForm" :label-width="180">
+        <tm-form-item :margin="[15, 0]" required label="活动标题" field="name" :rules="[{ required: true, message: '请输入活动标题' }]">
+          <tm-input v-model="ActForm.name" showClear placeholder="请输入活动标题"></tm-input>
         </tm-form-item>
         <tm-form-item :margin="[15, 0]" label="选择球队" field="team_id" :rules="[{ message: '请选择球队' }]">
-          <dx-select-team v-model="formData.team_id"></dx-select-team>
+          <dx-select-team v-model="ActForm.team_id"></dx-select-team>
         </tm-form-item>
-        <tm-form-item :margin="[15, 0]" required label="活动分类" field="category_id" :rules="[{ required: true, message: '请选择活动分类' }]">
-          <view @click="showCategory = true" class="input-select round-3" :class="{ 'no-select': !formData.category_id }"> {{ categoryText }}</view>
+        <tm-form-item :margin="[15, 0]" required label="活动分类" field="type_id" :rules="[{ required: true, message: '请选择活动分类' }]">
+          <view @click="showActType = true" class="input-select round-3" :class="{ 'no-select': !ActForm.type_id }"> {{ actTypeText }}</view>
         </tm-form-item>
-        <tm-form-item :margin="[15, 0]" required label="开始时间" field="start_date" :rules="[{ required: true, message: '请选择开始时间' }]">
-          <view @click="openSelectTime('start_date')" class="input-select round-3" :class="{ 'no-select': !formData.start_date }"> {{ start_date_text || '请选择开始时间' }}</view>
+        <tm-form-item :margin="[15, 0]" required label="开始时间" field="start_time" :rules="[{ required: true, message: '请选择开始时间' }]">
+          <view @click="openSelectTime('start_time')" class="input-select round-3" :class="{ 'no-select': !ActForm.start_time }"> {{ start_time_text || '请选择开始时间' }}</view>
         </tm-form-item>
         <tm-form-item :margin="[15, 0]" label="活动地址" field="address" :rules="[{ message: '请输入或点击地图定位' }]">
-          <tm-input v-model="formData.address" showClear>
+          <tm-input v-model="ActForm.address" showClear>
             <template #right>
               <tm-icon name="tmicon-location" color="#999999" :font-size="30" @click="chooseAddress"></tm-icon>
             </template>
           </tm-input>
         </tm-form-item>
         <tm-form-item :margin="[15, 0]" required label="是否公开" field="is_public">
-          <tm-switch v-model="formData.is_public" :defaultValue="formData.is_public"></tm-switch>
+          <tm-switch v-model="ActForm.is_public" :defaultValue="ActForm.is_public"></tm-switch>
         </tm-form-item>
       <tm-form-item :margin="[15, 0]" label="组织者电话" field="mobile" :rules="[{ message: '请输入组织者电话' }]">
-          <tm-input v-model="formData.mobile" showClear></tm-input>
+          <tm-input v-model="ActForm.mobile" showClear></tm-input>
         </tm-form-item>
-        <view class="mt-30 pl-30">活动介绍</view>
-        <tm-form-item :margin="[15, 0]" required field="content" :rules="[{ required: true, message: '请输入活动介绍' }]">
-          <dx-editor v-model="formData.content"></dx-editor>
+        <tm-form-item :margin="[15, 0]" label="活动介绍" field="content">
+          <tm-input type="textarea" :inputPadding="[24, 15]" :height="100" v-model="ActForm.content" showClear></tm-input>
         </tm-form-item>
         <tm-form-item :margin="[15, 0]" :border="false">
-          <tm-button :margin="[15]" :shadow="0" :round="20" size="small" form-type="submit" block :label="formData.id ? '保存' : '立即发布'"></tm-button>
+          <tm-button :margin="[15]" :shadow="0" :round="20" size="small" form-type="submit" block :label="ActForm.id ? '保存' : '立即发布'"></tm-button>
         </tm-form-item>
       </tm-form>
     </tm-sheet>
     <!--  -->
-    <tm-picker v-model:show="showCategory" :columns="categoryList" mapKey="name" v-model="categoryIndex"></tm-picker>
+    <tm-picker v-model:show="showActType" :columns="actTypeList" mapKey="name" v-model="actTypeInd"></tm-picker>
     <!-- 时间 -->
     <tm-time-picker
       v-if="showDate"
@@ -56,25 +55,27 @@
     ></tm-time-picker>
   </tm-app>
 </template>
+
 <script setup lang="ts">
 import { ref,watch,computed } from 'vue';
-import {myActivityInfo} from '@/common/index'
 import {debugLog} from '@/common/tools'
 import { onLoad } from '@dcloudio/uni-app';
-import * as dayjs from "@/tmui/tool/dayjs/esm/index"
+import { useUserStore } from '@/stores/user';
 
-const categoryList = ref([
+const userStore = useUserStore();
+
+const actTypeList = ref([
   { id: '0', name: '足球(6人制)' },
   { id: '1', name: '足球(8人制)' },
   { id: '2', name: '足球(11人制)' }
 ]);
-const showCategory = ref(false);
-const categoryIndex = ref<number[]>([]);
-const categoryStr = ref('');
-const categoryText = computed(() => {
-  if (!formData.value.category_id) return '请选择活动分类';
-  const category = categoryList.value.find(item => item.id === formData.value.category_id);
-  return category ? category.name : '请选择活动分类';
+const showActType = ref(false);
+const actTypeInd = ref<number[]>([]);
+const actTypeStr = ref('');
+const actTypeText = computed(() => {
+  if (!ActForm.value.type_id) return '请选择活动分类';
+  const actType = actTypeList.value.find(item => item.id === ActForm.value.type_id);
+  return actType ? actType.name : '请选择活动分类';
 })
 
 const showDate = ref(false);
@@ -82,17 +83,16 @@ const dateStr = ref('');
 const dateSAva = ref<number>();
 const defaultDate = ref();
 const currentField = ref('');
-const start_date_text = ref('');
-const formData = ref<any>({
-  id: '',
-  title: '',
+const start_time_text = ref('');
+const ActForm = ref<any>({
+  name: '',
   team_id: '',
-  category_id: '',
-  cover: '',
+  type_id: '',
+  cover_path: '',
   address: '',
   lat: 0,
   lon: 0,
-  start_date: 0,
+  start_time: 0,
   is_public: true,
   mobile: '',
   content: '',
@@ -100,8 +100,8 @@ const formData = ref<any>({
 function openSelectTime(field:string){
   currentField.value = field;
   showDate.value = true;
-  if(formData.value[field]){
-    defaultDate.value = formData.value[field];
+  if(ActForm.value[field]){
+    defaultDate.value = ActForm.value[field];
   }else{
     defaultDate.value = new Date().getTime();
   }
@@ -110,18 +110,18 @@ function openSelectTime(field:string){
 function chooseAddress() {
   uni.chooseLocation({
     success: function (res) {
-      formData.value.address = res.address;
-      formData.value.lat = res.latitude;
-      formData.value.lon = res.longitude;
+      ActForm.value.address = res.address;
+      ActForm.value.lat = res.latitude;
+      ActForm.value.lon = res.longitude;
     }
   });
 }
 
-watch(categoryIndex, (val) => {
-  const selectedCategory = categoryList.value[val[0]];
-  if (selectedCategory) {
-    formData.value.category_id = selectedCategory.id;
-    categoryStr.value = selectedCategory.name;
+watch(actTypeInd, (val) => {
+  const selectedActType = actTypeList.value[val[0]];
+  if (selectedActType) {
+    ActForm.value.type_id = selectedActType.id;
+    actTypeStr.value = selectedActType.name;
   }
 });
 
@@ -130,9 +130,9 @@ watch(
   (val) => {
     console.log('dateSAva', val);
     switch (currentField.value) {
-      case 'start_date':
-        start_date_text.value = dateStr.value;
-        formData.value.start_date = new Date(val as any).getTime();
+      case 'start_time':
+        start_time_text.value = dateStr.value;
+        ActForm.value.start_time = new Date(val as any).getTime();
         break;
       default:
         break;
@@ -141,30 +141,33 @@ watch(
 );
 onLoad(async (e: any) => {
   if (e.id) {
+    /*
     myActivityInfo({ id: e.id }).then(res => {
       if (res.code === 1000) {
-        formData.value.id = e.id;
-        formData.value.is_public = res.data.is_public;
-        formData.value.title = res.data.title;
-        formData.value.address = res.data.address;
-        formData.value.mobile = res.data.mobile;
-        formData.value.content = res.data.content;
-        formData.value.cover = res.data.cover;
-        formData.value.team_id = res.data.team_id;      
-        formData.value.start_date = res.data.start_date;
-        start_date_text.value = dayjs.default(res.data.start_date).format('YYYY年MM月DD日 HH时mm分');
+        ActForm.value.id = e.id;
+        ActForm.value.is_public = res.data.is_public;
+        ActForm.value.name = res.data.name;
+        ActForm.value.address = res.data.address;
+        ActForm.value.mobile = res.data.mobile;
+        ActForm.value.content = res.data.content;
+        ActForm.value.cover_path = res.data.cover_path;
+        ActForm.value.team_id = res.data.team_id;
+        ActForm.value.start_time = res.data.start_time;
+        start_time_text.value = dayjs.default(res.data.start_time).format('YYYY年MM月DD日 HH时mm分');
       }
     })
+    */
   }
 })
 function confirm(e:any) {
-  debugLog('confirm',formData.value);
+  debugLog('confirm',ActForm.value);
   if(e.validate){
     uni.request({
       url: '/ballkeeper/create_activity/',
       method: 'POST',
       data: {
-        ...formData.value,
+        ...ActForm.value,
+        creator_id: userStore.userInfo.id,
       },
       success: (res: any) => {
         debugLog("create_activity res: ", res);
@@ -203,20 +206,4 @@ function confirm(e:any) {
 }
 </script>
 <style lang="scss" scoped>
-.cover {
-  position: relative;
-  width: 100%;
-  image {
-    height: 450rpx;
-    width: 100%;
-  }
-  .upload {
-    position: absolute;
-    bottom: 30rpx;
-    right: 30rpx;
-    background: rgba(0, 0, 0, 0.3);
-    color: #ffffff;
-    padding: 10rpx 20rpx;
-  }
-}
 </style>

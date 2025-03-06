@@ -1,12 +1,11 @@
 <template>
   <view class="member px-50 pt-30">
     <view class="flex flex-col-top-center">
-      <tm-avatar :size="150" :round="25" :img="getBaseUrl() + userStore.userInfo.avatar"></tm-avatar>
+      <tm-avatar :size="150" :round="25" :img="getBaseUrl() + userStore.userInfo.avatar_path"></tm-avatar>
       <!-- <tm-avatar :size="150" :round="25" :img="userStore.userInfo.avatar || appStore.app_logo"></tm-avatar> -->
       <view class="ml-30 flex-1 flex-row-center-between">
         <template v-if="userStore.isLogin">
           <view class="flex-1" @click="openLink('pages/user/edit')">
-            <view class="text-size-xl">{{ userStore.userInfo.nickname }}</view>
             <view class="mt-15">{{ userStore.userInfo.mobile }}</view>
             <view class="ml-30 mt-10 text-size-xl">{{ userStore.userInfo.username }}</view>
           </view>

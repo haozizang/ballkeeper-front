@@ -5,17 +5,14 @@ import { UserInfoState } from './interface';
 // 用户store
 export const useUserStore = defineStore('userStore', () => {
 	const initInfo = {
-		role: [],
-		permission: [],
-		user_id: '',
-		avatar: '',
-		mobile: '',
-		email: '',
-		nickname: '',
+		id: -1,
 		username: '',
+		avatar_path: '',
 		gender: 0,
+		mobile: '',
 		token: '',
 		tokenExpired: 0,
+		create_time: 0,
 	};
 	//用户信息
 	const userInfo = ref<UserInfoState>(
@@ -25,8 +22,13 @@ export const useUserStore = defineStore('userStore', () => {
 	const isLogin = ref(false);
 	// 设置用户信息
 	const setUserInfo = (info : any) => {
+		userInfo.value.id = info.id;
 		userInfo.value.username = info.username;
-		userInfo.value.avatar = info.avatar_path;
+		userInfo.value.avatar_path = info.avatar_path;
+		userInfo.value.gender = info.gender;
+		userInfo.value.mobile = info.mobile;
+		userInfo.value.create_time = info.create_time;
+
 
 		// uni.setStorageSync('dx_activity_user_info', info);
 		// uni.setStorageSync('uni_id_token', info.token);
