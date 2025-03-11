@@ -62,7 +62,7 @@
 <script setup lang="ts">
 import { ref, reactive } from 'vue';
 import { openLink,timeText, debugLog } from '@/common/tools';
-import { onLoad } from '@dcloudio/uni-app';
+import { onShow } from '@dcloudio/uni-app';
 import { useUserStore } from '@/stores/user';
 
 const userStore = useUserStore();
@@ -122,7 +122,7 @@ function getMyActivities(is_more = false) {
   });
 }
 
-onLoad((e: any) => {
+onShow((e: any) => {
   getMyActivities(false);
 
   /*
