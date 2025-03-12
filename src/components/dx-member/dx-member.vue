@@ -46,7 +46,7 @@
       <template v-slot:title>
         <view class="flex-col-top-center">
           <tm-icon name="tmicon-layergroup-fill" :font-size="28" color="#555050"></tm-icon>
-          <text class="ml-15">我的组织</text>
+          <text class="ml-15">我的球队</text>
         </view>
       </template>
     </tm-cell>

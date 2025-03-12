@@ -34,7 +34,7 @@
       <view class="gap"></view>
       <!--  -->
       <view class="footer">
-        <view class="btn" @click="openLink('teams/create/create')">创建组织</view>
+        <view class="btn" @click="openLink('teams/create/create')">创建球队</view>
       </view>
     </tm-sheet>
   </tm-app>
