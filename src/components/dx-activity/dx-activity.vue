@@ -37,7 +37,7 @@
   </view>
 
   <view class="list bg-white">
-    <view class="item flex-row-center-between pa-30" v-for="(item, index) in other_activities" :key="index" @click="openLink('others/activity/detail?id=' + item.id)">
+    <view class="item flex-row-center-between pa-30" v-for="(item, index) in otherActivities" :key="index" @click="openLink('others/activity/detail?id=' + item.id)">
       <view class="pl-20 flex flex-1 flex-col flex-between" style="height: 200rpx">
         <view>
           <view class="text-overflow-2">{{ item.name }}</view>
@@ -68,7 +68,7 @@ import { useUserStore } from '@/stores/user';
 const userStore = useUserStore();
 
 const myActivities = ref<any>([]);
-const other_activities = ref<any>([]);
+const otherActivities = ref<any>([]);
 
 const param = reactive({
   offset: 0,
@@ -124,78 +124,6 @@ function getMyActivities(is_more = false) {
 
 onShow((e: any) => {
   getMyActivities(false);
-
-  /*
-  // DEL: 模拟活动数据
-  myActivities.value = [
-    {
-      name: '我创建的比赛',
-      cover: 'https://example.com/image1.jpg',
-      address: '北京音乐厅',
-      start_date: '2023-04-15',
-      views: 150,
-      is_hidden_views: false,
-      id: '1',
-    },
-    {
-      name: '我报名的比赛',
-      cover: 'https://example.com/image2.jpg',
-      address: '上海博物馆',
-      start_date: '2023-06-20',
-      views: 100,
-      is_hidden_views: false,
-      id: '2',
-    },
-    {
-      name: '我报名的聚餐',
-      cover: 'https://example.com/image3.jpg',
-      address: '广州国际美食中心',
-      start_date: '2023-09-10',
-      views: 75,
-      is_hidden_views: false,
-      id: '3',
-    },
-  ];
-
-  other_activities.value = [
-    {
-      name: '精神糖训练赛',
-      cover: 'https://example.com/image1.jpg',
-      address: '精神糖足球场',
-      start_date: '2023-04-15',
-      views: 150,
-      is_hidden_views: false,
-      id: '1',
-    },
-    {
-      name: '丰台区足球联赛',
-      cover: 'https://example.com/image2.jpg',
-      address: '上海博物馆',
-      start_date: '2023-06-20',
-      views: 100,
-      is_hidden_views: false,
-      id: '2',
-    },
-    {
-      name: '奥体中心篮球赛',
-      cover: 'https://example.com/image3.jpg',
-      address: '广州国际美食中心',
-      start_date: '2023-09-10',
-      views: 75,
-      is_hidden_views: false,
-      id: '3',
-    },
-    {
-      name: '冬季滑雪活动',
-      cover: 'https://example.com/image4.jpg',
-      address: '长白山滑雪场',
-      start_date: '2023-12-05',
-      views: 200,
-      is_hidden_views: false,
-      id: '4',
-    },
-  ];
-  */
 });
 
 </script>
