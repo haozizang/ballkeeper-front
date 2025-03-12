@@ -1,384 +1,346 @@
 <template>
   <tm-app>
-    <tm-sheet :margin="[0, 0]" :padding="[0, 0]">
-      <view class="cover">
-        <image :src="info.cover"></image>
-        <view class="follow" :class="{ active: info.is_follow }" @click="toFollow(1)">{{ info.is_follow ? '已关注' : '关注' }}
-        </view>
-      </view>
-      <view class="title pa-30"> {{ info.title || '' }} </view>
-    </tm-sheet>
+    <div class="activity-detail">
+      <!-- 头部信息 -->
+      <div class="header">
+        <!-- 球队信息 - 只有当活动属于球队时才显示 -->
+        <div class="team-logo-info" v-if="hasTeam">
+          <div class="logo">
+            <img :src="team.logoUrl || '/default-logo.png'" alt="球队Logo">
+          </div>
+          <div class="basic-info">
+            <h2>{{ team.name }}</h2>
+            <p class="stats">成员 {{ team.memberCnt }} 活动 {{ team.actCnt }}</p>
+          </div>
+        </div>
 
-    <tm-sheet :margin="[0, 30]" :padding="[0, 0]">
-      <tm-cell :margin="[0, 0]" :bottomBorder="true" rightIcon="">
-        <template v-slot:title>
-          <view class="flex-col-top-center">
-            <tm-icon name="tmicon-clock" color="#777777" :font-size="28"></tm-icon>
-            <text class="ml-15">开始时间</text>
-          </view>
-        </template>
-        <template v-slot:right>
-          <view> {{ timeText('start_date') }} </view>
-        </template>
-      </tm-cell>
-      <tm-cell :margin="[0, 0]" :bottomBorder="true" rightIcon="">
-        <template v-slot:title>
-          <view class="flex-col-top-center">
-            <tm-icon name="tmicon-clock" color="#777777" :font-size="28"></tm-icon>
-            <text class="ml-15">报名截止时间</text>
-          </view>
-        </template>
-        <template v-slot:right>
-          <view> {{ timeText('closing_date') }} </view>
-        </template>
-      </tm-cell>
-      <tm-cell :margin="[0, 0]" :bottomBorder="true" rightIcon="">
-        <template v-slot:title>
-          <view class="flex-col-top-center">
-            <tm-icon name="tmicon-clock" color="#777777" :font-size="28"></tm-icon>
-            <text class="ml-15">结束时间</text>
-          </view>
-        </template>
-        <template v-slot:right>
-          <view> {{ timeText('end_date') }} </view>
-        </template>
-      </tm-cell>
-      <tm-cell :margin="[0, 0]" :bottomBorder="true" rightIcon="">
-        <template v-slot:title>
-          <view class="flex-col-top-center">
-            <tm-icon name="tmicon-user-group" color="#777777" :font-size="28"></tm-icon>
-            <text class="ml-15">{{ info.applyCount || 0 }}人已报名</text>
-          </view>
-        </template>
-        <template v-slot:right>
-          <view class="flex join-list">
-            <image class="avatar" v-for="(item, index) in info.applyList" :key="index" :src="item.avatar"></image>
-          </view>
-        </template>
-      </tm-cell>
-      <tm-cell :margin="[0, 0]" :bottomBorder="true" rightIcon="" @click="callPhone(info.mobile)">
-        <template v-slot:title>
-          <view class="flex-col-top-center">
-            <tm-icon name="tmicon-phone-fill" color="#777777" :font-size="28"></tm-icon>
-            <text class="ml-15">联系电话</text>
-          </view>
-        </template>
-        <template v-slot:right>
-          <view> {{ info.mobile }} </view>
-        </template>
-      </tm-cell>
-      <tm-cell :margin="[0, 0]" :bottomBorder="true" @click="openMap">
-        <template v-slot:title>
-          <view class="flex-col-top-center pr-30">
-            <tm-icon name="tmicon-position-fill"></tm-icon>
-            <text class="ml-15">{{ info.address || '' }}</text>
-          </view>
-        </template>
-      </tm-cell>
-      <tm-cell :margin="[0, 0]" :bottomBorder="true" rightIcon="">
-        <template v-slot:title>
-          <view class="flex-col-top-center">
-            <text class="mr-15">浏览量：{{ info.views || 0 }}</text>
-            <text class="ml-50">关注数：{{ info.followCount || 0 }}</text>
-          </view>
-        </template>
-      </tm-cell>
-    </tm-sheet>
+        <!-- 活动主要信息 -->
+        <div class="info-list">
+          <div class="info-item">
+            <div class="icon"><i class="calendar-icon"></i></div>
+            <div class="text">{{ activity.date }} {{ activity.time }}</div>
+            <div class="views">{{ activity.viewCnt }}</div>
+          </div>
 
-    <tm-sheet :margin="[0, 0]" :padding="[0, 0]">
-      <!-- 组织 -->
-      <view class="item my-30 flex flex-between pa-30" @click="openLink('teams/detail/detail?id=' + info.team?._id)">
-        <view>
-          <tm-avatar :size="180" :img="info.team?.logo"></tm-avatar>
-        </view>
-        <view class="flex-1 ml-30 right">
-          <view class="top flex">
-            <view class="name">{{ info.team?.title }}</view>
-            <!-- <view class="approve ml-15">{{info.team?.is_identification?'已认证':'未认证'}}</view> -->
-            <view class="ml-15 flex align-center" v-if="!info.team?.is_identification">
-              <tm-icon name="tmicon-minus-circle" color="#999999" :font-size="24"></tm-icon>
-              <text class="ml-5 approve">未认证</text>
-            </view>
-            <view class="ml-15 flex align-center" v-else>
-              <tm-icon name="tmicon-check-circle-fill" color="#0bbb08" :font-size="24"></tm-icon>
-              <text class="ml-5 success">已认证</text>
-            </view>
-          </view>
-          <view>
-            <text>活动数量:</text>
-            <text class="mx-10 num">{{ info.team?.activityCount || 0 }}</text>
-            <text>场</text>
-          </view>
-          <view>
-            <view class="btn" :class="{ 'follow': info.team?.is_follow }" @click.stop="toFollow(2)">
-              {{
-                info.team?.is_follow ? '已关注' : '关注' }}</view>
-          </view>
-        </view>
-      </view>
-    </tm-sheet>
+          <div class="info-item">
+            <div class="icon"><i class="location-icon"></i></div>
+            <div class="text">{{ activity.location }}</div>
+            <div class="nav-link">场地导航 ></div>
+          </div>
 
-    <tm-sheet :margin="[0, 30]" :padding="[0, 0]">
-      <!-- 介绍 -->
-      <view class="pa-30">
-        <tm-html :content="info.content"></tm-html>
-      </view>
-    </tm-sheet>
-    <view class="gap"></view>
-    <view class="footer flex-col-center-center py-10 px-50">
-      <view class="left">
-        <view class="flex flex-between" :class="!info.is_self ? 'operate' : 'pr-50'">
-          <view @click="openLink('/pages/index/index')">
-            <tm-icon name="tmicon-home" :font-size="32"></tm-icon>
-            <view class="mt-5 text-size-s">首页</view>
-          </view>
-          <!-- #ifdef MP_WEIXIN -->
-          <button class="footer-btn" open-type="share">
-            <tm-icon name="tmicon-share" :font-size="32"></tm-icon>
-            <view class="mt-5 text-size-s">分享</view>
-          </button>
-          <!-- #endif -->
-          <!-- #ifdef APP-PLUS -->
-          <button class="footer-btn" open-type="share">
-            <tm-icon name="tmicon-share" :font-size="32"></tm-icon>
-            <view class="mt-5 text-size-s">分享</view>
-          </button>
-          <!-- #endif -->
-          <!-- #ifdef H5 -->
-          <button class="footer-btn" @click="share">
-            <tm-icon name="tmicon-share" :font-size="32"></tm-icon>
-            <view class="mt-5 text-size-s">分享</view>
-          </button>
-          <!-- #endif -->
-          <view class="pt-5" v-if="info.is_self" @click="openLink('others/activity/manage?id=' + info._id)">
-            <tm-icon name="tmicon-all" :font-size="28"></tm-icon>
-            <view class="mt-5 text-size-s">管理</view>
-          </view>
-        </view>
-      </view>
-      <view class="right">
-        <tm-button :round="20" v-if="info.is_apply" type="primary" block label="我的报名"
-          @click="openLink('others/activity/info?id=' + info._id)"></tm-button>
-        <tm-button :round="20" v-else type="primary" :disabled="isEnd" block :label="isEnd ? '已截止' : '立即报名'"
-          @click="toApply"></tm-button>
-      </view>
-    </view>
+          <div class="info-item">
+            <div class="icon"><i class="type-icon"></i></div>
+            <div class="text">{{ activity.type }}</div>
+          </div>
+
+          <div class="info-item">
+            <div class="icon"><i class="fee-icon"></i></div>
+            <div class="text">收费: {{ activity.fee }}</div>
+          </div>
+        </div>
+
+        <!-- 发布者信息 -->
+        <div class="publisher-info">
+          <div class="publisher">
+            <img :src="activity.publisher.avatar" alt="发布者头像" class="avatar">
+            <span class="name">{{ activity.publisher.name }}</span>
+          </div>
+          <div class="rating">
+            <span v-for="i in 5" :key="i" class="star" :class="{ 'active': i <= activity.publisher.rating }"></span>
+          </div>
+        </div>
+
+        <!-- 活动详细说明 -->
+        <div class="activity-details">
+          <p>时间: {{ activity.startTime }} ~ {{ activity.endTime }}</p>
+          <p>需知:</p>
+          <div class="details-content" v-html="activity.detailsHtml"></div>
+          <div v-if="activity.detailsExpanded" class="more">展开</div>
+        </div>
+      </div>
+
+      <!-- 报名信息 -->
+      <div class="signup-section">
+        <div class="signup-header">
+          <div class="signup-count">报名 {{ activity.signupCnt }}/{{ activity.maxSignupCnt }}</div>
+          <div class="signup-waiting">待定 {{ activity.waitingCnt }}</div>
+          <div class="signup-declined">请假 {{ activity.declinedCnt }}</div>
+        </div>
+
+        <!-- 报名用户列表 -->
+        <div class="attendees-list">
+          <div v-for="(attendee, index) in activity.attendees" :key="index" class="attendee-item">
+            <img :src="attendee.avatar" alt="用户头像" class="avatar">
+            <span class="name">{{ attendee.name }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
   </tm-app>
 </template>
-<script lang="ts" setup>
-import { ref, computed } from 'vue';
-import { openLink } from '@/common/tools';
-import { onLoad, onShow,onShareAppMessage, onShareTimeline } from '@dcloudio/uni-app';
-import { activityDetail, followActivity, followTeam, applySave } from '@/common/index'
-import * as dayjs from "@/tmui/tool/dayjs/esm/index"
-import { callPhone } from '@/tmui/tool/function/util';
-// #ifdef H5
-import { setClipboardData } from '@/tmui/tool/function/util';
-// #endif
-const info = ref<any>({});
-const id = ref('');
-const isFirst = ref(false);
-const timeText = computed(() => (field: string) => {
-  return dayjs.default(info.value[field]).format('YYYY-MM-DD HH:mm')
-})
-const isEnd = computed(() => {
-  return dayjs.default().isAfter(dayjs.default(info.value.closing_date))
-})
-function getActivityDetail() {
-  activityDetail({ id: id.value }).then(res => {
-    if (res.code === 1000) {
-      info.value = res.data;
-    }
-  })
-}
-onLoad((e: any) => {
-  if (e.id) {
-    id.value = e.id;
-    getActivityDetail();
-  }
+
+<script setup>
+import { reactive, ref } from 'vue'
+
+// 控制是否显示球队信息
+const hasTeam = ref(true) // 默认为false，表示由个人创建的活动
+
+// 使用reactive创建响应式数据
+const team = reactive({
+  logoUrl: '/football-logo.png',
+  actCnt: 40,
+  memberCnt: 36,
+  name: '东单足球'
 });
-// #ifdef MP-WEIXIN
-onShareAppMessage(() => {
-  return {
-    title: info.value.title,
-    path: '/others/activity/detail?id=' + info.value._id,
-    imageUrl: info.value.cover
-  }
+const activity = reactive({
+  name: '东单足球',
+  date: '3月12日-周三',
+  time: '20:00',
+  viewCnt: 137,
+  location: '章云足球训练营(天坛东门校区)',
+  type: '足球6人制/平台可见',
+  fee: '自定义收费 (未开启)',
+  startTime: '20:00',
+  endTime: '22:00',
+  publisher: {
+    name: '晓蒙',
+    avatar: '/avatar1.png',
+    rating: 4
+  },
+  detailsHtml: `
+    1. 场地：东城区天坛东门足球场，地铁5号线天坛东门站C出口向东30米；<br>
+    2. 费用AA，人均30元左右，每次招募14-16人左右，6人制场地（含门将6vs6或7vs7）；<br>
+    3. 长期招募门将，专职门将免费；<br>
+    4. 防止报名爽约及该场地预定需全额费用，请合理安排时间，报名后尽量不要请假，活动当日取消报名的队员仍需缴纳费用；报名后临时请假取消的请及时点击请假，以便腾出名额给其他需要报名参加的队友；首次报...
+  `,
+  detailsExpanded: false,
+  signupCnt: 14,
+  maxSignupCnt: 18,
+  waitingCnt: 0,
+  declinedCnt: 2,
+  attendees: [
+    { name: '晓蒙', avatar: '/avatar1.png' },
+    { name: 'sunshuo', avatar: '/avatar2.png' },
+    { name: 'jacklee', avatar: '/avatar3.png' },
+    { name: '鞍', avatar: '/avatar4.png' },
+    { name: '刘世华', avatar: '/avatar5.png' },
+    { name: 'john', avatar: '/avatar6.png' }
+  ]
 })
-onShareTimeline(() => {
-  return {
-    title: info.value.title,
-    imageUrl: info.value.cover
-  }
-})
-// #endif
-onShow(() => {
-  if (isFirst.value) {
-    getActivityDetail();
-  }
-  isFirst.value = true;
-})
-// #ifdef H5
-function share(){
-  setClipboardData(window.location.href);
-  uni.$tm.u.toast('链接已复制');
-}
-// #endif
-function toFollow(type: number) {
-  console.log('toFollow');
-  if (type === 1) {
-    followActivity({ id: info.value._id }).then(res => {
-      uni.$tm.u.toast(res.message);
-      if (res.code === 1000) {
-        info.value.is_follow = !info.value.is_follow;
-      }
-    })
-  } else {
-    followTeam({ id: info.value.team._id }).then(res => {
-      uni.$tm.u.toast(res.message);
-      if (res.code === 1000) {
-        info.value.team.is_follow = !info.value.team.is_follow;
-      }
-    })
-  }
-}
-function openMap() {
-  uni.openLocation({
-    latitude: info.value.lat,
-    longitude: info.value.lon,
-    name: info.value.address,
-    address: info.value.address,
-    scale: 18
-  });
-}
-function toApply() {
-  if (isEnd.value) {
-    uni.$tm.u.toast('活动已结束')
-    return
-  }
-  // 是否有表单 or 报名费用（二期加）
-  if (info.value.is_form && !info.value.has_field) {
-    return uni.$tm.u.toast('联系管理员填写表单')
-  }
-  if (info.value.is_form || info.value.is_cost) {
-    return openLink('others/activity/apply?id=' + info.value._id)
-  }
-  // 直接报名
-  applySave({ id: info.value._id }).then(res => {
-    uni.$tm.u.toast(res.message)
-    if (res.code === 1000) {
-      openLink('others/activity/info?id=' + info.value._id)
-    }
-  })
-}
+
+// 实际应用中，可以在组件挂载后从API获取活动信息，并根据返回的数据设置hasTeam的值
+// 例如：
+// onMounted(async () => {
+//   const activityData = await getActivityDetail(activityId);
+//   if (activityData.teamId) {
+//     hasTeam.value = true;
+//     // 加载球队信息
+//     const teamData = await getTeamDetail(activityData.teamId);
+//     Object.assign(team, teamData);
+//   }
+//   Object.assign(activity, activityData);
+// });
+
+// Vue 3下组件名称可以通过defineOptions设置(如果需要的话)
+// defineOptions({
+//   name: 'ActivityDetail'
+// })
 </script>
-<style lang="scss" scoped>
-.cover {
+
+<style scoped>
+.activity-detail {
+  background-color: #f5f5f5;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+.header {
+  background-color: white;
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 10px;
+}
+
+.team-logo-info {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.logo {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  overflow: hidden;
+  margin-right: 10px;
+}
+
+.logo img {
   width: 100%;
-  height: 450rpx;
-  position: relative;
-
-  image {
-    width: 100%;
-    height: 100%;
-  }
-
-  .follow {
-    background: #0163ff;
-    color: #ffffff;
-    border: 1px solid #3c8af8;
-    position: absolute;
-    right: 30rpx;
-    bottom: 30rpx;
-    z-index: 99;
-    padding: 8rpx 20rpx;
-    border-radius: 10rpx;
-
-    &.active {
-      background: rgba(0, 0, 0, 0.3);
-      border: 1px solid rgba(0, 0, 0, 0.5);
-    }
-  }
+  height: 100%;
+  object-fit: cover;
 }
 
-.item {
-  position: relative;
-
-  .right {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-  }
-
-  .num {
-    color: #3c8af8;
-    font-size: 35rpx;
-  }
-
-  .btn {
-    padding: 8rpx 25rpx;
-    position: absolute;
-    right: 30rpx;
-    top: 50%;
-    transform: translateY(-50%);
-    border-radius: 10rpx;
-    border: 1px solid #999999;
-    color: #999999;
-
-    &.follow {
-      border: 1px solid #3c8af8;
-      color: #3c8af8;
-    }
-  }
+.basic-info h2 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 500;
 }
 
-.join-list {
-  padding-right: 20rpx;
-
-  .avatar {
-    width: 45rpx;
-    height: 45rpx;
-    border-radius: 50%;
-    margin-right: -20rpx;
-  }
+.stats {
+  color: #999;
+  font-size: 14px;
+  margin: 5px 0 0 0;
 }
 
-.gap {
-  height: 150rpx;
+.info-list {
+  margin-bottom: 15px;
 }
 
-.footer {
-  position: fixed;
-  bottom: 0;
-  left: 0;
+.info-item {
+  display: flex;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.info-item:last-child {
+  border-bottom: none;
+}
+
+.icon {
+  width: 24px;
+  margin-right: 10px;
+  color: #666;
+}
+
+.views {
+  margin-left: auto;
+  color: #999;
+  font-size: 14px;
+}
+
+.nav-link {
+  margin-left: auto;
+  color: #666;
+  font-size: 14px;
+}
+
+.publisher-info {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.publisher {
+  display: flex;
+  align-items: center;
+}
+
+.avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  margin-right: 8px;
+}
+
+.rating {
+  margin-left: 10px;
+}
+
+.star {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  background-color: #e0e0e0;
+  clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+  margin-right: 2px;
+}
+
+.star.active {
+  background-color: #ff9800;
+}
+
+.activity-details {
+  font-size: 14px;
+  line-height: 1.5;
+  color: #333;
+}
+
+.more {
+  color: #0984e3;
+  text-align: center;
+  padding: 5px;
+  margin-top: 10px;
+}
+
+.signup-section {
+  background-color: white;
+  border-radius: 8px;
+  padding: 15px;
+}
+
+.signup-header {
+  display: flex;
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.signup-count {
+  font-weight: 500;
+  margin-right: 15px;
+}
+
+.signup-waiting, .signup-declined {
+  color: #666;
+  margin-right: 15px;
+}
+
+.attendees-list {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.attendee-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-right: 15px;
+  margin-bottom: 15px;
+  width: 60px;
+}
+
+.attendee-item .avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  margin-bottom: 5px;
+}
+
+.attendee-item .name {
+  font-size: 12px;
+  text-align: center;
+  color: #333;
   width: 100%;
-  background: #fff;
-  box-shadow: 0 0 10rpx rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 
-  .operate {
-    padding-left: 20rpx;
-    padding-right: 100rpx;
-  }
+/* 图标样式 */
+.calendar-icon::before {
+  content: "📅";
+}
 
-  .left {
-    width: 50%;
-  }
+.location-icon::before {
+  content: "📍";
+}
 
-  .right {
-    width: 50%;
-  }
+.type-icon::before {
+  content: "⚽";
+}
 
-  .footer-btn {
-    background: transparent;
-    box-sizing: border-box;
-    padding: 0;
-    margin: 0;
-    font-size: 30rpx;
-    line-height: inherit;
-
-    &::after {
-      border: none;
-    }
-  }
+.fee-icon::before {
+  content: "💰";
 }
 </style>
