@@ -161,6 +161,7 @@ function confirm(e: any) {
           return;
         }
         uni.$tm.u.toast('创建成功!');
+        userStore.userInfo.team_id = res.data.team.id;
         if (e.data.id) {
           uni.navigateBack();
         } else {

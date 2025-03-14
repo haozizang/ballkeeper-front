@@ -34,7 +34,7 @@
       <view class="gap"></view>
       <!--  -->
       <view class="footer">
-        <view class="btn" @click="openLink('teams/create/create')">创建球队</view>
+        <view class="btn" @click="goCreateTeam">创建球队</view>
       </view>
     </tm-sheet>
   </tm-app>
@@ -112,6 +112,15 @@ function getList(is_more = false){
 onMounted(() => {
   getList();
 });
+
+function goCreateTeam() {
+  debugLog('userStore.userInfo: ', userStore.userInfo);
+  if (userStore.userInfo.team_id) {
+    uni.$tm.u.toast('用户只能创建1支球队');
+    return;
+  }
+  openLink('teams/create/create');
+}
 
 // 修复触底加载逻辑
 onReachBottom(() => {

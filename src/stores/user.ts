@@ -10,6 +10,7 @@ export const useUserStore = defineStore('userStore', () => {
 		avatar_path: '',
 		gender: 0,
 		mobile: '',
+		team_id: 0,
 		token: '',
 		tokenExpired: 0,
 		create_time: 0,
@@ -27,8 +28,8 @@ export const useUserStore = defineStore('userStore', () => {
 		userInfo.value.avatar_path = info.avatar_path;
 		userInfo.value.gender = info.gender;
 		userInfo.value.mobile = info.mobile;
+		userInfo.value.team_id = info.team_id;
 		userInfo.value.create_time = info.create_time;
-
 
 		// uni.setStorageSync('dx_activity_user_info', info);
 		// uni.setStorageSync('uni_id_token', info.token);
