@@ -2,14 +2,14 @@
   <tm-app>
     <tm-sheet :margin="[0, 0]" :padding="[0, 0]">
       <view class="list">
-        <view class="item my-15 flex flex-between pa-30" @click="openLink('teams/detail/detail?id='+item._id)" v-for="(item, index) in teamList" :key="index">
+        <view class="item my-15 flex flex-between pa-30" @click="openLink('teams/detail/detail?id='+item.id)" v-for="(item, index) in teamList" :key="index">
           <view class="logo round-3">
-            <tm-avatar :size="200" :img="item.logo"></tm-avatar>
+            <tm-avatar :size="200" :img="getBaseUrl() + item.logo_path"></tm-avatar>
             <view class="is_identification" v-if="item.is_identification">已认证</view>
           </view>
           <view class="flex-1 ml-30 right">
             <view class="top">
-              <view class="name text-overflow-1">{{ item.title }}</view>
+              <view class="name text-overflow-1">{{ item.name }}</view>
               <view class="tips mt-15 text-overflow-2">{{ item.content }}</view>
             </view>
             <view class="flex flex-between">
@@ -19,7 +19,7 @@
                 <text>场</text>
               </view>
               <view>
-                <view class="btn" @click.stop="openLink('teams/manage/manage?id='+item._id)">管理</view>
+                <view class="btn" @click.stop="openLink('teams/manage/manage?id='+item.id)">管理</view>
               </view>
             </view>
           </view>
@@ -45,6 +45,7 @@ import { openLink, debugLog } from '@/common/tools';
 import { ref, reactive, onMounted } from 'vue';
 import { onReachBottom, onPullDownRefresh } from '@dcloudio/uni-app';
 import { useUserStore } from '@/stores/user';
+import { getBaseUrl } from '@/common/env';
 
 const userStore = useUserStore();
 
@@ -96,7 +97,7 @@ function getList(is_more = false){
       }
 
       loading.value = false;
-      
+
       // 停止下拉刷新状态
       uni.stopPullDownRefresh();
     },
@@ -142,7 +143,7 @@ onPullDownRefresh(() => {
 .item {
   position: relative;
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-  
+
   .logo{
     position: relative;
     overflow: hidden;
@@ -195,7 +196,7 @@ onPullDownRefresh(() => {
   background: #fff;
   box-shadow: 0 0 10rpx rgba(0, 0, 0, 0.1);
   z-index: 999;  // 确保在最上层
-  
+
   .btn {
     width: 100%;
     background: #3c8af8;
