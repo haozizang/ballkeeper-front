@@ -231,7 +231,7 @@ function confirm(e: any) {
           uni.$tm.u.toast(`${res.data.detail}(${res.statusCode})` || '登录失败');
           return;
         }
-        userStore.setUserInfo(res.data);
+        userStore.setUserInfo(res.data.user);
         debugLog("login userInfo: ", userStore.userInfo);
         uni.reLaunch({
           url: '/pages/index/index',
