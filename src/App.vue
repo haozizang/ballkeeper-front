@@ -19,7 +19,7 @@ onLaunch((e) => {
     // #endif
 });
 onShow(() => {
-    console.log('App Show');
+    console.log('[App.vue]App Show');
     const appStore = useAppStore();
     const userStore = useUserStore();
     debugLog("userStore.userInfo: ", userStore.userInfo);

@@ -103,9 +103,11 @@ import { getBaseUrl } from '@/common/env';
 const userStore = useUserStore();
 
 onShow(() => {
-    console.log('App Show');
-    const userStore = useUserStore();
-    debugLog("userStore.userInfo: ", userStore.userInfo);
+  console.log("[dx-member.vue]onShow");
+
+  debugLog("onShow");
+  const userStore = useUserStore();
+  debugLog("userStore.userInfo: ", userStore.userInfo);
 });
 
 </script>
