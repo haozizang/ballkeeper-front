@@ -99,7 +99,7 @@ function getTeamList(is_more = false) {
 
   uni.request({
     url: "/ballkeeper/get_team_list/",
-    method: 'POST',
+    method: 'GET',
     data: {
       username: userStore.userInfo.username,
       keyword: param.keyword,

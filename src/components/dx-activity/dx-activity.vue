@@ -123,6 +123,7 @@ function getMyActivities(is_more = false) {
 }
 
 onShow((e: any) => {
+  debugLog("[dx-activity.vue]onShow");
   getMyActivities(false);
 });
 
