@@ -3,20 +3,20 @@
     <tm-sheet :margin="[0, 0]" :padding="[0, 0]">
       <view class="manage px-50 pt-30">
         <view class="flex flex-col-top-center">
-          <tm-avatar :size="150" :img="getBaseUrl() + info.logo_path"></tm-avatar>
-          <view class="ml-30">{{ info.name }}</view>
+          <tm-avatar :size="150" :img="getBaseUrl() + team.logo_path"></tm-avatar>
+          <view class="ml-30">{{ team.name }}</view>
         </view>
         <view class="flex flex-between text-align-center py-50">
           <view>
-            <view class="number">{{ info.activityCount }}</view>
+            <view class="number">{{ team.act_cnt }}</view>
             <view class="mt-10">活动总数</view>
           </view>
           <view>
-            <view class="number">{{ info.joinCount }}</view>
+            <view class="number">{{ team.join_cnt }}</view>
             <view class="mt-10">累计报名人数</view>
           </view>
           <view>
-            <view class="number">{{ info.followCount }}</view>
+            <view class="number">{{ team.follow_cnt }}</view>
             <view class="mt-10">关注</view>
           </view>
         </view>
@@ -26,15 +26,15 @@
       <!-- 组织管理 -->
       <tm-cell :margin="[0, 0]" title="组织管理" :bottomBorder="true" rightIcon=""> </tm-cell>
       <tm-grid :width="750" :col="4">
-        <tm-grid-item :height="150" @click="openLink('teams/activity/activity?team_id=' + (info._id || ''))">
+        <tm-grid-item :height="150" @click="openLink('teams/activity/activity?team_id=' + (team.id || ''))">
           <tm-icon name="tmicon-flag-fill" :font-size="40"></tm-icon>
           <tm-text _class="pt-10" :font-size="22" label="全部活动"></tm-text>
         </tm-grid-item>
-        <tm-grid-item color="orange" :height="150" @click="openLink('teams/create/create?id=' + (info._id || ''))">
+        <tm-grid-item color="orange" :height="150" @click="openLink('teams/create/create?id=' + (team.id || ''))">
           <tm-icon name="tmicon-edit" :font-size="44"></tm-icon>
           <tm-text _class="pt-10" :font-size="22" label="修改组织"></tm-text>
         </tm-grid-item>
-        <tm-grid-item color="green" :height="150" @click="openLink('teams/approve/approve?team_id=' + (info._id || ''))">
+        <tm-grid-item color="green" :height="150" @click="openLink('teams/approve/approve?team_id=' + (team.id || ''))">
           <tm-icon name="tmicon-md-ribbon" :font-size="44"></tm-icon>
           <tm-text :font-size="22" label="组织认证"></tm-text>
         </tm-grid-item>
@@ -90,7 +90,7 @@
       <!-- 相册管理 -->
       <tm-cell :margin="[0, 0]" title="相册管理" :bottomBorder="true" rightIcon=""> </tm-cell>
       <tm-grid :width="750" :col="4">
-        <tm-grid-item :height="150" @click="openLink('teams/images/images?team_id=' + (info._id || ''))">
+        <tm-grid-item :height="150" @click="openLink('teams/images/images?team_id=' + (team.id || ''))">
           <tm-icon name="tmicon-picture-fill" :font-size="42"></tm-icon>
           <tm-text _class="pt-10" :font-size="22" label="相册"></tm-text>
         </tm-grid-item>
@@ -108,13 +108,13 @@ import { delTeam } from '@/common/index';
 import { debugLog } from '@/common/tools';
 
 const showWin = ref(false);
-const info = ref({
-  _id: '',
+const team = ref({
+  id: '',
   name: '组织名称',
   logo_path: '',
-  activityCount: 0,
-  joinCount: 0,
-  followCount: 0
+  act_cnt: 0,
+  join_cnt: 0,
+  follow_cnt: 0
 });
 onLoad((e: any) => {
   if (e.id) {
@@ -129,8 +129,8 @@ onLoad((e: any) => {
           return;
         }
         uni.$tm.u.toast('获取球队成功!');
-        info.value = res.data.team;
-        debugLog("info: ", info.value);
+        team.value = res.data.team;
+        debugLog("team: ", team.value);
       }
     })
   }
@@ -138,7 +138,7 @@ onLoad((e: any) => {
 
 function deleteConfirm() {
   delTeam({
-    id: info.value._id
+    id: team.value.id
   }).then(res => {
     if (res.code === 1000) {
       uni.$tm.u.toast('删除成功');
