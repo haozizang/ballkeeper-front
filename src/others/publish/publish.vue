@@ -139,7 +139,11 @@ watch(
     }
   }
 );
+
 onLoad(async (e: any) => {
+  debugLog('userStore.userInfo.id: ', userStore.userInfo);
+  ActForm.value.team_id = userStore.userInfo.team_id;
+
   if (e.id) {
     /*
     myActivityInfo({ id: e.id }).then(res => {
@@ -159,8 +163,9 @@ onLoad(async (e: any) => {
     */
   }
 })
+
 function confirm(e:any) {
-  debugLog('confirm',ActForm.value);
+  debugLog('confirm', ActForm.value);
   if(e.validate){
     uni.request({
       url: '/ballkeeper/create_activity/',
