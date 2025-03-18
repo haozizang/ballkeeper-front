@@ -37,14 +37,14 @@ const teamList = ref<any>([]);
 
 // 添加一个默认的空元素，表示不选择球队的选项，创建独立活动
 teamList.value.push({
-  id: '0',
+  id: '-1',
   name: '独立活动(不选择球队)',
 });
 
 onLoad(async (e: any) => {
-  console.log('props.modelValue: ', props.modelValue);
+  debugLog("props.modelValue: ", props.modelValue);
 
-  if (!props.modelValue) {
+  if (!props.modelValue || props.modelValue === '-1') {
     uni.$tm.u.toast('无team_id传入,无法获取球队信息');
     return;
   }

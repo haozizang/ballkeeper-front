@@ -120,7 +120,7 @@ onLoad((e: any) => {
   if (e.id) {
     uni.request({
       url: '/ballkeeper/get_team/',
-      method: 'POST',
+      method: 'GET',
       data: { team_id: e.id },
       success: (res: any) => {
         debugLog("get_team res: ", res);

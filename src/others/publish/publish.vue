@@ -86,6 +86,7 @@ const currentField = ref('');
 const start_time_text = ref('');
 const ActForm = ref<any>({
   name: '',
+  creator_id: userStore.userInfo.id,
   team_id: '',
   type_id: '',
   cover_path: '',
@@ -172,7 +173,6 @@ function confirm(e:any) {
       method: 'POST',
       data: {
         ...ActForm.value,
-        creator_id: userStore.userInfo.id,
       },
       success: (res: any) => {
         debugLog("create_activity res: ", res);
