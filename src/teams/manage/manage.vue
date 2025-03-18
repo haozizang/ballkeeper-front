@@ -4,7 +4,7 @@
       <view class="manage px-50 pt-30">
         <view class="flex flex-col-top-center">
           <tm-avatar :size="150" :img="getBaseUrl() + info.logo_path"></tm-avatar>
-          <view class="ml-30">{{ info.title }}</view>
+          <view class="ml-30">{{ info.name }}</view>
         </view>
         <view class="flex flex-between text-align-center py-50">
           <view>
@@ -110,7 +110,7 @@ import { debugLog } from '@/common/tools';
 const showWin = ref(false);
 const info = ref({
   _id: '',
-  title: '组织名称',
+  name: '组织名称',
   logo_path: '',
   activityCount: 0,
   joinCount: 0,

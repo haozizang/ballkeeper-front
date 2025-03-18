@@ -30,7 +30,7 @@
 
             <!-- 右侧内容 -->
             <view class="team-info ml-24">
-              <view class="title text-overflow-1">{{item.title}}</view>
+              <view class="title text-overflow-1">{{ item.name }}</view>
               <view class="tips text-overflow-2 mt-15">{{ item.content }}</view>
             </view>
           </view>
