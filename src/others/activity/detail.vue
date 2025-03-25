@@ -1,107 +1,110 @@
 <template>
   <tm-app>
-    <div class="activity-detail">
+    <view class="activity-detail">
       <!-- 头部信息 -->
-      <div class="header">
+      <view class="header">
         <!-- 球队信息 - 只有当活动属于球队时才显示 -->
-        <div class="team-logo-info" v-if="hasTeam">
-          <div class="logo">
-            <img :src="team.logoUrl || '/default-logo.png'" alt="球队Logo">
-          </div>
-          <div class="basic-info">
-            <h2>{{ team.name }}</h2>
-            <p class="stats">成员 {{ team.memberCnt }} 活动 {{ team.actCnt }}</p>
-          </div>
-        </div>
+        <view class="team-logo-info" v-if="hasTeam">
+          <view class="logo">
+            <img :src="getBaseUrl() + actTeam.logo_path" alt="球队Logo">
+          </view>
+          <view class="basic-info">
+            <h2>{{ actTeam.name }}</h2>
+            <p class="stats">成员 {{ actTeam.memberCnt }} 活动 {{ actTeam.actCnt }}</p>
+          </view>
+        </view>
 
         <!-- 活动主要信息 -->
-        <div class="info-list">
-          <div class="info-item">
-            <div class="icon"><i class="calendar-icon"></i></div>
-            <div class="text">{{ activity.date }} {{ activity.time }}</div>
-            <div class="views">{{ activity.viewCnt }}</div>
-          </div>
+        <view class="info-list">
+          <view class="ml-30">{{ activity.name }}</view>
+          <view class="info-item">
+            <view class="icon"><i class="calendar-icon"></i></view>
+            <view class="text">{{ activity.start_time }}</view>
+            <view class="views">{{ activity.viewCnt }}</view>
+          </view>
 
-          <div class="info-item">
-            <div class="icon"><i class="location-icon"></i></div>
-            <div class="text">{{ activity.location }}</div>
-            <div class="nav-link">场地导航 ></div>
-          </div>
+          <view class="info-item">
+            <view class="icon"><i class="location-icon"></i></view>
+            <view class="text">{{ activity.address }}</view>
+            <view class="nav-link">场地导航 ></view>
+          </view>
 
-          <div class="info-item">
-            <div class="icon"><i class="type-icon"></i></div>
-            <div class="text">{{ activity.type }}</div>
-          </div>
+          <view class="info-item">
+            <view class="icon"><i class="type-icon"></i></view>
+            <view class="text">{{ activity.type }}</view>
+          </view>
 
-          <div class="info-item">
-            <div class="icon"><i class="fee-icon"></i></div>
-            <div class="text">收费: {{ activity.fee }}</div>
-          </div>
-        </div>
+          <view class="info-item">
+            <view class="icon"><i class="fee-icon"></i></view>
+            <view class="text">收费: {{ activity.fee }}</view>
+          </view>
+        </view>
 
         <!-- 发布者信息 -->
-        <div class="publisher-info">
-          <div class="publisher">
+        <view class="publisher-info">
+          <view class="publisher">
             <img :src="activity.publisher.avatar" alt="发布者头像" class="avatar">
             <span class="name">{{ activity.publisher.name }}</span>
-          </div>
-          <div class="rating">
+          </view>
+          <view class="rating">
             <span v-for="i in 5" :key="i" class="star" :class="{ 'active': i <= activity.publisher.rating }"></span>
-          </div>
-        </div>
+          </view>
+        </view>
 
         <!-- 活动详细说明 -->
-        <div class="activity-details">
-          <p>时间: {{ activity.startTime }} ~ {{ activity.endTime }}</p>
+        <view class="activity-details">
+          <p>时间: {{ activity.start_time }}</p>
           <p>需知:</p>
-          <div class="details-content" v-html="activity.detailsHtml"></div>
-          <div v-if="activity.detailsExpanded" class="more">展开</div>
-        </div>
-      </div>
+          <view class="details-content" v-html="activity.detailsHtml"></view>
+          <view v-if="activity.detailsExpanded" class="more">展开</view>
+        </view>
+      </view>
 
       <!-- 报名信息 -->
-      <div class="signup-section">
-        <div class="signup-header">
-          <div class="signup-count">报名 {{ activity.signupCnt }}/{{ activity.maxSignupCnt }}</div>
-          <div class="signup-waiting">待定 {{ activity.waitingCnt }}</div>
-          <div class="signup-declined">请假 {{ activity.declinedCnt }}</div>
-        </div>
+      <view class="signup-section">
+        <view class="signup-header">
+          <view class="signup-count">报名 {{ activity.signupCnt }}/{{ activity.maxSignupCnt }}</view>
+          <view class="signup-waiting">待定 {{ activity.waitingCnt }}</view>
+          <view class="signup-declined">请假 {{ activity.declinedCnt }}</view>
+        </view>
 
         <!-- 报名用户列表 -->
-        <div class="attendees-list">
-          <div v-for="(attendee, index) in activity.attendees" :key="index" class="attendee-item">
-            <img :src="attendee.avatar" alt="用户头像" class="avatar">
+        <view class="attendees-list">
+          <view v-for="(attendee, index) in activity.attendees" :key="index" class="attendee-item">
+            <img :src="getBaseUrl() + attendee.avatar" alt="用户头像" class="avatar">
             <span class="name">{{ attendee.name }}</span>
-          </div>
-        </div>
-      </div>
-    </div>
+          </view>
+        </view>
+      </view>
+    </view>
   </tm-app>
 </template>
 
-<script setup>
-import { reactive, ref } from 'vue'
+<script setup lang="ts">
+import { onLoad } from '@dcloudio/uni-app';
+import { ref } from 'vue'
+import { getBaseUrl } from '@/common/env';
+import { debugLog } from '@/common/tools';
 
 // 控制是否显示球队信息
-const hasTeam = ref(true) // 默认为false，表示由个人创建的活动
+const hasTeam = ref(false);  // 默认为false，表示由个人创建的活动
 
-// 使用reactive创建响应式数据
-const team = reactive({
-  logoUrl: '/football-logo.png',
-  actCnt: 40,
-  memberCnt: 36,
-  name: '东单足球'
+const actTeam = ref({
+  id: '',
+  name: '组织名称',
+  logo_path: '',
+  act_cnt: 0,
+  join_cnt: 0,
+  follow_cnt: 0
 });
-const activity = reactive({
-  name: '东单足球',
-  date: '3月12日-周三',
-  time: '20:00',
+
+const activity = ref({
+  name: '活动名称',
   viewCnt: 137,
-  location: '章云足球训练营(天坛东门校区)',
-  type: '足球6人制/平台可见',
+  address: '活动地址',
+  type: '活动类型',
   fee: '自定义收费 (未开启)',
-  startTime: '20:00',
-  endTime: '22:00',
+  start_time: '开始时间',
   publisher: {
     name: '晓蒙',
     avatar: '/avatar1.png',
@@ -126,7 +129,30 @@ const activity = reactive({
     { name: '刘世华', avatar: '/avatar5.png' },
     { name: 'john', avatar: '/avatar6.png' }
   ]
-})
+});
+
+onLoad((e: any) => {
+  debugLog("DBG: e: ", e);
+  if (!e.id) {
+    uni.$tm.u.toast('活动ID为空!terminate');
+    return;
+  }
+  uni.request({
+    url: '/ballkeeper/get_activity/',
+    method: 'GET',
+    data: { activity_id: e.id },
+    success: (res: any) => {
+      debugLog("get_activity res: ", res);
+      if (res.statusCode !== 200) {
+        uni.$tm.u.toast(`${res.data.detail}(${res.statusCode})` || '获取失败');
+        return;
+      }
+      uni.$tm.u.toast('获取活动成功!');
+      activity.value = res.data.activity;
+      debugLog("activity: ", activity.value);
+    }
+  });
+});
 
 // 实际应用中，可以在组件挂载后从API获取活动信息，并根据返回的数据设置hasTeam的值
 // 例如：
@@ -136,7 +162,7 @@ const activity = reactive({
 //     hasTeam.value = true;
 //     // 加载球队信息
 //     const teamData = await getTeamDetail(activityData.teamId);
-//     Object.assign(team, teamData);
+//     Object.assign(actTeam, teamData);
 //   }
 //   Object.assign(activity, activityData);
 // });

@@ -116,6 +116,7 @@ const team = ref({
   join_cnt: 0,
   follow_cnt: 0
 });
+
 onLoad((e: any) => {
   if (e.id) {
     uni.request({
