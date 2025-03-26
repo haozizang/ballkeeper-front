@@ -10,7 +10,7 @@
           </view>
           <view class="basic-info">
             <h2>{{ actTeam.name }}</h2>
-            <p class="stats">成员 {{ actTeam.memberCnt }} 活动 {{ actTeam.actCnt }}</p>
+            <p class="stats">成员 {{ actTeam.member_cnt }} 活动 {{ actTeam.act_cnt }}</p>
           </view>
         </view>
 
@@ -19,8 +19,8 @@
           <view class="ml-30">{{ activity.name }}</view>
           <view class="info-item">
             <view class="icon"><i class="calendar-icon"></i></view>
-            <view class="text">{{ activity.start_time }}</view>
-            <view class="views">{{ activity.viewCnt }}</view>
+            <view class="text">{{ formatTime(activity.start_time) }}</view>
+            <view class="views">{{ activity.view_cnt }}</view>
           </view>
 
           <view class="info-item">
@@ -43,7 +43,7 @@
         <!-- 发布者信息 -->
         <view class="publisher-info">
           <view class="publisher">
-            <img :src="activity.publisher.avatar" alt="发布者头像" class="avatar">
+            <img :src="getBaseUrl() + activity.publisher.avatar" alt="发布者头像" class="avatar">
             <span class="name">{{ activity.publisher.name }}</span>
           </view>
           <view class="rating">
@@ -53,7 +53,7 @@
 
         <!-- 活动详细说明 -->
         <view class="activity-details">
-          <p>时间: {{ activity.start_time }}</p>
+          <p>时间: {{ formatTime(activity.start_time) }}</p>
           <p>需知:</p>
           <view class="details-content" v-html="activity.detailsHtml"></view>
           <view v-if="activity.detailsExpanded" class="more">展开</view>
@@ -84,7 +84,7 @@
 import { onLoad } from '@dcloudio/uni-app';
 import { ref } from 'vue'
 import { getBaseUrl } from '@/common/env';
-import { debugLog } from '@/common/tools';
+import { debugLog, formatTime } from '@/common/tools';
 
 // 控制是否显示球队信息
 const hasTeam = ref(false);  // 默认为false，表示由个人创建的活动
@@ -94,17 +94,18 @@ const actTeam = ref({
   name: '组织名称',
   logo_path: '',
   act_cnt: 0,
+  member_cnt: 0,
   join_cnt: 0,
   follow_cnt: 0
 });
 
 const activity = ref({
   name: '活动名称',
-  viewCnt: 137,
+  view_cnt: 137,
   address: '活动地址',
   type: '活动类型',
   fee: '自定义收费 (未开启)',
-  start_time: '开始时间',
+  start_time: 0,
   publisher: {
     name: '晓蒙',
     avatar: '/avatar1.png',
@@ -132,6 +133,7 @@ const activity = ref({
 });
 
 onLoad((e: any) => {
+
   debugLog("DBG: e: ", e);
   if (!e.id) {
     uni.$tm.u.toast('活动ID为空!terminate');

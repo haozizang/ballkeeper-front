@@ -92,3 +92,16 @@ export const timeText = computed(() => (time: number) => {
   let week = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
   return arr[0] + ' ' + week[Number(arr[1])]
 })
+
+// 添加时间格式化函数
+export const formatTime = function (timestamp: number) {
+  if (!timestamp) return '';
+  const date = new Date(timestamp);
+  return date.toLocaleString('zh-CN', {
+    year: 'numeric',
+    month: 'numeric',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+}
