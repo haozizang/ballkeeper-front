@@ -31,7 +31,7 @@
 
           <view class="info-item">
             <view class="icon"><i class="type-icon"></i></view>
-            <view class="text">{{ activity.type }}</view>
+            <view class="text">{{ ACT_TYPES.find(item => item.id === activity.type_id)?.name || '未知' }}</view>
           </view>
 
           <view class="info-item">
@@ -85,6 +85,7 @@ import { onLoad } from '@dcloudio/uni-app';
 import { ref } from 'vue'
 import { getBaseUrl } from '@/common/env';
 import { debugLog, formatTime } from '@/common/tools';
+import { ACT_TYPES } from '@/common/data'
 
 // 控制是否显示球队信息
 const hasTeam = ref(false);  // 默认为false，表示由个人创建的活动
@@ -103,7 +104,7 @@ const activity = ref({
   name: '活动名称',
   view_cnt: 137,
   address: '活动地址',
-  type: '活动类型',
+  type_id: 0,
   fee: '自定义收费 (未开启)',
   start_time: 0,
   publisher: {

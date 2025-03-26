@@ -36,7 +36,7 @@
       </tm-form>
     </tm-sheet>
     <!--  -->
-    <tm-picker v-model:show="showActType" :columns="actTypeList" mapKey="name" v-model="actTypeInd"></tm-picker>
+    <tm-picker v-model:show="showActType" :columns="ACT_TYPES" mapKey="name" v-model="actTypeInd"></tm-picker>
     <!-- 时间 -->
     <tm-time-picker
       v-if="showDate"
@@ -59,22 +59,18 @@
 <script setup lang="ts">
 import { ref,watch,computed } from 'vue';
 import {debugLog} from '@/common/tools'
+import { ACT_TYPES } from '@/common/data'
 import { onLoad } from '@dcloudio/uni-app';
 import { useUserStore } from '@/stores/user';
 
 const userStore = useUserStore();
 
-const actTypeList = ref([
-  { id: '0', name: '足球(6人制)' },
-  { id: '1', name: '足球(8人制)' },
-  { id: '2', name: '足球(11人制)' }
-]);
 const showActType = ref(false);
 const actTypeInd = ref<number[]>([]);
 const actTypeStr = ref('');
 const actTypeText = computed(() => {
   if (!ActForm.value.type_id) return '请选择活动分类';
-  const actType = actTypeList.value.find(item => item.id === ActForm.value.type_id);
+  const actType = ACT_TYPES.find(item => item.id === ActForm.value.type_id);
   return actType ? actType.name : '请选择活动分类';
 })
 
@@ -119,7 +115,7 @@ function chooseAddress() {
 }
 
 watch(actTypeInd, (val) => {
-  const selectedActType = actTypeList.value[val[0]];
+  const selectedActType = ACT_TYPES[val[0]];
   if (selectedActType) {
     ActForm.value.type_id = selectedActType.id;
     actTypeStr.value = selectedActType.name;
