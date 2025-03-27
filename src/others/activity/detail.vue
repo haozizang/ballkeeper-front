@@ -17,7 +17,7 @@
         <!-- 发布者信息 -->
         <view class="publisher-info">
           <view class="publisher">
-            <img :src="getBaseUrl() + publisher.avatar" alt="发布者头像" class="avatar">
+            <img :src="getBaseUrl() + publisher.avatar_path" alt="发布者头像" class="avatar">
             <span class="name">{{ publisher.username }}</span>
           </view>
           <view class="rating">
@@ -148,7 +148,7 @@ const actTeam = ref({
 
 const publisher = ref({
   username: '晓蒙',
-  avatar: '/avatar1.png',
+  avatar_path: '',
   rating: 4
 });
 
