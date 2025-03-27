@@ -42,19 +42,18 @@
         <!-- 发布者信息 -->
         <view class="publisher-info">
           <view class="publisher">
-            <img :src="getBaseUrl() + activity.publisher.avatar" alt="发布者头像" class="avatar">
-            <span class="name">{{ activity.publisher.name }}</span>
+            <img :src="getBaseUrl() + publisher.avatar" alt="发布者头像" class="avatar">
+            <span class="name">{{ publisher.name }}</span>
           </view>
           <view class="rating">
-            <span v-for="i in 5" :key="i" class="star" :class="{ 'active': i <= activity.publisher.rating }"></span>
+            <span v-for="i in 5" :key="i" class="star" :class="{ 'active': i <= publisher.rating }"></span>
           </view>
         </view>
 
         <!-- 活动详细说明 -->
         <view class="activity-details">
-          <p>时间: {{ formatTime(activity.start_time) }}</p>
-          <p>需知:</p>
-          <view class="details-content" v-html="activity.detailsHtml"></view>
+          <p>活动须知:</p>
+          <view class="text">{{ activity.content }}</view>
           <view v-if="activity.detailsExpanded" class="more">展开</view>
         </view>
       </view>
@@ -99,23 +98,19 @@ const actTeam = ref({
   follow_cnt: 0
 });
 
+const publisher = ref({
+  name: '晓蒙',
+  avatar: '/avatar1.png',
+  rating: 4
+});
+
 const activity = ref({
   name: '活动名称',
   address: '活动地址',
   type_id: 0,
   fee: '自定义收费 (未开启)',
   start_time: 0,
-  publisher: {
-    name: '晓蒙',
-    avatar: '/avatar1.png',
-    rating: 4
-  },
-  detailsHtml: `
-    1. 场地：东城区天坛东门足球场，地铁5号线天坛东门站C出口向东30米；<br>
-    2. 费用AA，人均30元左右，每次招募14-16人左右，6人制场地（含门将6vs6或7vs7）；<br>
-    3. 长期招募门将，专职门将免费；<br>
-    4. 防止报名爽约及该场地预定需全额费用，请合理安排时间，报名后尽量不要请假，活动当日取消报名的队员仍需缴纳费用；报名后临时请假取消的请及时点击请假，以便腾出名额给其他需要报名参加的队友；首次报...
-  `,
+  content: '',
   detailsExpanded: false,
   signupCnt: 14,
   maxSignupCnt: 18,
@@ -336,7 +331,7 @@ onLoad((e: any) => {
 
 /* 图标样式 */
 .calendar-icon::before {
-  content: "📅";
+  content: "⏰";
 }
 
 .location-icon::before {
