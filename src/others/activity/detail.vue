@@ -14,9 +14,22 @@
           </view>
         </view>
 
+        <!-- 发布者信息 -->
+        <view class="publisher-info">
+          <view class="publisher">
+            <img :src="getBaseUrl() + publisher.avatar" alt="发布者头像" class="avatar">
+            <span class="name">{{ publisher.username }}</span>
+          </view>
+          <view class="rating">
+            <span v-for="i in 5" :key="i" class="star" :class="{ 'active': i <= publisher.rating }"></span>
+          </view>
+        </view>
+
         <!-- 活动主要信息 -->
         <view class="info-list">
+          <view class="info-item">
           <view class="ml-30">活动名称: {{ activity.name }}</view>
+          </view>
           <view class="info-item">
             <view class="icon"><i class="calendar-icon"></i></view>
             <view class="text">活动时间: {{ formatTime(activity.start_time) }}</view>
@@ -37,25 +50,15 @@
             <view class="icon"><i class="fee-icon"></i></view>
             <view class="text">收费: {{ activity.fee }}</view>
           </view>
-        </view>
-
-        <!-- 发布者信息 -->
-        <view class="publisher-info">
-          <view class="publisher">
-            <img :src="getBaseUrl() + publisher.avatar" alt="发布者头像" class="avatar">
-            <span class="name">{{ publisher.name }}</span>
-          </view>
-          <view class="rating">
-            <span v-for="i in 5" :key="i" class="star" :class="{ 'active': i <= publisher.rating }"></span>
+          <!-- 活动详细说明 -->
+          <!-- <view class="activity-details"> -->
+          <view class="info-item">
+            <p>活动须知:</p>
+            <view class="text">{{ activity.content }}</view>
+            <view v-if="activity.detailsExpanded" class="more">展开</view>
           </view>
         </view>
 
-        <!-- 活动详细说明 -->
-        <view class="activity-details">
-          <p>活动须知:</p>
-          <view class="text">{{ activity.content }}</view>
-          <view v-if="activity.detailsExpanded" class="more">展开</view>
-        </view>
       </view>
 
       <!-- 报名信息 -->
@@ -107,12 +110,12 @@ const apiService = {
       });
     });
   },
-  
+
   // 获取用户信息
   getUser: (userId: string): Promise<any> => {
     return new Promise((resolve, reject) => {
       uni.request({
-        url: '/ballkeeper/get_user_info/',
+        url: '/ballkeeper/get_user/',
         method: 'GET',
         data: { user_id: userId },
         success: (res: any) => {
@@ -144,7 +147,7 @@ const actTeam = ref({
 });
 
 const publisher = ref({
-  name: '晓蒙',
+  username: '晓蒙',
   avatar: '/avatar1.png',
   rating: 4
 });
@@ -177,7 +180,7 @@ onLoad((e: any) => {
     uni.$tm.u.toast('活动ID为空!terminate');
     return;
   }
-  
+
   // 使用async/await和API服务
   const loadData = async () => {
     try {
@@ -185,7 +188,7 @@ onLoad((e: any) => {
       const activityData = await apiService.getActivity(e.id);
       activity.value = activityData;
       debugLog("活动数据:", activity.value);
-      
+
       // 如果有创建者ID，获取创建者信息
       if (activityData.creator_id) {
         const userData = await apiService.getUser(activityData.creator_id);
@@ -197,7 +200,7 @@ onLoad((e: any) => {
       uni.$tm.u.toast(error.message || '获取数据失败');
     }
   };
-  
+
   // 执行数据加载
   loadData();
 });
@@ -220,6 +223,9 @@ onLoad((e: any) => {
   display: flex;
   align-items: center;
   margin-bottom: 15px;
+  padding: 5px;
+  border: 1px solid #f0f0f0;
+  border-radius: 12px;
 }
 
 .logo {
