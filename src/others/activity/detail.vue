@@ -16,16 +16,15 @@
 
         <!-- 活动主要信息 -->
         <view class="info-list">
-          <view class="ml-30">{{ activity.name }}</view>
+          <view class="ml-30">活动名称: {{ activity.name }}</view>
           <view class="info-item">
             <view class="icon"><i class="calendar-icon"></i></view>
-            <view class="text">{{ formatTime(activity.start_time) }}</view>
-            <view class="views">{{ activity.view_cnt }}</view>
+            <view class="text">活动时间: {{ formatTime(activity.start_time) }}</view>
           </view>
 
           <view class="info-item">
             <view class="icon"><i class="location-icon"></i></view>
-            <view class="text">{{ activity.address }}</view>
+            <view class="text">地址: {{ activity.address }}</view>
             <view class="nav-link">场地导航 ></view>
           </view>
 
@@ -102,7 +101,6 @@ const actTeam = ref({
 
 const activity = ref({
   name: '活动名称',
-  view_cnt: 137,
   address: '活动地址',
   type_id: 0,
   fee: '自定义收费 (未开启)',
@@ -134,7 +132,6 @@ const activity = ref({
 });
 
 onLoad((e: any) => {
-
   debugLog("DBG: e: ", e);
   if (!e.id) {
     uni.$tm.u.toast('活动ID为空!terminate');
@@ -150,30 +147,11 @@ onLoad((e: any) => {
         uni.$tm.u.toast(`${res.data.detail}(${res.statusCode})` || '获取失败');
         return;
       }
-      uni.$tm.u.toast('获取活动成功!');
       activity.value = res.data.activity;
       debugLog("activity: ", activity.value);
     }
   });
 });
-
-// 实际应用中，可以在组件挂载后从API获取活动信息，并根据返回的数据设置hasTeam的值
-// 例如：
-// onMounted(async () => {
-//   const activityData = await getActivityDetail(activityId);
-//   if (activityData.teamId) {
-//     hasTeam.value = true;
-//     // 加载球队信息
-//     const teamData = await getTeamDetail(activityData.teamId);
-//     Object.assign(actTeam, teamData);
-//   }
-//   Object.assign(activity, activityData);
-// });
-
-// Vue 3下组件名称可以通过defineOptions设置(如果需要的话)
-// defineOptions({
-//   name: 'ActivityDetail'
-// })
 </script>
 
 <style scoped>

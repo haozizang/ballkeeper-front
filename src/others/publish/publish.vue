@@ -184,8 +184,6 @@ function confirm(e:any) {
       }
     })
 
-
-
     /*
     activitySave({
       ...e.data,
