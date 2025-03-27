@@ -220,7 +220,7 @@ function confirm(e: any) {
   if (e.validate) {
     uni.request({
       url: "/ballkeeper/login/",
-      method: 'POST',
+      method: 'GET',
       data: {
         ...e.data,
         loginType: 'account'
