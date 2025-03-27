@@ -20,15 +20,12 @@
             <img :src="getBaseUrl() + publisher.avatar_path" alt="发布者头像" class="avatar">
             <span class="name">{{ publisher.username }}</span>
           </view>
-          <view class="rating">
-            <span v-for="i in 5" :key="i" class="star" :class="{ 'active': i <= publisher.rating }"></span>
-          </view>
         </view>
 
         <!-- 活动主要信息 -->
         <view class="info-list">
           <view class="info-item">
-          <view class="ml-30">活动名称: {{ activity.name }}</view>
+            <view class="activity-name">{{ activity.name }}</view>
           </view>
           <view class="info-item">
             <view class="icon"><i class="calendar-icon"></i></view>
@@ -89,7 +86,7 @@ import { debugLog, formatTime } from '@/common/tools';
 import { ACT_TYPES } from '@/common/data'
 import { apiService } from '@/common/requests';
 // 控制是否显示球队信息
-const hasTeam = ref(false);  // 默认为false,表示由个人创建的活动
+const hasTeam = ref(true);  // 默认为false,表示由个人创建的活动
 
 const actTeam = ref({
   id: '',
@@ -104,7 +101,6 @@ const actTeam = ref({
 const publisher = ref({
   username: '晓蒙',
   avatar_path: '',
-  rating: 4
 });
 
 const activity = ref({
@@ -245,7 +241,6 @@ onLoad((e: any) => {
 .publisher-info {
   display: flex;
   align-items: center;
-  margin-bottom: 15px;
 }
 
 .publisher {
@@ -253,28 +248,22 @@ onLoad((e: any) => {
   align-items: center;
 }
 
+/* 活动名称样式 */
+.activity-name {
+  font-size: 20px;
+  font-weight: 700;
+  color: #333333;
+  text-align: left;
+  padding: 10px 15px;
+  width: 100%;
+  background-color: #ebebeb;
+}
+
 .avatar {
   width: 30px;
   height: 30px;
   border-radius: 50%;
   margin-right: 8px;
-}
-
-.rating {
-  margin-left: 10px;
-}
-
-.star {
-  display: inline-block;
-  width: 16px;
-  height: 16px;
-  background-color: #e0e0e0;
-  clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
-  margin-right: 2px;
-}
-
-.star.active {
-  background-color: #ff9800;
 }
 
 .activity-details {
@@ -378,4 +367,5 @@ onLoad((e: any) => {
   border-radius: 6px;
   font-size: 14px;
 }
+
 </style>
