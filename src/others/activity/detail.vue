@@ -54,7 +54,7 @@
           <!-- <view class="activity-details"> -->
           <view class="info-item">
             <p>活动须知:</p>
-            <view class="text">{{ activity.content }}</view>
+            <view class="text" style="white-space: pre-wrap;">{{ activity.content }}</view>
             <view v-if="activity.detailsExpanded" class="more">展开</view>
           </view>
         </view>
@@ -87,52 +87,7 @@ import { ref } from 'vue'
 import { getBaseUrl } from '@/common/env';
 import { debugLog, formatTime } from '@/common/tools';
 import { ACT_TYPES } from '@/common/data'
-
-// API服务函数 - 使用uni.request
-const apiService = {
-  // 获取活动详情
-  getActivity: (activityId: string): Promise<any> => {
-    return new Promise((resolve, reject) => {
-      uni.request({
-        url: '/ballkeeper/get_activity/',
-        method: 'GET',
-        data: { activity_id: activityId },
-        success: (res: any) => {
-          if (res.statusCode !== 200) {
-            reject(new Error(`${res.data.detail}(${res.statusCode})` || '获取失败'));
-            return;
-          }
-          resolve(res.data.activity);
-        },
-        fail: (err) => {
-          reject(err);
-        }
-      });
-    });
-  },
-
-  // 获取用户信息
-  getUser: (userId: string): Promise<any> => {
-    return new Promise((resolve, reject) => {
-      uni.request({
-        url: '/ballkeeper/get_user/',
-        method: 'GET',
-        data: { user_id: userId },
-        success: (res: any) => {
-          if (res.statusCode !== 200) {
-            reject(new Error(`${res.data.detail}(${res.statusCode})` || '获取用户失败'));
-            return;
-          }
-          resolve(res.data.user);
-        },
-        fail: (err) => {
-          reject(err);
-        }
-      });
-    });
-  }
-};
-
+import { apiService } from '@/common/requests';
 // 控制是否显示球队信息
 const hasTeam = ref(false);  // 默认为false,表示由个人创建的活动
 
@@ -174,6 +129,26 @@ const activity = ref({
   ]
 });
 
+// 使用async/await和API服务
+const getActInfo = async (act_id: any) => {
+  try {
+    // 获取活动数据
+    const activityData = await apiService.getActivity(act_id);
+    activity.value = activityData;
+    debugLog("活动数据:", activity.value);
+
+    // 如果有创建者ID，获取创建者信息
+    if (activityData.creator_id) {
+      const userData = await apiService.getUser(activityData.creator_id);
+      publisher.value = userData;
+      debugLog("发布者数据:", publisher.value);
+    }
+  } catch (error: any) {
+    debugLog("请求错误:", error);
+    uni.$tm.u.toast(error.message || '获取数据失败');
+  }
+};
+
 onLoad((e: any) => {
   debugLog("DBG: e: ", e);
   if (!e.id) {
@@ -181,28 +156,8 @@ onLoad((e: any) => {
     return;
   }
 
-  // 使用async/await和API服务
-  const loadData = async () => {
-    try {
-      // 获取活动数据
-      const activityData = await apiService.getActivity(e.id);
-      activity.value = activityData;
-      debugLog("活动数据:", activity.value);
-
-      // 如果有创建者ID，获取创建者信息
-      if (activityData.creator_id) {
-        const userData = await apiService.getUser(activityData.creator_id);
-        publisher.value = userData;
-        debugLog("发布者数据:", publisher.value);
-      }
-    } catch (error: any) {
-      debugLog("请求错误:", error);
-      uni.$tm.u.toast(error.message || '获取数据失败');
-    }
-  };
-
   // 执行数据加载
-  loadData();
+  getActInfo(e.id);
 });
 </script>
 
