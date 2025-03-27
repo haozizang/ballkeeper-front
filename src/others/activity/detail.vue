@@ -52,9 +52,9 @@
           </view>
           <!-- 活动详细说明 -->
           <!-- <view class="activity-details"> -->
-          <view class="info-item">
-            <p>活动须知:</p>
-            <view class="text" style="white-space: pre-wrap;">{{ activity.content }}</view>
+          <view class="info-item flex-col">
+            <p class="content-title">活动说明:</p>
+            <view class="text content-block" style="white-space: pre-wrap;">{{ activity.content }}</view>
             <view v-if="activity.detailsExpanded" class="more">展开</view>
           </view>
         </view>
@@ -359,5 +359,23 @@ onLoad((e: any) => {
 
 .fee-icon::before {
   content: "💰";
+}
+
+.flex-col {
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.content-title {
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+
+.content-block {
+  width: 100%;
+  padding: 8px;
+  background-color: #f9f9f9;
+  border-radius: 6px;
+  font-size: 14px;
 }
 </style>
