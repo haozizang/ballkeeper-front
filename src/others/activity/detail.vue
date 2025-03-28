@@ -59,18 +59,55 @@
 
     <!-- 报名信息 -->
     <view class="signup-section">
-      <view class="signup-header">
-        <view class="signup-count">报名 {{ activity.signupCnt }}/{{ activity.maxSignupCnt }}</view>
-        <view class="signup-waiting">待定 {{ activity.waitingCnt }}</view>
-        <view class="signup-declined">请假 {{ activity.declinedCnt }}</view>
+      <!-- 报名用户列表 -->
+      <view class="user-list-section">
+        <view class="section-header">
+          <view class="section-title">报名 {{ signupUsers.length }}/{{ activity.maxSignupCnt }}</view>
+        </view>
+        <view class="attendees-list">
+          <view v-for="(attendee, index) in signupUsers" :key="index" class="attendee-item">
+            <img :src="getBaseUrl() + attendee.avatar" alt="用户头像" class="avatar">
+            <span class="name">{{ attendee.name }}</span>
+          </view>
+          <view class="empty-tip" v-if="signupUsers.length === 0">暂无报名用户</view>
+        </view>
       </view>
 
-      <!-- 报名用户列表 -->
-      <view class="attendees-list">
-        <view v-for="(attendee, index) in attendees" :key="index" class="attendee-item">
-          <img :src="getBaseUrl() + attendee.avatar" alt="用户头像" class="avatar">
-          <span class="name">{{ attendee.name }}</span>
+      <!-- 待定用户列表 -->
+      <view class="user-list-section">
+        <view class="section-header">
+          <view class="section-title">待定 {{ waitingUsers.length }}</view>
         </view>
+        <view class="attendees-list">
+          <view v-for="(attendee, index) in waitingUsers" :key="index" class="attendee-item">
+            <img :src="getBaseUrl() + attendee.avatar" alt="用户头像" class="avatar">
+            <span class="name">{{ attendee.name }}</span>
+          </view>
+          <view class="empty-tip" v-if="waitingUsers.length === 0">暂无待定用户</view>
+        </view>
+      </view>
+
+      <!-- 请假用户列表 -->
+      <view class="user-list-section">
+        <view class="section-header">
+          <view class="section-title">请假 {{ declinedUsers.length }}</view>
+        </view>
+        <view class="attendees-list">
+          <view v-for="(attendee, index) in declinedUsers" :key="index" class="attendee-item">
+            <img :src="getBaseUrl() + attendee.avatar" alt="用户头像" class="avatar">
+            <span class="name">{{ attendee.name }}</span>
+          </view>
+          <view class="empty-tip" v-if="declinedUsers.length === 0">暂无请假用户</view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 底部固定操作按钮 -->
+    <view class="fixed-bottom">
+      <view class="action-buttons">
+        <button class="btn btn-primary" @click="handleSignup">报名</button>
+        <button class="btn btn-secondary" @click="handlePending">待定</button>
+        <button class="btn btn-secondary" @click="handleLeave">请假</button>
       </view>
     </view>
   </tm-app>
@@ -101,14 +138,10 @@ const publisher = ref({
   avatar_path: '',
 });
 
-const attendees = ref([
-  { name: '晓蒙', avatar: '/avatar1.png' },
-  { name: 'sunshuo', avatar: '/avatar2.png' },
-  { name: 'jacklee', avatar: '/avatar3.png' },
-  { name: '鞍', avatar: '/avatar4.png' },
-  { name: '刘世华', avatar: '/avatar5.png' },
-  { name: 'john', avatar: '/avatar6.png' }
-]);
+// 定义三种状态的用户列表
+const signupUsers = ref<any[]>([]);
+const waitingUsers = ref<any[]>([]);
+const declinedUsers = ref<any[]>([]);
 
 const activity = ref({
   name: '活动名称',
@@ -148,11 +181,47 @@ const getActInfo = async (act_id: any) => {
 
     const act_users = await apiService.getActUsers(activityData.id);
     debugLog("DBG: act_users: ", act_users);
-    attendees.value = act_users;
+    
+    // 根据用户状态分类
+    // 假设API返回的用户数据中有state字段：1=报名，2=待定，3=请假
+    signupUsers.value = act_users.filter((user: any) => user.state === 1 || !user.state);
+    waitingUsers.value = act_users.filter((user: any) => user.state === 2);
+    declinedUsers.value = act_users.filter((user: any) => user.state === 3);
+    
+    // 如果API没有提供state字段，可以先测试用临时数据
+    if (signupUsers.value.length === 0 && waitingUsers.value.length === 0 && declinedUsers.value.length === 0) {
+      // 临时测试数据
+      signupUsers.value = act_users.slice(0, Math.min(4, act_users.length));
+      if (act_users.length > 4) {
+        waitingUsers.value = act_users.slice(4, Math.min(5, act_users.length));
+      }
+      if (act_users.length > 5) {
+        declinedUsers.value = act_users.slice(5);
+      }
+    }
   } catch (error: any) {
     debugLog("请求错误:", error);
     uni.$tm.u.toast(error.message || '获取数据失败');
   }
+};
+
+// 按钮点击处理函数
+const handleSignup = () => {
+  debugLog("用户点击了报名按钮");
+  uni.$tm.u.toast('报名功能开发中...');
+  // TODO: 实现报名功能
+};
+
+const handleLeave = () => {
+  debugLog("用户点击了请假按钮");
+  uni.$tm.u.toast('请假功能开发中...');
+  // TODO: 实现请假功能
+};
+
+const handlePending = () => {
+  debugLog("用户点击了待定按钮");
+  uni.$tm.u.toast('待定功能开发中...');
+  // TODO: 实现待定功能
 };
 
 onLoad((e: any) => {
@@ -191,9 +260,8 @@ onLoad((e: any) => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 15px;
+  margin-bottom: 10px;
   padding-bottom: 10px;
-  border-bottom: 1px solid #f0f0f0;
 }
 
 .team-logo-info {
@@ -291,45 +359,62 @@ onLoad((e: any) => {
 .signup-section {
   background-color: white;
   border-radius: 8px;
-  padding: 15px;
+  padding: 10px;
+  margin-bottom: 70px;
 }
 
-.signup-header {
+.user-list-section {
+  margin-bottom: 12px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  padding: 8px;
+}
+
+.section-header {
   display: flex;
-  margin-bottom: 15px;
-  padding-bottom: 10px;
+  margin-bottom: 6px;
+  padding-bottom: 4px;
   border-bottom: 1px solid #f0f0f0;
 }
 
-.signup-count {
+.section-title {
   font-weight: 500;
-  margin-right: 15px;
-}
-
-.signup-waiting, .signup-declined {
-  color: #666;
-  margin-right: 15px;
+  color: #333;
+  font-size: 15px;
 }
 
 .attendees-list {
   display: flex;
   flex-wrap: wrap;
+  min-height: 30px;
+}
+
+.attendees-list:empty {
+  min-height: 0;
+}
+
+.empty-tip {
+  width: 100%;
+  text-align: center;
+  color: #999;
+  padding: 15px 0;
+  font-size: 13px;
 }
 
 .attendee-item {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-right: 15px;
-  margin-bottom: 15px;
-  width: 60px;
+  margin-right: 12px;
+  margin-bottom: 10px;
+  width: 55px;
 }
 
 .attendee-item .avatar {
-  width: 50px;
-  height: 50px;
+  width: 45px;
+  height: 45px;
   border-radius: 50%;
-  margin-bottom: 5px;
+  margin-bottom: 3px;
 }
 
 .attendee-item .name {
@@ -377,4 +462,65 @@ onLoad((e: any) => {
   font-size: 14px;
 }
 
+/* 固定在底部的按钮 */
+.fixed-bottom {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background-color: #fff;
+  padding: 10px 15px;
+  box-shadow: 0 -3px 10px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+}
+
+.action-buttons {
+  display: flex;
+  justify-content: space-between;
+}
+
+.btn {
+  flex: 1;
+  /* padding: 12px 0; */
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  font-weight: 500;
+  text-align: center;
+  cursor: pointer;
+  margin: 0 8px;
+  transition: all 0.2s ease;
+  height: 45px;
+  line-height: 45px;
+}
+
+.btn:first-child {
+  margin-left: 0;
+}
+
+.btn:last-child {
+  margin-right: 0;
+}
+
+.btn-primary {
+  background-color: #3b7aff;
+  color: white;
+  box-shadow: 0 2px 5px rgba(59, 122, 255, 0.3);
+}
+
+.btn-primary:active {
+  background-color: #2960d8;
+  transform: translateY(1px);
+}
+
+.btn-secondary {
+  background-color: #f2f2f2;
+  color: #666;
+  border: 1px solid #ddd;
+}
+
+.btn-secondary:active {
+  background-color: #e5e5e5;
+  transform: translateY(1px);
+}
 </style>
