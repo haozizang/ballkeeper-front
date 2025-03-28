@@ -72,6 +72,13 @@
           <span class="name">{{ attendee.name }}</span>
         </view>
       </view>
+
+      <!-- 操作按钮 -->
+      <view class="action-buttons">
+        <button class="btn btn-primary" @click="handleSignup">报名</button>
+        <button class="btn btn-secondary" @click="handleLeave">请假</button>
+        <button class="btn btn-secondary" @click="handlePending">待定</button>
+      </view>
     </view>
   </tm-app>
 </template>
@@ -153,6 +160,25 @@ const getActInfo = async (act_id: any) => {
     debugLog("请求错误:", error);
     uni.$tm.u.toast(error.message || '获取数据失败');
   }
+};
+
+// 按钮点击处理函数
+const handleSignup = () => {
+  debugLog("用户点击了报名按钮");
+  uni.$tm.u.toast('报名功能开发中...');
+  // TODO: 实现报名功能
+};
+
+const handleLeave = () => {
+  debugLog("用户点击了请假按钮");
+  uni.$tm.u.toast('请假功能开发中...');
+  // TODO: 实现请假功能
+};
+
+const handlePending = () => {
+  debugLog("用户点击了待定按钮");
+  uni.$tm.u.toast('待定功能开发中...');
+  // TODO: 实现待定功能
 };
 
 onLoad((e: any) => {
@@ -375,6 +401,56 @@ onLoad((e: any) => {
   background-color: #f9f9f9;
   border-radius: 6px;
   font-size: 14px;
+}
+
+.action-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+  padding: 0 10px;
+}
+
+.btn {
+  flex: 1;
+  /* padding: 12px 0; */
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  font-weight: 500;
+  text-align: center;
+  cursor: pointer;
+  margin: 0 8px;
+  transition: all 0.2s ease;
+}
+
+.btn:first-child {
+  margin-left: 0;
+}
+
+.btn:last-child {
+  margin-right: 0;
+}
+
+.btn-primary {
+  background-color: #3b7aff;
+  color: white;
+  box-shadow: 0 2px 5px rgba(59, 122, 255, 0.3);
+}
+
+.btn-primary:active {
+  background-color: #2960d8;
+  transform: translateY(1px);
+}
+
+.btn-secondary {
+  background-color: #f2f2f2;
+  color: #666;
+  border: 1px solid #ddd;
+}
+
+.btn-secondary:active {
+  background-color: #e5e5e5;
+  transform: translateY(1px);
 }
 
 </style>
