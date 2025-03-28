@@ -1,80 +1,75 @@
 <template>
   <tm-app>
-    <view class="activity-detail">
-      <!-- 头部信息 -->
-      <view class="header">
-        <!-- 发布者与球队信息行 -->
-        <view class="info-row">
-          <!-- 发布者信息 -->
-          <view class="publisher-info">
-            <view class="publisher">
-              <img :src="getBaseUrl() + publisher.avatar_path" alt="发布者头像" class="avatar">
-              <span class="name">{{ publisher.username }}</span>
-            </view>
-          </view>
-          
-          <!-- 球队信息 - 只有当活动属于球队时才显示 -->
-          <view class="team-logo-info" v-if="hasTeam">
-            <view class="logo">
-              <img :src="getBaseUrl() + actTeam.logo_path" alt="球队Logo">
-            </view>
-            <view class="basic-info">
-              <h2>{{ actTeam.name }}</h2>
-              <p class="stats">成员 {{ actTeam.member_cnt }} 活动 {{ actTeam.act_cnt }}</p>
-            </view>
+    <!-- 头部信息 -->
+    <view class="header">
+      <view class="activity-name">{{ activity.name }}</view>
+      <!-- 发布者与球队信息行 -->
+      <view class="info-row">
+        <!-- 发布者信息 -->
+        <view class="publisher-info">
+          <view class="publisher">
+            <img :src="getBaseUrl() + publisher.avatar_path" alt="发布者头像" class="avatar">
+            <span class="name">{{ publisher.username }}</span>
           </view>
         </view>
 
-        <!-- 活动主要信息 -->
-        <view class="info-list">
-          <view class="info-item">
-            <view class="activity-name">{{ activity.name }}</view>
+        <!-- 球队信息 - 只有当活动属于球队时才显示 -->
+        <view class="team-logo-info" v-if="hasTeam">
+          <view class="logo">
+            <img :src="getBaseUrl() + actTeam.logo_path" alt="球队Logo">
           </view>
-          <view class="info-item">
-            <view class="icon"><i class="calendar-icon"></i></view>
-            <view class="text">活动时间: {{ formatTime(activity.start_time) }}</view>
-          </view>
-
-          <view class="info-item">
-            <view class="icon"><i class="location-icon"></i></view>
-            <view class="text">地址: {{ activity.address }}</view>
-            <view class="nav-link">场地导航 ></view>
-          </view>
-
-          <view class="info-item">
-            <view class="icon"><i class="type-icon"></i></view>
-            <view class="text">{{ ACT_TYPES.find(item => item.id === activity.type_id)?.name || '未知' }}</view>
-          </view>
-
-          <view class="info-item">
-            <view class="icon"><i class="fee-icon"></i></view>
-            <view class="text">收费: {{ activity.fee }}</view>
-          </view>
-          <!-- 活动详细说明 -->
-          <!-- <view class="activity-details"> -->
-          <view class="info-item flex-col">
-            <p class="content-title">活动说明:</p>
-            <view class="text content-block" style="white-space: pre-wrap;">{{ activity.content }}</view>
-            <view v-if="activity.detailsExpanded" class="more">展开</view>
+          <view class="basic-info">
+            <h2>{{ actTeam.name }}</h2>
+            <p class="stats">成员 {{ actTeam.member_cnt }} 活动 {{ actTeam.act_cnt }}</p>
           </view>
         </view>
-
       </view>
 
-      <!-- 报名信息 -->
-      <view class="signup-section">
-        <view class="signup-header">
-          <view class="signup-count">报名 {{ activity.signupCnt }}/{{ activity.maxSignupCnt }}</view>
-          <view class="signup-waiting">待定 {{ activity.waitingCnt }}</view>
-          <view class="signup-declined">请假 {{ activity.declinedCnt }}</view>
+      <!-- 活动主要信息 -->
+      <view class="info-list">
+        <view class="info-item">
+          <view class="icon"><i class="calendar-icon"></i></view>
+          <view class="text">活动时间: {{ formatTime(activity.start_time) }}</view>
         </view>
 
-        <!-- 报名用户列表 -->
-        <view class="attendees-list">
-          <view v-for="(attendee, index) in attendees" :key="index" class="attendee-item">
-            <img :src="getBaseUrl() + attendee.avatar" alt="用户头像" class="avatar">
-            <span class="name">{{ attendee.name }}</span>
-          </view>
+        <view class="info-item">
+          <view class="icon"><i class="location-icon"></i></view>
+          <view class="text">地址: {{ activity.address }}</view>
+          <view class="nav-link">场地导航 ></view>
+        </view>
+
+        <view class="info-item">
+          <view class="icon"><i class="type-icon"></i></view>
+          <view class="text">{{ ACT_TYPES.find(item => item.id === activity.type_id)?.name || '未知' }}</view>
+        </view>
+
+        <view class="info-item">
+          <view class="icon"><i class="fee-icon"></i></view>
+          <view class="text">收费: {{ activity.fee }}</view>
+        </view>
+        <!-- 活动详细说明 -->
+        <view class="info-item flex-col">
+          <p class="content-title">活动说明:</p>
+          <view class="text content-block" style="white-space: pre-wrap;">{{ activity.content }}</view>
+          <view v-if="activity.detailsExpanded" class="more">展开</view>
+        </view>
+      </view>
+
+    </view>
+
+    <!-- 报名信息 -->
+    <view class="signup-section">
+      <view class="signup-header">
+        <view class="signup-count">报名 {{ activity.signupCnt }}/{{ activity.maxSignupCnt }}</view>
+        <view class="signup-waiting">待定 {{ activity.waitingCnt }}</view>
+        <view class="signup-declined">请假 {{ activity.declinedCnt }}</view>
+      </view>
+
+      <!-- 报名用户列表 -->
+      <view class="attendees-list">
+        <view v-for="(attendee, index) in attendees" :key="index" class="attendee-item">
+          <img :src="getBaseUrl() + attendee.avatar" alt="用户头像" class="avatar">
+          <span class="name">{{ attendee.name }}</span>
         </view>
       </view>
     </view>
@@ -152,6 +147,7 @@ const getActInfo = async (act_id: any) => {
 
 
     const act_users = await apiService.getActUsers(activityData.id);
+    debugLog("DBG: act_users: ", act_users);
     attendees.value = act_users;
   } catch (error: any) {
     debugLog("请求错误:", error);
@@ -172,15 +168,22 @@ onLoad((e: any) => {
 </script>
 
 <style scoped>
-.activity-detail {
-  background-color: #f5f5f5;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-}
-
 .header {
   background-color: white;
   border-radius: 8px;
   padding: 15px;
+  margin-bottom: 10px;
+}
+
+/* 活动名称样式 */
+.activity-name {
+  font-size: 22px;
+  font-weight: 700;
+  color: #333333;
+  text-align: center;
+  padding: 10px 10px;
+  width: 100%;
+  background-color: #ebebeb;
   margin-bottom: 10px;
 }
 
@@ -271,28 +274,11 @@ onLoad((e: any) => {
   align-items: center;
 }
 
-/* 活动名称样式 */
-.activity-name {
-  font-size: 20px;
-  font-weight: 700;
-  color: #333333;
-  text-align: left;
-  padding: 10px 15px;
-  width: 100%;
-  background-color: #ebebeb;
-}
-
 .avatar {
   width: 30px;
   height: 30px;
   border-radius: 50%;
   margin-right: 8px;
-}
-
-.activity-details {
-  font-size: 14px;
-  line-height: 1.5;
-  color: #333;
 }
 
 .more {
