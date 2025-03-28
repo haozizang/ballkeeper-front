@@ -71,7 +71,7 @@
 
         <!-- 报名用户列表 -->
         <view class="attendees-list">
-          <view v-for="(attendee, index) in activity.attendees" :key="index" class="attendee-item">
+          <view v-for="(attendee, index) in attendees" :key="index" class="attendee-item">
             <img :src="getBaseUrl() + attendee.avatar" alt="用户头像" class="avatar">
             <span class="name">{{ attendee.name }}</span>
           </view>
@@ -106,6 +106,15 @@ const publisher = ref({
   avatar_path: '',
 });
 
+const attendees = ref([
+  { name: '晓蒙', avatar: '/avatar1.png' },
+  { name: 'sunshuo', avatar: '/avatar2.png' },
+  { name: 'jacklee', avatar: '/avatar3.png' },
+  { name: '鞍', avatar: '/avatar4.png' },
+  { name: '刘世华', avatar: '/avatar5.png' },
+  { name: 'john', avatar: '/avatar6.png' }
+]);
+
 const activity = ref({
   name: '活动名称',
   address: '活动地址',
@@ -117,15 +126,7 @@ const activity = ref({
   signupCnt: 14,
   maxSignupCnt: 18,
   waitingCnt: 0,
-  declinedCnt: 2,
-  attendees: [
-    { name: '晓蒙', avatar: '/avatar1.png' },
-    { name: 'sunshuo', avatar: '/avatar2.png' },
-    { name: 'jacklee', avatar: '/avatar3.png' },
-    { name: '鞍', avatar: '/avatar4.png' },
-    { name: '刘世华', avatar: '/avatar5.png' },
-    { name: 'john', avatar: '/avatar6.png' }
-  ]
+  declinedCnt: 2
 });
 
 // 使用async/await和API服务
@@ -148,6 +149,10 @@ const getActInfo = async (act_id: any) => {
       publisher.value = userData;
       debugLog("发布者数据:", publisher.value);
     }
+
+
+    const act_users = await apiService.getActUsers(activityData.id);
+    attendees.value = act_users;
   } catch (error: any) {
     debugLog("请求错误:", error);
     uni.$tm.u.toast(error.message || '获取数据失败');

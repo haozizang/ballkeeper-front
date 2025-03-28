@@ -62,5 +62,25 @@ export const apiService = {
         }
       });
     });
+  },
+
+  getActUsers: (act_id: string): Promise<any> => {
+    return new Promise((resolve, reject) => {
+      uni.request({
+        url: '/ballkeeper/get_act_users/',
+        method: 'GET',
+        data: { act_id: act_id },
+        success: (res: any) => {
+          if (res.statusCode !== 200) {
+            reject(new Error(`${res.data.detail}(${res.statusCode})` || '获取用户失败'));
+            return;
+          }
+          resolve(res.data.user);
+        },
+        fail: (err) => {
+          reject(err);
+        }
+      });
+    });
   }
 };
