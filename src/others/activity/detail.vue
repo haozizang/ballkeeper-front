@@ -3,22 +3,25 @@
     <view class="activity-detail">
       <!-- 头部信息 -->
       <view class="header">
-        <!-- 球队信息 - 只有当活动属于球队时才显示 -->
-        <view class="team-logo-info" v-if="hasTeam">
-          <view class="logo">
-            <img :src="getBaseUrl() + actTeam.logo_path" alt="球队Logo">
+        <!-- 发布者与球队信息行 -->
+        <view class="info-row">
+          <!-- 发布者信息 -->
+          <view class="publisher-info">
+            <view class="publisher">
+              <img :src="getBaseUrl() + publisher.avatar_path" alt="发布者头像" class="avatar">
+              <span class="name">{{ publisher.username }}</span>
+            </view>
           </view>
-          <view class="basic-info">
-            <h2>{{ actTeam.name }}</h2>
-            <p class="stats">成员 {{ actTeam.member_cnt }} 活动 {{ actTeam.act_cnt }}</p>
-          </view>
-        </view>
-
-        <!-- 发布者信息 -->
-        <view class="publisher-info">
-          <view class="publisher">
-            <img :src="getBaseUrl() + publisher.avatar_path" alt="发布者头像" class="avatar">
-            <span class="name">{{ publisher.username }}</span>
+          
+          <!-- 球队信息 - 只有当活动属于球队时才显示 -->
+          <view class="team-logo-info" v-if="hasTeam">
+            <view class="logo">
+              <img :src="getBaseUrl() + actTeam.logo_path" alt="球队Logo">
+            </view>
+            <view class="basic-info">
+              <h2>{{ actTeam.name }}</h2>
+              <p class="stats">成员 {{ actTeam.member_cnt }} 活动 {{ actTeam.act_cnt }}</p>
+            </view>
           </view>
         </view>
 
@@ -176,13 +179,22 @@ onLoad((e: any) => {
   margin-bottom: 10px;
 }
 
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
 .team-logo-info {
   display: flex;
   align-items: center;
-  margin-bottom: 15px;
   padding: 5px;
   border: 1px solid #f0f0f0;
   border-radius: 12px;
+  margin-left: auto;
 }
 
 .logo {
