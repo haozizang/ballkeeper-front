@@ -86,7 +86,7 @@ import { debugLog, formatTime } from '@/common/tools';
 import { ACT_TYPES } from '@/common/data'
 import { apiService } from '@/common/requests';
 // 控制是否显示球队信息
-const hasTeam = ref(true);  // 默认为false,表示由个人创建的活动
+const hasTeam = ref(false);  // 默认为false,表示由个人创建的活动
 
 const actTeam = ref({
   id: '',
@@ -132,6 +132,12 @@ const getActInfo = async (act_id: any) => {
     const activityData = await apiService.getActivity(act_id);
     activity.value = activityData;
     debugLog("活动数据:", activity.value);
+
+    if (activityData.team_id) {
+      const teamData = await apiService.getTeam(activityData.team_id);
+      actTeam.value = teamData;
+      hasTeam.value = true;
+    }
 
     // 如果有创建者ID，获取创建者信息
     if (activityData.creator_id) {
