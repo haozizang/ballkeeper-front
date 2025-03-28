@@ -137,7 +137,7 @@ const getActInfo = async (act_id: any) => {
     activity.value = activityData;
     debugLog("活动数据:", activity.value);
 
-    if (activityData.team_id) {
+    if (activityData.team_id != -1) {
       const teamData = await apiService.getTeam(activityData.team_id);
       actTeam.value = teamData;
       hasTeam.value = true;
