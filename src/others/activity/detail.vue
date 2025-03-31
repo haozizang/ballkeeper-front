@@ -50,8 +50,16 @@
         <!-- 活动详细说明 -->
         <view class="info-item flex-col">
           <p class="content-title">活动说明:</p>
-          <view class="text content-block" style="white-space: pre-wrap;">{{ activity.content }}</view>
-          <view v-if="activity.detailsExpanded" class="more">展开</view>
+          <view class="text content-block"
+                :class="{'content-collapsed': !isContentExpanded && needFold}"
+                style="white-space: pre-wrap;"
+                ref="contentBlock">
+            {{ activity.content }}
+          </view>
+          <view v-if="needFold" class="more" @click="toggleContent">
+            {{ isContentExpanded ? '收起' : '展开' }}
+            <text class="more-icon">{{ isContentExpanded ? '↑' : '↓' }}</text>
+          </view>
         </view>
       </view>
 
@@ -115,7 +123,7 @@
 
 <script setup lang="ts">
 import { onLoad } from '@dcloudio/uni-app';
-import { ref } from 'vue'
+import { ref, nextTick } from 'vue'
 import { getBaseUrl } from '@/common/env';
 import { debugLog, formatTime } from '@/common/tools';
 import { ACT_TYPES } from '@/common/data'
@@ -150,12 +158,38 @@ const activity = ref({
   fee: '自定义收费 (未开启)',
   start_time: 0,
   content: '',
-  detailsExpanded: false,
   signupCnt: 14,
   maxSignupCnt: 18,
   waitingCnt: 0,
   declinedCnt: 2
 });
+
+// 内容折叠相关
+const isContentExpanded = ref(false);
+const needFold = ref(false);
+const contentBlock = ref<null>(null);
+const MAX_CONTENT_HEIGHT = 80; // 最大显示高度
+
+// 检查内容是否需要折叠
+const checkContentHeight = () => {
+  // 使用 uni.createSelectorQuery 获取元素高度
+  const query = uni.createSelectorQuery();
+  query.select('.content-block').boundingClientRect(data => {
+    if (data && typeof data === 'object' && 'height' in data) {
+      const rect = data as { height: number };
+      if (rect.height > MAX_CONTENT_HEIGHT) {
+        needFold.value = true;
+      } else {
+        needFold.value = false;
+      }
+    }
+  }).exec();
+};
+
+// 切换内容展开/折叠状态
+const toggleContent = () => {
+  isContentExpanded.value = !isContentExpanded.value;
+};
 
 // 使用async/await和API服务
 const getActInfo = async (act_id: any) => {
@@ -178,27 +212,48 @@ const getActInfo = async (act_id: any) => {
       debugLog("发布者数据:", publisher.value);
     }
 
+    try {
+      const act_users = await apiService.getActUsers(activityData.id);
+      debugLog("DBG: act_users: ", act_users);
 
-    const act_users = await apiService.getActUsers(activityData.id);
-    debugLog("DBG: act_users: ", act_users);
-    
-    // 根据用户状态分类
-    // 假设API返回的用户数据中有state字段：1=报名，2=待定，3=请假
-    signupUsers.value = act_users.filter((user: any) => user.state === 1 || !user.state);
-    waitingUsers.value = act_users.filter((user: any) => user.state === 2);
-    declinedUsers.value = act_users.filter((user: any) => user.state === 3);
-    
-    // 如果API没有提供state字段，可以先测试用临时数据
-    if (signupUsers.value.length === 0 && waitingUsers.value.length === 0 && declinedUsers.value.length === 0) {
-      // 临时测试数据
-      signupUsers.value = act_users.slice(0, Math.min(4, act_users.length));
-      if (act_users.length > 4) {
-        waitingUsers.value = act_users.slice(4, Math.min(5, act_users.length));
+      // 确保act_users是一个数组
+      if (Array.isArray(act_users)) {
+        // 根据用户状态分类
+        // 假设API返回的用户数据中有state字段：1=报名，2=待定，3=请假
+        signupUsers.value = act_users.filter((user: any) => user.state === 1 || !user.state);
+        waitingUsers.value = act_users.filter((user: any) => user.state === 2);
+        declinedUsers.value = act_users.filter((user: any) => user.state === 3);
+
+        // 如果API没有提供state字段，可以先测试用临时数据
+        if (signupUsers.value.length === 0 && waitingUsers.value.length === 0 && declinedUsers.value.length === 0) {
+          // 临时测试数据
+          signupUsers.value = act_users.slice(0, Math.min(4, act_users.length));
+          if (act_users.length > 4) {
+            waitingUsers.value = act_users.slice(4, Math.min(5, act_users.length));
+          }
+          if (act_users.length > 5) {
+            declinedUsers.value = act_users.slice(5);
+          }
+        }
+      } else {
+        debugLog("错误: act_users不是数组", act_users);
+        // 设置默认空数组，防止页面渲染错误
+        signupUsers.value = [];
+        waitingUsers.value = [];
+        declinedUsers.value = [];
       }
-      if (act_users.length > 5) {
-        declinedUsers.value = act_users.slice(5);
-      }
+    } catch (userError) {
+      debugLog("获取用户列表失败:", userError);
+      // 设置默认空数组，防止页面渲染错误
+      signupUsers.value = [];
+      waitingUsers.value = [];
+      declinedUsers.value = [];
     }
+
+    // 数据加载完成后，在下一个渲染周期检查内容高度
+    nextTick(() => {
+      checkContentHeight();
+    });
   } catch (error: any) {
     debugLog("请求错误:", error);
     uni.$tm.u.toast(error.message || '获取数据失败');
@@ -260,8 +315,6 @@ onLoad((e: any) => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 10px;
-  padding-bottom: 10px;
 }
 
 .team-logo-info {
@@ -299,18 +352,15 @@ onLoad((e: any) => {
   margin: 5px 0 0 0;
 }
 
-.info-list {
-  margin-bottom: 15px;
-}
-
 .info-item {
   display: flex;
   align-items: center;
-  padding: 10px 0;
+  padding: 8px 0;
   border-bottom: 1px solid #f0f0f0;
 }
 
 .info-item:last-child {
+  padding-bottom: 0;
   border-bottom: none;
 }
 
@@ -352,8 +402,18 @@ onLoad((e: any) => {
 .more {
   color: #0984e3;
   text-align: center;
-  padding: 5px;
-  margin-top: 10px;
+  padding: 2px 5px;
+  margin-top: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.more-icon {
+  margin-left: 4px;
+  font-weight: bold;
 }
 
 .signup-section {
@@ -372,8 +432,6 @@ onLoad((e: any) => {
 
 .section-header {
   display: flex;
-  margin-bottom: 6px;
-  padding-bottom: 4px;
   border-bottom: 1px solid #f0f0f0;
 }
 
@@ -460,6 +518,15 @@ onLoad((e: any) => {
   background-color: #f9f9f9;
   border-radius: 6px;
   font-size: 14px;
+  transition: max-height 0.3s ease;
+  overflow: hidden;
+}
+
+.content-collapsed {
+  max-height: 80px;
+  position: relative;
+  mask-image: linear-gradient(to bottom, black 70%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, black 70%, transparent 100%);
 }
 
 /* 固定在底部的按钮 */
@@ -490,7 +557,7 @@ onLoad((e: any) => {
   cursor: pointer;
   margin: 0 8px;
   transition: all 0.2s ease;
-  height: 45px;
+  height: 40px;
   line-height: 45px;
 }
 
