@@ -148,7 +148,16 @@ const publisher = ref({
 
 // 定义三种状态的用户列表
 const signupUsers = ref<any[]>([]);
-const waitingUsers = ref<any[]>([]);
+const waitingUsers = ref<any[]>([
+  {
+    name: 'user1',
+    avatar: 'https://img.yzcdn.cn/vant/ipad.png',
+  },
+  {
+    name: 'user2',
+    avatar: 'https://img.yzcdn.cn/vant/ipad.png',
+  },
+]);
 const declinedUsers = ref<any[]>([]);
 
 const activity = ref({
@@ -215,9 +224,8 @@ const getActInfo = async (act_id: any) => {
     try {
       const act_users = await apiService.getActUsers(activityData.id);
       debugLog("DBG: act_users: ", act_users);
-
       // 确保act_users是一个数组
-      if (Array.isArray(act_users)) {
+      if (Array.isArray(act_users) && act_users.length > 0) {
         // 根据用户状态分类
         // 假设API返回的用户数据中有state字段：1=报名，2=待定，3=请假
         signupUsers.value = act_users.filter((user: any) => user.state === 1 || !user.state);
@@ -238,10 +246,13 @@ const getActInfo = async (act_id: any) => {
       } else {
         debugLog("错误: act_users不是数组", act_users);
         // 设置默认空数组，防止页面渲染错误
-        signupUsers.value = [];
-        waitingUsers.value = [];
-        declinedUsers.value = [];
+        // signupUsers.value = [];
+        // waitingUsers.value = [];
+        // declinedUsers.value = [];
       }
+      debugLog("DBG: signupUsers: ", signupUsers.value);
+      debugLog("DBG: waitingUsers: ", waitingUsers.value);
+      debugLog("DBG: declinedUsers: ", declinedUsers.value);
     } catch (userError) {
       debugLog("获取用户列表失败:", userError);
       // 设置默认空数组，防止页面渲染错误
