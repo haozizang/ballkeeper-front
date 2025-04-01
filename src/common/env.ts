@@ -9,3 +9,5 @@ export const getBaseUrl = () => {
     }
     return DEV_PROXY.prefix;
 };
+
+export const ONE_TEAM_LIMIT = false;

@@ -45,7 +45,7 @@ import { openLink, debugLog } from '@/common/tools';
 import { ref, reactive, onMounted } from 'vue';
 import { onReachBottom, onPullDownRefresh } from '@dcloudio/uni-app';
 import { useUserStore } from '@/stores/user';
-import { getBaseUrl } from '@/common/env';
+import { getBaseUrl, ONE_TEAM_LIMIT } from '@/common/env';
 
 const userStore = useUserStore();
 
@@ -116,9 +116,12 @@ onMounted(() => {
 
 function goCreateTeam() {
   debugLog('userStore.userInfo: ', userStore.userInfo);
-  if (userStore.userInfo.team_id) {
-    uni.$tm.u.toast('用户只能创建1支球队');
-    return;
+  debugLog('ONE_TEAM_LIMIT: ', ONE_TEAM_LIMIT);
+  if (ONE_TEAM_LIMIT) {
+    if (userStore.userInfo.team_id) {
+      uni.$tm.u.toast('用户只能创建1支球队');
+      return;
+    }
   }
   openLink('teams/create/create');
 }
