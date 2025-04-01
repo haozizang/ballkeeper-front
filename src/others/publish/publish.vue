@@ -5,7 +5,7 @@
         <tm-form-item :margin="[15, 0]" required label="活动标题" field="name" :rules="[{ required: true, message: '请输入活动标题' }]">
           <tm-input v-model="ActForm.name" showClear placeholder="请输入活动标题"></tm-input>
         </tm-form-item>
-        <tm-form-item :margin="[15, 0]" label="选择球队" field="team_id" :rules="[{ message: '请选择球队' }]">
+        <tm-form-item :margin="[15, 0]" required label="选择球队" field="team_id" :rules="[{ required: true, message: '请选择球队' }]">
           <dx-select-team v-model="ActForm.team_id"></dx-select-team>
         </tm-form-item>
         <tm-form-item :margin="[15, 0]" required label="活动分类" field="type_id" :rules="[{ required: true, message: '请选择活动分类' }]">
