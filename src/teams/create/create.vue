@@ -56,7 +56,7 @@
 <script setup lang="ts">
 import { ref, watch, computed, onMounted } from 'vue';
 import { debugLog } from '@/common/tools';
-import { upload, myTeamDetail } from '@/common/index'
+import { upload } from '@/common/index'
 import { openLink } from '@/common/tools';
 import { TEAM_TYPES } from '@/common/data';
 import { onLoad } from '@dcloudio/uni-app';
@@ -69,7 +69,7 @@ const categoryStr = ref('');
 const teamForm = ref({
   cover: '',
   name: '',
-  team_type: TEAM_TYPES.length > 0 ? TEAM_TYPES[0].id : '',
+  team_type: TEAM_TYPES.length > 0 ? TEAM_TYPES[0].id : undefined,
   is_public: false,
   address: '',
   mobile: '',
@@ -99,24 +99,24 @@ onMounted(() => {
 })
 onLoad(async (e: any) => {
   if (e.id) {
-    myTeamDetail({ id: e.id }).then(res => {
-      if (res.code === 1000) {
-        teamForm.value.id = e.id;
-        teamForm.value.is_public = res.data.is_public;
-        teamForm.value.name = res.data.name;
-        teamForm.value.address = res.data.address;
-        teamForm.value.mobile = res.data.mobile;
-        teamForm.value.content = res.data.content;
-        teamForm.value.cover = res.data.cover;
-        TEAM_TYPES.map((item: any, index: number) => {
-          item.children.map((row: any, rowIndex: number) => {
-            if (row.id === res.data.team_type) {
-              categoryIndex.value = [index, rowIndex];
-            }
-          })
-        })
-      }
-    })
+    // myTeamDetail({ id: e.id }).then(res => {
+    //   if (res.code === 1000) {
+    //     teamForm.value.id = e.id;
+    //     teamForm.value.is_public = res.data.is_public;
+    //     teamForm.value.name = res.data.name;
+    //     teamForm.value.address = res.data.address;
+    //     teamForm.value.mobile = res.data.mobile;
+    //     teamForm.value.content = res.data.content;
+    //     teamForm.value.cover = res.data.cover;
+    //     TEAM_TYPES.map((item: any, index: number) => {
+    //       item.children.map((row: any, rowIndex: number) => {
+    //         if (row.id === res.data.team_type) {
+    //           categoryIndex.value = [index, rowIndex];
+    //         }
+    //       })
+    //     })
+    //   }
+    // })
   }
 })
 function uploadCover() {
