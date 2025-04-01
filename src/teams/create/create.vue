@@ -59,7 +59,6 @@ import { debugLog } from '@/common/tools';
 import { upload } from '@/common/index'
 import { openLink } from '@/common/tools';
 import { TEAM_TYPES } from '@/common/data';
-import { onLoad } from '@dcloudio/uni-app';
 import { useUserStore } from '@/stores/user';
 
 const userStore = useUserStore();
@@ -97,28 +96,7 @@ onMounted(() => {
     teamForm.value.team_type = TEAM_TYPES[0].id
   }
 })
-onLoad(async (e: any) => {
-  if (e.id) {
-    // myTeamDetail({ id: e.id }).then(res => {
-    //   if (res.code === 1000) {
-    //     teamForm.value.id = e.id;
-    //     teamForm.value.is_public = res.data.is_public;
-    //     teamForm.value.name = res.data.name;
-    //     teamForm.value.address = res.data.address;
-    //     teamForm.value.mobile = res.data.mobile;
-    //     teamForm.value.content = res.data.content;
-    //     teamForm.value.cover = res.data.cover;
-    //     TEAM_TYPES.map((item: any, index: number) => {
-    //       item.children.map((row: any, rowIndex: number) => {
-    //         if (row.id === res.data.team_type) {
-    //           categoryIndex.value = [index, rowIndex];
-    //         }
-    //       })
-    //     })
-    //   }
-    // })
-  }
-})
+
 function uploadCover() {
   uni.chooseImage({
     count: 1,
