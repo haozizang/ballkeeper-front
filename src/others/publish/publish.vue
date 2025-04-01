@@ -35,9 +35,8 @@
         </tm-form-item>
       </tm-form>
     </tm-sheet>
-    <!--  -->
+
     <tm-picker v-model:show="showActType" :columns="ACT_TYPES" mapKey="name" v-model="actTypeInd"></tm-picker>
-    <!-- 时间 -->
     <tm-time-picker
       v-if="showDate"
       :showDetail="{
@@ -66,8 +65,19 @@ import { useUserStore } from '@/stores/user';
 const userStore = useUserStore();
 
 const showActType = ref(false);
-const actTypeInd = ref<number[]>([]);
-const actTypeStr = ref('');
+const actTypeInd = computed({
+  get: () => {
+    const index = ACT_TYPES.findIndex(item => item.id === ActForm.value.type_id);
+    return index >= 0 ? [index] : [0];
+  },
+  set: (newVal) => {
+    const selectedActType = ACT_TYPES[newVal[0]];
+    if (selectedActType) {
+      ActForm.value.type_id = selectedActType.id;
+    }
+  }
+});
+
 const actTypeText = computed(() => {
   if (!ActForm.value.type_id) return '请选择活动分类';
   const actType = ACT_TYPES.find(item => item.id === ActForm.value.type_id);
@@ -121,7 +131,6 @@ watch(actTypeInd, (val) => {
   const selectedActType = ACT_TYPES[val[0]];
   if (selectedActType) {
     ActForm.value.type_id = selectedActType.id;
-    actTypeStr.value = selectedActType.name;
   }
 }, {immediate: true});
 

@@ -13,7 +13,7 @@
           <tm-input v-model="teamForm.name" showClear></tm-input>
         </tm-form-item>
         <tm-form-item :margin="[15, 0]" required label="组织分类" field="team_type" :rules="[{ required: true, message: '请选择活动分类' }]">
-          <view @click="showCategory = true" class="input-select round-3" :class="{ 'no-select': !teamForm.team_type }"> {{ categoryText }}</view>
+          <view @click="showCategory = true" class="input-select round-3" :class="{ 'no-select': !teamForm.team_type }"> {{ teamTypeText }}</view>
         </tm-form-item>
         <!-- <tm-form-item :margin="[15, 0]" required label="组织地址" field="address" :rules="[{ required: true, message: '请输入或点击地图定位' }]">
           <tm-input v-model="teamForm.address" showClear>
@@ -50,11 +50,11 @@
       </tm-form>
     </tm-sheet>
     <!--  -->
-    <tm-picker v-model:show="showCategory" :columns="TEAM_TYPES" mapKey="name" v-model="categoryIndex"></tm-picker>
+    <tm-picker v-model:show="showCategory" :columns="TEAM_TYPES" mapKey="name" v-model="teamTypeInd"></tm-picker>
   </tm-app>
 </template>
 <script setup lang="ts">
-import { ref, watch, computed, onMounted } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { debugLog } from '@/common/tools';
 import { upload } from '@/common/index'
 import { openLink } from '@/common/tools';
@@ -63,12 +63,10 @@ import { useUserStore } from '@/stores/user';
 
 const userStore = useUserStore();
 const showCategory = ref(false);
-const categoryIndex = ref<number[]>([]);
-const categoryStr = ref('');
 const teamForm = ref({
   cover: '',
   name: '',
-  team_type: TEAM_TYPES.length > 0 ? TEAM_TYPES[0].id : undefined,
+  team_type: TEAM_TYPES[0].id,
   is_public: false,
   address: '',
   mobile: '',
@@ -77,20 +75,26 @@ const teamForm = ref({
   lon: 0,
   id: ''
 });
-const categoryText = computed(() => {
-  if (!TEAM_TYPES.length) return '请选择分类'
-  if (!teamForm.value.team_type && teamForm.value.team_type !== 0) return '请选择分类'
+const teamTypeText = computed(() => {
+  if (!teamForm.value.team_type) return '请选择分类'
+  const type = TEAM_TYPES.find(item => item.id === teamForm.value.team_type)
+  return type ? type.name : '请选择分类'
+});
 
-  const category = TEAM_TYPES.find(item => item.id === teamForm.value.team_type)
-  return category ? category.name : '请选择分类'
-})
-watch(categoryIndex, (val) => {
-  const selectedCategory = TEAM_TYPES[val[0]];
-  if (selectedCategory) {
-    teamForm.value.team_type = selectedCategory.id;
-    categoryStr.value = selectedCategory.name;
+// tm-picker 的 v-model 需要一个数组，所以需要转换
+const teamTypeInd = computed({
+  get: () => {
+    const index = TEAM_TYPES.findIndex(item => item.id === teamForm.value.team_type);
+    return index >= 0 ? [index] : [0];
+  },
+  set: (newVal) => {
+    const selectedCategory = TEAM_TYPES[newVal[0]];
+    if (selectedCategory) {
+      teamForm.value.team_type = selectedCategory.id;
+    }
   }
 });
+
 onMounted(() => {
   if (!teamForm.value.team_type && TEAM_TYPES.length > 0) {
     teamForm.value.team_type = TEAM_TYPES[0].id
