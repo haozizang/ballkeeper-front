@@ -10,6 +10,11 @@ export const ACT_TYPES = [
   { id: 3, name: '足球(自定义)' }
 ];
 
+export const TEAM_TYPES = [
+  { id: 0, name: '足球' },
+  { id: 1, name: '其他' }
+];
+
 export const SIGNUP_TYPES = {
   attend: { id: 0, txt: '报名' },
   pending: { id: 1, txt: '待定' },

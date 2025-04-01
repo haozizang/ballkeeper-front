@@ -12,8 +12,8 @@
         <tm-form-item :margin="[15, 0]" required label="组织名称" field="name" :rules="[{ required: true, message: '请输入组织名称' }]">
           <tm-input v-model="teamForm.name" showClear></tm-input>
         </tm-form-item>
-        <tm-form-item :margin="[15, 0]" required label="组织分类" field="category_id" :rules="[{ required: true, message: '请选择活动分类' }]">
-          <view @click="showCategory = true" class="input-select round-3" :class="{ 'no-select': !teamForm.category_id }"> {{ categoryText }}</view>
+        <tm-form-item :margin="[15, 0]" required label="组织分类" field="team_type" :rules="[{ required: true, message: '请选择活动分类' }]">
+          <view @click="showCategory = true" class="input-select round-3" :class="{ 'no-select': !teamForm.team_type }"> {{ categoryText }}</view>
         </tm-form-item>
         <!-- <tm-form-item :margin="[15, 0]" required label="组织地址" field="address" :rules="[{ required: true, message: '请输入或点击地图定位' }]">
           <tm-input v-model="teamForm.address" showClear>
@@ -50,7 +50,7 @@
       </tm-form>
     </tm-sheet>
     <!--  -->
-    <tm-picker v-model:show="showCategory" :columns="categoryList" mapKey="name" v-model="categoryIndex"></tm-picker>
+    <tm-picker v-model:show="showCategory" :columns="TEAM_TYPES" mapKey="name" v-model="categoryIndex"></tm-picker>
   </tm-app>
 </template>
 <script setup lang="ts">
@@ -58,21 +58,18 @@ import { ref, watch, computed, onMounted } from 'vue';
 import { debugLog } from '@/common/tools';
 import { upload, myTeamDetail } from '@/common/index'
 import { openLink } from '@/common/tools';
+import { TEAM_TYPES } from '@/common/data';
 import { onLoad } from '@dcloudio/uni-app';
 import { useUserStore } from '@/stores/user';
 
 const userStore = useUserStore();
-const categoryList = ref([
-  { id: 2, name: '足球' },
-  { id: 3, name: '其他' }
-]);
 const showCategory = ref(false);
 const categoryIndex = ref<number[]>([]);
 const categoryStr = ref('');
 const teamForm = ref({
   cover: '',
   name: '',
-  category_id: categoryList.value.length > 0 ? categoryList.value[0].id : '',
+  team_type: TEAM_TYPES.length > 0 ? TEAM_TYPES[0].id : '',
   is_public: false,
   address: '',
   mobile: '',
@@ -82,22 +79,22 @@ const teamForm = ref({
   id: ''
 });
 const categoryText = computed(() => {
-  if (!categoryList.value.length) return '请选择分类'
-  if (!teamForm.value.category_id && teamForm.value.category_id !== 0) return '请选择分类'
+  if (!TEAM_TYPES.length) return '请选择分类'
+  if (!teamForm.value.team_type && teamForm.value.team_type !== 0) return '请选择分类'
 
-  const category = categoryList.value.find(item => item.id === teamForm.value.category_id)
+  const category = TEAM_TYPES.find(item => item.id === teamForm.value.team_type)
   return category ? category.name : '请选择分类'
 })
 watch(categoryIndex, (val) => {
-  const selectedCategory = categoryList.value[val[0]];
+  const selectedCategory = TEAM_TYPES[val[0]];
   if (selectedCategory) {
-    teamForm.value.category_id = selectedCategory.id;
+    teamForm.value.team_type = selectedCategory.id;
     categoryStr.value = selectedCategory.name;
   }
 });
 onMounted(() => {
-  if (!teamForm.value.category_id && categoryList.value.length > 0) {
-    teamForm.value.category_id = categoryList.value[0].id
+  if (!teamForm.value.team_type && TEAM_TYPES.length > 0) {
+    teamForm.value.team_type = TEAM_TYPES[0].id
   }
 })
 onLoad(async (e: any) => {
@@ -111,9 +108,9 @@ onLoad(async (e: any) => {
         teamForm.value.mobile = res.data.mobile;
         teamForm.value.content = res.data.content;
         teamForm.value.cover = res.data.cover;
-        categoryList.value.map((item: any, index: number) => {
+        TEAM_TYPES.map((item: any, index: number) => {
           item.children.map((row: any, rowIndex: number) => {
-            if (row.id === res.data.category_id) {
+            if (row.id === res.data.team_type) {
               categoryIndex.value = [index, rowIndex];
             }
           })
