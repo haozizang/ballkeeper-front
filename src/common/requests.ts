@@ -82,5 +82,29 @@ export const apiService = {
         }
       });
     });
+  },
+
+  signupAct: (act_id: number, user_id: number, signup_type: number): Promise<any> => {
+    return new Promise((resolve, reject) => {
+      uni.request({
+        url: '/ballkeeper/signup_act/',
+        method: 'POST',
+        data: {
+          act_id: act_id,
+          user_id: user_id,
+          signup_type: signup_type
+        },
+        success: (res: any) => {
+          if (res.statusCode !== 200) {
+            reject(new Error(`${res.data.detail}(${res.statusCode})` || '报名失败'));
+            return;
+          }
+          resolve(res.data);
+        },
+        fail: (err) => {
+          reject(err);
+        }
+      });
+    });
   }
 };

@@ -126,8 +126,12 @@ import { onLoad } from '@dcloudio/uni-app';
 import { ref, nextTick } from 'vue'
 import { getBaseUrl } from '@/common/env';
 import { debugLog, formatTime } from '@/common/tools';
-import { ACT_TYPES } from '@/common/data'
+import { ACT_TYPES, SIGNUP_TYPES } from '@/common/data'
 import { apiService } from '@/common/requests';
+import { useUserStore } from '@/stores/user';
+
+const userStore = useUserStore();
+
 // 控制是否显示球队信息
 const hasTeam = ref(false);  // 默认为false,表示由个人创建的活动
 
@@ -161,6 +165,7 @@ const waitingUsers = ref<any[]>([
 const declinedUsers = ref<any[]>([]);
 
 const activity = ref({
+  id: 0,
   name: '活动名称',
   address: '活动地址',
   type_id: 0,
@@ -272,10 +277,10 @@ const getActInfo = async (act_id: any) => {
 };
 
 // 按钮点击处理函数
-const handleSignup = () => {
+const handleSignup = async () => {
   debugLog("用户点击了报名按钮");
-  uni.$tm.u.toast('报名功能开发中...');
-  // TODO: 实现报名功能
+  const signup_resp = await apiService.signupAct(activity.value.id, userStore.userInfo.id, SIGNUP_TYPES.attend.id);
+  debugLog("DBG: signup_resp: ", signup_resp);
 };
 
 const handleLeave = () => {
