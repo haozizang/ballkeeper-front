@@ -59,7 +59,7 @@ import { debugLog } from '@/common/tools';
 import { upload, myTeamDetail } from '@/common/index'
 import { openLink } from '@/common/tools';
 import { onLoad } from '@dcloudio/uni-app';
-import {useUserStore} from '@/stores/user';
+import { useUserStore } from '@/stores/user';
 
 const userStore = useUserStore();
 const categoryList = ref([

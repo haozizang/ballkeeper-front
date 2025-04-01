@@ -85,7 +85,7 @@ const ActForm = ref<any>({
   name: '',
   creator_id: userStore.userInfo.id,
   team_id: -1,
-  type_id: '',
+  type_id: 0,
   cover_path: '',
   address: '',
   lat: 0,
@@ -117,12 +117,13 @@ function chooseAddress() {
 }
 
 watch(actTypeInd, (val) => {
+  debugLog('actTypeInd: ', val);
   const selectedActType = ACT_TYPES[val[0]];
   if (selectedActType) {
     ActForm.value.type_id = selectedActType.id;
     actTypeStr.value = selectedActType.name;
   }
-});
+}, {immediate: true});
 
 watch(
   () => dateSAva.value,

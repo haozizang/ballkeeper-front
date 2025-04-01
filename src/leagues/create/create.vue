@@ -79,13 +79,15 @@ const formData = ref({
   lon: 0,
   id: ''
 });
+
 const leagueTypeText = computed(() => {
   if (!leagueTypeList.value.length) return '请选择赛制'
   if (!formData.value.league_type_ind && formData.value.league_type_ind !== 0) return '请选择赛制'
 
   const leagueType = leagueTypeList.value.find(item => item.id === formData.value.league_type_ind)
   return leagueType ? leagueType.name : '请选择赛制'
-})
+});
+
 watch(leagueTypeInd, (val) => {
   const selectedLeagueType = leagueTypeList.value[val[0]];
   if (selectedLeagueType) {
