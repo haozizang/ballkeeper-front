@@ -80,10 +80,11 @@ const dateSAva = ref<number>();
 const defaultDate = ref();
 const currentField = ref('');
 const start_time_text = ref('');
+
 const ActForm = ref<any>({
   name: '',
   creator_id: userStore.userInfo.id,
-  team_id: '',
+  team_id: -1,
   type_id: '',
   cover_path: '',
   address: '',
@@ -94,6 +95,7 @@ const ActForm = ref<any>({
   mobile: '',
   content: '',
 });
+
 function openSelectTime(field:string){
   currentField.value = field;
   showDate.value = true;
@@ -139,7 +141,9 @@ watch(
 
 onLoad(async (e: any) => {
   debugLog('userStore.userInfo.id: ', userStore.userInfo);
-  ActForm.value.team_id = userStore.userInfo.team_id;
+  if (userStore.userInfo.team_id) {
+    ActForm.value.team_id = userStore.userInfo.team_id;
+  }
 
   if (e.id) {
     /*

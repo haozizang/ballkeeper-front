@@ -37,14 +37,15 @@ const teamList = ref<any>([]);
 
 // 添加一个默认的空元素，表示不选择球队的选项，创建独立活动
 teamList.value.push({
-  id: '-1',
-  name: '独立活动(不选择球队)',
+  id: -1,
+  name: '独立活动(不绑定球队)',
 });
+
 
 onLoad(async (e: any) => {
   debugLog("props.modelValue: ", props.modelValue);
 
-  if (!props.modelValue || props.modelValue === '-1') {
+  if (!props.modelValue || props.modelValue === -1) {
     uni.$tm.u.toast('无team_id传入,无法获取球队信息');
     return;
   }
@@ -61,7 +62,7 @@ onLoad(async (e: any) => {
         return;
       }
       teamList.value.push(res.data.team);
-      // teamName.value = res.data.team.name;
+      teamName.value = teamList.value.find((item:any)=>item.id === props.modelValue)?.name;
     },
     fail: () => {
       uni.$tm.u.toast('获取球队失败,请重试');
@@ -70,10 +71,10 @@ onLoad(async (e: any) => {
 })
 
 watch(() => props.modelValue, (val) => {
-  debugLog('DBG: props.modelValue: ', val);
+  debugLog('props.modelValue: ', val);
   radio.value = val;
   teamName.value = teamList.value.find((item:any)=>item.id === val)?.name;
-})
+}, {immediate: true})
 
 function confirm(){
   const item = teamList.value.find((item:any)=>item.id === radio.value);
