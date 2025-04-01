@@ -21,7 +21,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref,watch } from 'vue';
+import { ref, watch } from 'vue';
 import { onLoad } from '@dcloudio/uni-app';
 import { getBaseUrl } from '@/common/env';
 import {debugLog} from '@/common/tools'
@@ -37,7 +37,7 @@ const teamList = ref<any>([]);
 
 // 添加一个默认的空元素，表示不选择球队的选项，创建独立活动
 teamList.value.push({
-  id: -1,
+  id: 0,
   name: '独立活动(不绑定球队)',
 });
 
@@ -80,6 +80,7 @@ function confirm(){
   const item = teamList.value.find((item:any)=>item.id === radio.value);
   teamName.value = item?.name;
   emit('update:modelValue', radio.value);
+  debugLog('after confirm props.modelValue: ', props.modelValue);
   showWin.value = false;
 }
 </script>

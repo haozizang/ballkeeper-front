@@ -56,7 +56,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref,watch,computed } from 'vue';
+import { ref, watch, computed } from 'vue';
 import {debugLog} from '@/common/tools'
 import { ACT_TYPES } from '@/common/data'
 import { onLoad } from '@dcloudio/uni-app';
@@ -100,7 +100,7 @@ const ActForm = ref<any>({
   address: '',
   lat: 0,
   lon: 0,
-  start_time: 0,
+  start_time: undefined,
   is_public: true,
   mobile: '',
   content: '',
