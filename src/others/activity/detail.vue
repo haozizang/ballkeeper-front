@@ -127,6 +127,7 @@ import { ref, nextTick } from 'vue'
 import { getBaseUrl } from '@/common/env';
 import { debugLog, formatTime } from '@/common/tools';
 import { ACT_TYPES, SIGNUP_TYPES } from '@/common/data'
+import { EMPTY_TEAM_ID } from '@/common/env'
 import { apiService } from '@/common/requests';
 import { useUserStore } from '@/stores/user';
 
@@ -213,7 +214,7 @@ const getActInfo = async (act_id: any) => {
     activity.value = activityData;
     debugLog("活动数据:", activity.value);
 
-    if (activityData.team_id != -1) {
+    if (activityData.team_id != EMPTY_TEAM_ID) {
       const teamData = await apiService.getTeam(activityData.team_id);
       actTeam.value = teamData;
       hasTeam.value = true;

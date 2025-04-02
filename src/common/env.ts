@@ -11,3 +11,4 @@ export const getBaseUrl = () => {
 };
 
 export const ONE_TEAM_LIMIT = false;
+export const EMPTY_TEAM_ID = 0;
