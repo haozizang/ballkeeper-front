@@ -70,42 +70,42 @@
       <!-- 报名用户列表 -->
       <view class="user-list-section">
         <view class="section-header">
-          <view class="section-title">报名 {{ signupUsers.length }}/{{ activity.maxSignupCnt }}</view>
+          <view class="section-title">报名 {{ attendUsers.length }}/{{ activity.maxSignupCnt }}</view>
         </view>
         <view class="attendees-list">
-          <view v-for="(attendee, index) in signupUsers" :key="index" class="attendee-item">
-            <img :src="getBaseUrl() + attendee.avatar_path" alt="用户头像" class="avatar">
-            <span class="name">{{ attendee.username }}</span>
+          <view v-for="(user, index) in attendUsers" :key="index" class="user-item">
+            <img :src="getBaseUrl() + user.avatar_path" alt="用户头像" class="avatar">
+            <span class="name">{{ user.username }}</span>
           </view>
-          <view class="empty-tip" v-if="signupUsers.length === 0">暂无报名用户</view>
+          <view class="empty-tip" v-if="attendUsers.length === 0">暂无报名用户</view>
         </view>
       </view>
 
       <!-- 待定用户列表 -->
       <view class="user-list-section">
         <view class="section-header">
-          <view class="section-title">待定 {{ waitingUsers.length }}</view>
+          <view class="section-title">待定 {{ pendingUsers.length }}</view>
         </view>
         <view class="attendees-list">
-          <view v-for="(attendee, index) in waitingUsers" :key="index" class="attendee-item">
-            <img :src="getBaseUrl() + attendee.avatar" alt="用户头像" class="avatar">
-            <span class="name">{{ attendee.name }}</span>
+          <view v-for="(user, index) in pendingUsers" :key="index" class="user-item">
+            <img :src="getBaseUrl() + user.avatar_path" alt="用户头像" class="avatar">
+            <span class="name">{{ user.username }}</span>
           </view>
-          <view class="empty-tip" v-if="waitingUsers.length === 0">暂无待定用户</view>
+          <view class="empty-tip" v-if="pendingUsers.length === 0">暂无待定用户</view>
         </view>
       </view>
 
       <!-- 请假用户列表 -->
       <view class="user-list-section">
         <view class="section-header">
-          <view class="section-title">请假 {{ declinedUsers.length }}</view>
+          <view class="section-title">请假 {{ absentUsers.length }}</view>
         </view>
         <view class="attendees-list">
-          <view v-for="(attendee, index) in declinedUsers" :key="index" class="attendee-item">
-            <img :src="getBaseUrl() + attendee.avatar" alt="用户头像" class="avatar">
-            <span class="name">{{ attendee.name }}</span>
+          <view v-for="(user, index) in absentUsers" :key="index" class="user-item">
+            <img :src="getBaseUrl() + user.avatar" alt="用户头像" class="avatar">
+            <span class="name">{{ user.name }}</span>
           </view>
-          <view class="empty-tip" v-if="declinedUsers.length === 0">暂无请假用户</view>
+          <view class="empty-tip" v-if="absentUsers.length === 0">暂无请假用户</view>
         </view>
       </view>
     </view>
@@ -151,8 +151,8 @@ const publisher = ref({
 });
 
 // 定义三种状态的用户列表
-const signupUsers = ref<any[]>([]);
-const waitingUsers = ref<any[]>([
+const attendUsers = ref<any[]>([]);
+const pendingUsers = ref<any[]>([
   {
     name: 'user1',
     avatar: 'https://img.yzcdn.cn/vant/ipad.png',
@@ -162,7 +162,7 @@ const waitingUsers = ref<any[]>([
     avatar: 'https://img.yzcdn.cn/vant/ipad.png',
   },
 ]);
-const declinedUsers = ref<any[]>([]);
+const absentUsers = ref<any[]>([]);
 
 const activity = ref({
   id: 0,
@@ -233,37 +233,37 @@ const getActInfo = async (act_id: any) => {
       if (Array.isArray(act_users) && act_users.length > 0) {
         // 根据用户状态分类
         // 假设API返回的用户数据中有state字段：1=报名，2=待定，3=请假
-        signupUsers.value = act_users.filter((user: any) => user.state === 1 || !user.state);
-        waitingUsers.value = act_users.filter((user: any) => user.state === 2);
-        declinedUsers.value = act_users.filter((user: any) => user.state === 3);
+        attendUsers.value = act_users.filter((user: any) => user.state === 1 || !user.state);
+        pendingUsers.value = act_users.filter((user: any) => user.state === 2);
+        absentUsers.value = act_users.filter((user: any) => user.state === 3);
 
         // 如果API没有提供state字段，可以先测试用临时数据
-        if (signupUsers.value.length === 0 && waitingUsers.value.length === 0 && declinedUsers.value.length === 0) {
+        if (attendUsers.value.length === 0 && pendingUsers.value.length === 0 && absentUsers.value.length === 0) {
           // 临时测试数据
-          signupUsers.value = act_users.slice(0, Math.min(4, act_users.length));
+          attendUsers.value = act_users.slice(0, Math.min(4, act_users.length));
           if (act_users.length > 4) {
-            waitingUsers.value = act_users.slice(4, Math.min(5, act_users.length));
+            pendingUsers.value = act_users.slice(4, Math.min(5, act_users.length));
           }
           if (act_users.length > 5) {
-            declinedUsers.value = act_users.slice(5);
+            absentUsers.value = act_users.slice(5);
           }
         }
       } else {
         debugLog("错误: act_users不是数组", act_users);
         // 设置默认空数组，防止页面渲染错误
-        // signupUsers.value = [];
-        // waitingUsers.value = [];
-        // declinedUsers.value = [];
+        // attendUsers.value = [];
+        // pendingUsers.value = [];
+        // absentUsers.value = [];
       }
-      debugLog("DBG: signupUsers: ", signupUsers.value);
-      debugLog("DBG: waitingUsers: ", waitingUsers.value);
-      debugLog("DBG: declinedUsers: ", declinedUsers.value);
+      debugLog("DBG: attendUsers: ", attendUsers.value);
+      debugLog("DBG: pendingUsers: ", pendingUsers.value);
+      debugLog("DBG: absentUsers: ", absentUsers.value);
     } catch (userError) {
       debugLog("获取用户列表失败:", userError);
       // 设置默认空数组，防止页面渲染错误
-      signupUsers.value = [];
-      waitingUsers.value = [];
-      declinedUsers.value = [];
+      attendUsers.value = [];
+      pendingUsers.value = [];
+      absentUsers.value = [];
     }
 
     // 数据加载完成后，在下一个渲染周期检查内容高度
@@ -281,7 +281,7 @@ const handleSignup = async () => {
   debugLog("用户点击了报名按钮");
   const signup_resp = await apiService.signupAct(activity.value.id, userStore.userInfo.id, SIGNUP_TYPES.attend.id);
   debugLog("DBG: signup_resp: ", signup_resp);
-  signupUsers.value.push(signup_resp.user);
+  attendUsers.value.push(signup_resp.user);
 };
 
 const handleLeave = () => {
@@ -476,7 +476,7 @@ onLoad((e: any) => {
   font-size: 13px;
 }
 
-.attendee-item {
+.user-item {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -485,14 +485,14 @@ onLoad((e: any) => {
   width: 55px;
 }
 
-.attendee-item .avatar {
+.user-item .avatar {
   width: 45px;
   height: 45px;
   border-radius: 50%;
   margin-bottom: 3px;
 }
 
-.attendee-item .name {
+.user-item .name {
   font-size: 12px;
   text-align: center;
   color: #333;
