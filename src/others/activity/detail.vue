@@ -74,8 +74,8 @@
         </view>
         <view class="attendees-list">
           <view v-for="(attendee, index) in signupUsers" :key="index" class="attendee-item">
-            <img :src="getBaseUrl() + attendee.avatar" alt="用户头像" class="avatar">
-            <span class="name">{{ attendee.name }}</span>
+            <img :src="getBaseUrl() + attendee.avatar_path" alt="用户头像" class="avatar">
+            <span class="name">{{ attendee.username }}</span>
           </view>
           <view class="empty-tip" v-if="signupUsers.length === 0">暂无报名用户</view>
         </view>
@@ -281,6 +281,7 @@ const handleSignup = async () => {
   debugLog("用户点击了报名按钮");
   const signup_resp = await apiService.signupAct(activity.value.id, userStore.userInfo.id, SIGNUP_TYPES.attend.id);
   debugLog("DBG: signup_resp: ", signup_resp);
+  signupUsers.value.push(signup_resp.user);
 };
 
 const handleLeave = () => {
