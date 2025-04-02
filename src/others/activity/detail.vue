@@ -70,7 +70,7 @@
       <!-- 报名用户列表 -->
       <view class="user-list-section">
         <view class="section-header">
-          <view class="section-title">报名 {{ attendUsers.length }}/{{ activity.maxSignupCnt }}</view>
+          <view class="section-title">报名 {{ attendUsers.length }}/{{ activity.max_attend }}</view>
         </view>
         <view class="attendees-list">
           <view v-for="(user, index) in attendUsers" :key="index" class="user-item">
@@ -172,10 +172,10 @@ const activity = ref({
   fee: '自定义收费 (未开启)',
   start_time: 0,
   content: '',
-  signupCnt: 14,
-  maxSignupCnt: 18,
-  waitingCnt: 0,
-  declinedCnt: 2
+  attend_cnt: 14,
+  max_attend: 18,
+  pending_cnt: 0,
+  absent_cnt: 2
 });
 
 // 内容折叠相关
