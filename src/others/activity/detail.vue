@@ -153,16 +153,7 @@ const publisher = ref({
 
 // 定义三种状态的用户列表
 const attendUsers = ref<any[]>([]);
-const pendingUsers = ref<any[]>([
-  {
-    name: 'user1',
-    avatar: 'https://img.yzcdn.cn/vant/ipad.png',
-  },
-  {
-    name: 'user2',
-    avatar: 'https://img.yzcdn.cn/vant/ipad.png',
-  },
-]);
+const pendingUsers = ref<any[]>([]);
 const absentUsers = ref<any[]>([]);
 
 const activity = ref({
@@ -170,6 +161,7 @@ const activity = ref({
   name: '活动名称',
   address: '活动地址',
   type_id: 0,
+  team_id: 0,
   fee: '自定义收费 (未开启)',
   start_time: 0,
   content: '',
@@ -210,62 +202,28 @@ const toggleContent = () => {
 const getActInfo = async (act_id: any) => {
   try {
     // 获取活动数据
-    const activityData = await apiService.getActivity(act_id);
-    activity.value = activityData;
-    debugLog("活动数据:", activity.value);
+    const resp = await apiService.getActivity(act_id);
+    debugLog("resp:", resp);
+    activity.value = resp.activity;
+    debugLog("activity:", activity.value);
 
-    if (activityData.team_id != EMPTY_TEAM_ID) {
-      const teamData = await apiService.getTeam(activityData.team_id);
-      actTeam.value = teamData;
+    publisher.value = resp.creator;
+    debugLog("publisher:", publisher.value);
+
+    if (activity.value.team_id != EMPTY_TEAM_ID && resp.team) {
+      actTeam.value = resp.team;
       hasTeam.value = true;
+      debugLog("actTeam:", actTeam.value);
     }
 
-    // 如果有创建者ID，获取创建者信息
-    if (activityData.creator_id) {
-      const userData = await apiService.getUser(activityData.creator_id);
-      publisher.value = userData;
-      debugLog("发布者数据:", publisher.value);
-    }
+    // 确保act_users是一个数组
+    attendUsers.value = resp.attend_users;
+    pendingUsers.value = resp.pending_users;
+    absentUsers.value = resp.absent_users;
 
-    try {
-      const act_users = await apiService.getActUsers(activityData.id);
-      debugLog("DBG: act_users: ", act_users);
-      // 确保act_users是一个数组
-      if (Array.isArray(act_users) && act_users.length > 0) {
-        // 根据用户状态分类
-        // 假设API返回的用户数据中有state字段：1=报名，2=待定，3=请假
-        attendUsers.value = act_users.filter((user: any) => user.state === 1 || !user.state);
-        pendingUsers.value = act_users.filter((user: any) => user.state === 2);
-        absentUsers.value = act_users.filter((user: any) => user.state === 3);
-
-        // 如果API没有提供state字段，可以先测试用临时数据
-        if (attendUsers.value.length === 0 && pendingUsers.value.length === 0 && absentUsers.value.length === 0) {
-          // 临时测试数据
-          attendUsers.value = act_users.slice(0, Math.min(4, act_users.length));
-          if (act_users.length > 4) {
-            pendingUsers.value = act_users.slice(4, Math.min(5, act_users.length));
-          }
-          if (act_users.length > 5) {
-            absentUsers.value = act_users.slice(5);
-          }
-        }
-      } else {
-        debugLog("错误: act_users不是数组", act_users);
-        // 设置默认空数组，防止页面渲染错误
-        // attendUsers.value = [];
-        // pendingUsers.value = [];
-        // absentUsers.value = [];
-      }
-      debugLog("DBG: attendUsers: ", attendUsers.value);
-      debugLog("DBG: pendingUsers: ", pendingUsers.value);
-      debugLog("DBG: absentUsers: ", absentUsers.value);
-    } catch (userError) {
-      debugLog("获取用户列表失败:", userError);
-      // 设置默认空数组，防止页面渲染错误
-      attendUsers.value = [];
-      pendingUsers.value = [];
-      absentUsers.value = [];
-    }
+    debugLog("DBG: attendUsers: ", attendUsers.value);
+    debugLog("DBG: pendingUsers: ", pendingUsers.value);
+    debugLog("DBG: absentUsers: ", absentUsers.value);
 
     // 数据加载完成后，在下一个渲染周期检查内容高度
     nextTick(() => {

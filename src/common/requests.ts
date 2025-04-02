@@ -14,7 +14,7 @@ export const apiService = {
             reject(new Error(`${res.data.detail}(${res.statusCode})` || '获取失败'));
             return;
           }
-          resolve(res.data.activity);
+          resolve(res.data);
         },
         fail: (err) => {
           reject(err);
@@ -23,7 +23,7 @@ export const apiService = {
     });
   },
 
-  getTeam: (team_id: string): Promise<any> => {
+  getTeam: (team_id: number): Promise<any> => {
     return new Promise((resolve, reject) => {
       uni.request({
         url: '/ballkeeper/get_team/',
@@ -44,7 +44,7 @@ export const apiService = {
   },
 
   // 获取用户信息
-  getUser: (user_id: string): Promise<any> => {
+  getUser: (user_id: number): Promise<any> => {
     return new Promise((resolve, reject) => {
       uni.request({
         url: '/ballkeeper/get_user/',
@@ -64,7 +64,7 @@ export const apiService = {
     });
   },
 
-  getActUsers: (act_id: string): Promise<any> => {
+  getActUsers: (act_id: number): Promise<any> => {
     return new Promise((resolve, reject) => {
       uni.request({
         url: '/ballkeeper/get_act_users/',
