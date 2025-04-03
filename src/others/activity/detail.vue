@@ -70,42 +70,42 @@
       <!-- 报名用户列表 -->
       <view class="user-list-section">
         <view class="section-header">
-          <view class="section-title">报名 {{ attendUsers.length }}/{{ activity.max_attend }}</view>
+          <view class="section-title">报名 {{ attendUsers.size }}/{{ activity.max_attend }}</view>
         </view>
         <view class="attendees-list">
-          <view v-for="(user, index) in attendUsers" :key="index" class="user-item">
+          <view v-for="[user_id, user] in attendUsers" :key="user_id" class="user-item">
             <img :src="getBaseUrl() + user.avatar_path" alt="用户头像" class="avatar">
             <span class="name">{{ user.username }}</span>
           </view>
-          <view class="empty-tip" v-if="attendUsers.length === 0">暂无报名用户</view>
+          <view class="empty-tip" v-if="attendUsers.size === 0">暂无报名用户</view>
         </view>
       </view>
 
       <!-- 待定用户列表 -->
       <view class="user-list-section">
         <view class="section-header">
-          <view class="section-title">待定 {{ pendingUsers.length }}</view>
+          <view class="section-title">待定 {{ pendingUsers.size }}</view>
         </view>
         <view class="attendees-list">
-          <view v-for="(user, index) in pendingUsers" :key="index" class="user-item">
+          <view v-for="[user_id, user] in pendingUsers" :key="user_id" class="user-item">
             <img :src="getBaseUrl() + user.avatar_path" alt="用户头像" class="avatar">
             <span class="name">{{ user.username }}</span>
           </view>
-          <view class="empty-tip" v-if="pendingUsers.length === 0">暂无待定用户</view>
+          <view class="empty-tip" v-if="pendingUsers.size === 0">暂无待定用户</view>
         </view>
       </view>
 
       <!-- 请假用户列表 -->
       <view class="user-list-section">
         <view class="section-header">
-          <view class="section-title">请假 {{ absentUsers.length }}</view>
+          <view class="section-title">请假 {{ absentUsers.size }}</view>
         </view>
         <view class="attendees-list">
-          <view v-for="(user, index) in absentUsers" :key="index" class="user-item">
+          <view v-for="[user_id, user] in absentUsers" :key="user_id" class="user-item">
             <img :src="getBaseUrl() + user.avatar_path" alt="用户头像" class="avatar">
             <span class="name">{{ user.username }}</span>
           </view>
-          <view class="empty-tip" v-if="absentUsers.length === 0">暂无请假用户</view>
+          <view class="empty-tip" v-if="absentUsers.size === 0">暂无请假用户</view>
         </view>
       </view>
     </view>
@@ -137,7 +137,7 @@ const userStore = useUserStore();
 const hasTeam = ref(false);  // 默认为false,表示由个人创建的活动
 
 const actTeam = ref({
-  id: '',
+  id: 0,
   name: '组织名称',
   logo_path: '',
   act_cnt: 0,
@@ -152,9 +152,11 @@ const publisher = ref({
 });
 
 // 定义三种状态的用户列表
-const attendUsers = ref<any[]>([]);
-const pendingUsers = ref<any[]>([]);
-const absentUsers = ref<any[]>([]);
+const attendUsers = ref(new Map<number, any>());
+const pendingUsers = ref(new Map<number, any>());
+const absentUsers = ref(new Map<number, any>());
+
+debugLog("DBG: attendUsers.size:", attendUsers.value.size);
 
 const activity = ref({
   id: 0,
@@ -216,10 +218,17 @@ const getActInfo = async (act_id: any) => {
       debugLog("actTeam:", actTeam.value);
     }
 
-    // 确保act_users是一个数组
-    attendUsers.value = resp.attend_users;
-    pendingUsers.value = resp.pending_users;
-    absentUsers.value = resp.absent_users;
+    resp.attend_users.forEach((user: any) => {
+      attendUsers.value.set(user.id, user);
+    });
+
+    resp.pending_users.forEach((user: any) => {
+      pendingUsers.value.set(user.id, user);
+    });
+
+    resp.absent_users.forEach((user: any) => {
+      absentUsers.value.set(user.id, user);
+    });
 
     debugLog("DBG: attendUsers: ", attendUsers.value);
     debugLog("DBG: pendingUsers: ", pendingUsers.value);
@@ -238,19 +247,17 @@ const getActInfo = async (act_id: any) => {
 // 按钮点击处理函数
 const handleSignup = async (signup_type: number) => {
   try {
-    debugLog("signup to attend");
-    // TODO: check if user in attendUsers
     const user_id = userStore.userInfo.id;
-    const user_in_attend = attendUsers.value.some(user => user.id === user_id);
-    if (user_in_attend) {
+    // 使用Map的has方法检查用户是否已报名
+    if (attendUsers.value.has(user_id)) {
       uni.$tm.u.toast('您已经报名参加此活动');
       return;
     }
 
-    const signup_resp = await apiService.signupAct(activity.value.id, userStore.userInfo.id, signup_type);
-    debugLog("DBG: signup_resp: ", signup_resp);
+    const signup_resp = await apiService.signupAct(activity.value.id, user_id, signup_type);
     if (signup_type === SIGNUP_TYPES.attend.id) {
-      attendUsers.value.push(signup_resp.user);
+      // 使用set方法添加用户
+      attendUsers.value.set(signup_resp.user.id, signup_resp.user);
     } else if (signup_type === SIGNUP_TYPES.pending.id) {
       pendingUsers.value.push(signup_resp.user);
     } else if (signup_type === SIGNUP_TYPES.absent.id) {
