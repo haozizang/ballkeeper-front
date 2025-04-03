@@ -113,9 +113,9 @@
     <!-- 底部固定操作按钮 -->
     <view class="fixed-bottom">
       <view class="action-buttons">
-        <button class="btn btn-primary" @click="handleSignup(SIGNUP_TYPES.attend.id)">报名</button>
-        <button class="btn btn-secondary" @click="handleSignup(SIGNUP_TYPES.pending.id)">待定</button>
-        <button class="btn btn-secondary" @click="handleSignup(SIGNUP_TYPES.absent.id)">请假</button>
+        <button class="btn btn-primary" @click="onClickAttend()">报名</button>
+        <button class="btn btn-secondary" @click="onClickPending()">待定</button>
+        <button class="btn btn-secondary" @click="onClickAbsent()">请假</button>
       </view>
     </view>
   </tm-app>
@@ -244,28 +244,57 @@ const getActInfo = async (act_id: any) => {
   }
 };
 
-// 按钮点击处理函数
-const handleSignup = async (signup_type: number) => {
+const onClickAttend = async () => {
   try {
     const user_id = userStore.userInfo.id;
-    // 使用Map的has方法检查用户是否已报名
     if (attendUsers.value.has(user_id)) {
-      uni.$tm.u.toast('您已经报名参加此活动');
+      uni.$tm.u.toast('您已报名参加');
       return;
     }
 
-    const signup_resp = await apiService.signupAct(activity.value.id, user_id, signup_type);
-    if (signup_type === SIGNUP_TYPES.attend.id) {
-      // 使用set方法添加用户
-      attendUsers.value.set(signup_resp.user.id, signup_resp.user);
-    } else if (signup_type === SIGNUP_TYPES.pending.id) {
-      pendingUsers.value.push(signup_resp.user);
-    } else if (signup_type === SIGNUP_TYPES.absent.id) {
-      absentUsers.value.push(signup_resp.user);
-    }
+    const signup_resp = await apiService.signupAct(activity.value.id, user_id, SIGNUP_TYPES.attend.id);
+    pendingUsers.value.delete(signup_resp.user.id);
+    absentUsers.value.delete(signup_resp.user.id);
+    attendUsers.value.set(signup_resp.user.id, signup_resp.user);
   } catch (error: any) {
-    debugLog("报名失败:", error);
-    uni.$tm.u.toast(error.message || '报名失败');
+    debugLog("报名参加失败:", error);
+    uni.$tm.u.toast(error.message || '报名参加失败');
+  }
+};
+
+const onClickPending = async () => {
+  try {
+    const user_id = userStore.userInfo.id;
+    if (pendingUsers.value.has(user_id)) {
+      uni.$tm.u.toast('您已待定');
+      return;
+    }
+
+    const signup_resp = await apiService.signupAct(activity.value.id, user_id, SIGNUP_TYPES.pending.id);
+    attendUsers.value.delete(signup_resp.user.id);
+    absentUsers.value.delete(signup_resp.user.id);
+    pendingUsers.value.set(signup_resp.user.id, signup_resp.user);
+  } catch (error: any) {
+    debugLog("待定失败:", error);
+    uni.$tm.u.toast(error.message || '报名待定失败');
+  }
+};
+
+const onClickAbsent = async () => {
+  try {
+    const user_id = userStore.userInfo.id;
+    if (absentUsers.value.has(user_id)) {
+      uni.$tm.u.toast('您已请假');
+      return;
+    }
+
+    const signup_resp = await apiService.signupAct(activity.value.id, user_id, SIGNUP_TYPES.absent.id);
+    attendUsers.value.delete(signup_resp.user.id);
+    pendingUsers.value.delete(signup_resp.user.id);
+    absentUsers.value.set(signup_resp.user.id, signup_resp.user);
+  } catch (error: any) {
+    debugLog("请假失败:", error);
+    uni.$tm.u.toast(error.message || '请假失败');
   }
 };
 
