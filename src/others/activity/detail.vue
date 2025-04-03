@@ -102,8 +102,8 @@
         </view>
         <view class="attendees-list">
           <view v-for="(user, index) in absentUsers" :key="index" class="user-item">
-            <img :src="getBaseUrl() + user.avatar" alt="用户头像" class="avatar">
-            <span class="name">{{ user.name }}</span>
+            <img :src="getBaseUrl() + user.avatar_path" alt="用户头像" class="avatar">
+            <span class="name">{{ user.username }}</span>
           </view>
           <view class="empty-tip" v-if="absentUsers.length === 0">暂无请假用户</view>
         </view>
@@ -113,9 +113,9 @@
     <!-- 底部固定操作按钮 -->
     <view class="fixed-bottom">
       <view class="action-buttons">
-        <button class="btn btn-primary" @click="handleSignup">报名</button>
-        <button class="btn btn-secondary" @click="handlePending">待定</button>
-        <button class="btn btn-secondary" @click="handleLeave">请假</button>
+        <button class="btn btn-primary" @click="handleSignup(SIGNUP_TYPES.attend.id)">报名</button>
+        <button class="btn btn-secondary" @click="handleSignup(SIGNUP_TYPES.pending.id)">待定</button>
+        <button class="btn btn-secondary" @click="handleSignup(SIGNUP_TYPES.absent.id)">请假</button>
       </view>
     </view>
   </tm-app>
@@ -236,28 +236,30 @@ const getActInfo = async (act_id: any) => {
 };
 
 // 按钮点击处理函数
-const handleSignup = async () => {
+const handleSignup = async (signup_type: number) => {
   try {
     debugLog("signup to attend");
-    const signup_resp = await apiService.signupAct(activity.value.id, userStore.userInfo.id, SIGNUP_TYPES.attend.id);
+    // TODO: check if user in attendUsers
+    const user_id = userStore.userInfo.id;
+    const user_in_attend = attendUsers.value.some(user => user.id === user_id);
+    if (user_in_attend) {
+      uni.$tm.u.toast('您已经报名参加此活动');
+      return;
+    }
+
+    const signup_resp = await apiService.signupAct(activity.value.id, userStore.userInfo.id, signup_type);
     debugLog("DBG: signup_resp: ", signup_resp);
-    attendUsers.value.push(signup_resp.user);
+    if (signup_type === SIGNUP_TYPES.attend.id) {
+      attendUsers.value.push(signup_resp.user);
+    } else if (signup_type === SIGNUP_TYPES.pending.id) {
+      pendingUsers.value.push(signup_resp.user);
+    } else if (signup_type === SIGNUP_TYPES.absent.id) {
+      absentUsers.value.push(signup_resp.user);
+    }
   } catch (error: any) {
     debugLog("报名失败:", error);
     uni.$tm.u.toast(error.message || '报名失败');
   }
-};
-
-const handleLeave = () => {
-  debugLog("用户点击了请假按钮");
-  uni.$tm.u.toast('请假功能开发中...');
-  // TODO: 实现请假功能
-};
-
-const handlePending = () => {
-  debugLog("用户点击了待定按钮");
-  uni.$tm.u.toast('待定功能开发中...');
-  // TODO: 实现待定功能
 };
 
 onLoad((e: any) => {
