@@ -11,6 +11,9 @@
         <tm-form-item :margin="[15, 0]" required label="活动分类" field="type_id" :rules="[{ required: true, message: '请选择活动分类' }]">
           <view @click="showActType = true" class="input-select round-3" :class="{ 'no-select': !ActForm.type_id }"> {{ actTypeText }}</view>
         </tm-form-item>
+        <tm-form-item :margin="[15, 0]" required label="人数上限" field="max_attend" :rules="[{ required: true, message: '请输入参加人数上限' }]">
+          <tm-input v-model="ActForm.max_attend" type="number" showClear></tm-input>
+        </tm-form-item>
         <tm-form-item :margin="[15, 0]" required label="开始时间" field="start_time" :rules="[{ required: true, message: '请选择开始时间' }]">
           <view @click="openSelectTime('start_time')" class="input-select round-3" :class="{ 'no-select': !ActForm.start_time }"> {{ start_time_text || '请选择开始时间' }}</view>
         </tm-form-item>
@@ -24,7 +27,7 @@
         <tm-form-item :margin="[15, 0]" required label="是否公开" field="is_public">
           <tm-switch v-model="ActForm.is_public" :defaultValue="ActForm.is_public"></tm-switch>
         </tm-form-item>
-      <tm-form-item :margin="[15, 0]" label="组织者电话" field="mobile" :rules="[{ message: '请输入组织者电话' }]">
+        <tm-form-item :margin="[15, 0]" label="组织者电话" field="mobile" :rules="[{ message: '请输入组织者电话' }]">
           <tm-input v-model="ActForm.mobile" showClear></tm-input>
         </tm-form-item>
         <tm-form-item :margin="[15, 0]" label="活动介绍" field="content">
@@ -103,6 +106,7 @@ const ActForm = ref<any>({
   start_time: undefined,
   is_public: true,
   mobile: '',
+  max_attend: 20,
   content: '',
 });
 
