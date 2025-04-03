@@ -92,7 +92,7 @@ const currentField = ref('');
 const start_time_text = ref('');
 
 const ActForm = ref<any>({
-  name: '',
+  name: '普通足球活动',
   creator_id: userStore.userInfo.id,
   team_id: -1,
   type_id: 0,
