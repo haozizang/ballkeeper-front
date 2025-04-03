@@ -237,10 +237,15 @@ const getActInfo = async (act_id: any) => {
 
 // 按钮点击处理函数
 const handleSignup = async () => {
-  debugLog("用户点击了报名按钮");
-  const signup_resp = await apiService.signupAct(activity.value.id, userStore.userInfo.id, SIGNUP_TYPES.attend.id);
-  debugLog("DBG: signup_resp: ", signup_resp);
-  attendUsers.value.push(signup_resp.user);
+  try {
+    debugLog("signup to attend");
+    const signup_resp = await apiService.signupAct(activity.value.id, userStore.userInfo.id, SIGNUP_TYPES.attend.id);
+    debugLog("DBG: signup_resp: ", signup_resp);
+    attendUsers.value.push(signup_resp.user);
+  } catch (error: any) {
+    debugLog("报名失败:", error);
+    uni.$tm.u.toast(error.message || '报名失败');
+  }
 };
 
 const handleLeave = () => {
